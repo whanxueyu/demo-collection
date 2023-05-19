@@ -1,4 +1,4 @@
-# demo
+# m3u8_player_demo
 
 ## Project setup
 ```
