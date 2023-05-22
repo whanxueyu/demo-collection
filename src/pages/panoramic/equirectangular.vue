@@ -22,11 +22,12 @@ export default {
                 showControls: false,
                 hotSpots: [
                     {
-                        pitch: 14.1,
-                        yaw: -11.4,
+                        pitch: 1.1,
+                        yaw: 1.4,
                         type: 'scene',
                         text: '第一个场景',
                         sceneId: 'scene2',
+                        image: require("../../assets/logo.png"),
                     },
                     {
                         pitch: -10.8,

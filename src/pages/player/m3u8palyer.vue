@@ -2,7 +2,7 @@
     <div class="hello">
         <h1>m3u8 Player Demo</h1>
       <p>当前地址：{{ options.src }}</p>
-      <vue3VideoPlay width="90%" title="冰河世纪" :src="options.src" :type="options.type" :autoPlay="false" />
+      <vue3VideoPlay width="90%" :title="options.name" :src="options.src" :type="options.type" :autoPlay="false" />
       <div class="inputbox">
         <input type="text" v-model="url" style="width: 75%;height: 30px;margin: 40px 0;" placeholder="请输入m3u8视频地址">
         <button class="palybtn" @click="play">播放</button>
@@ -20,6 +20,7 @@
     name: 'HelloWorld',
     setup() {
       const options = reactive({
+        name:'测试视频',
         // 测试地址 https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
         src: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8", //视频源
         type: 'm3u8', //视频类型

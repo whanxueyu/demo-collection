@@ -47,6 +47,15 @@ const routes = [
                             hidden:false
                         },
                     },
+                    {
+                        path: '/house',
+                        name: 'house',
+                        component: () => import('@/pages/panoramic/house.vue'),
+                        meta: {
+                            name: '看房',
+                            hidden:false
+                        },
+                    },
                 ]
             },
             {
