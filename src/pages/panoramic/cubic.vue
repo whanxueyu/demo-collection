@@ -1,6 +1,6 @@
 <template>
     
-    <VuePannellum ref="pannellumViewer" class="viewwe" :src="require('../assets/house.jpg')" :hotSpots="state.options.hotSpots" />
+    <VuePannellum ref="pannellumViewer" class="viewwe" :src="require('../../assets/house.jpg')" :hotSpots="state.options.hotSpots" />
 </template>
 
 <script>
