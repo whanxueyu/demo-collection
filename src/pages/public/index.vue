@@ -2,20 +2,25 @@
     <div class="common-layout">
         <el-container>
             <el-header>
-                <div class="menuList">
-                    <div class="menu" v-for="menu in state.routerList" :key="menu.path" @click="navto(menu)">{{
-                        menu.meta.name }}</div>
-                </div>
                 <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" :ellipsis="false"
                     @select="handleSelect">
                     <el-menu-item index="0">LOGO</el-menu-item>
                     <div class="flex-grow" />
-                    <el-menu-item index="1">m3u8播放器</el-menu-item>
-                    <el-sub-menu index="2">
-                        <template #title>360°全景</template>
-                        <el-menu-item index="2-1">圆柱投影(equirectangular)</el-menu-item>
-                        <el-menu-item index="2-2">立方体投影(cubic)</el-menu-item>
-                    </el-sub-menu>
+                    <template v-for="menu in state.routerList" :key="menu.path">
+                        <el-sub-menu :index="menu.path" v-if="menu.children&&menu.children.length">
+                            <template #title>
+                                <span>{{ menu.meta.name }}</span>
+                            </template>
+                            <template v-for="item in menu.children" :key="item.path">
+                                <el-menu-item :index="item.path" @click="navto(item)">
+                                    <span>{{ item.meta.name }}</span>
+                                </el-menu-item>
+                            </template>
+                        </el-sub-menu>
+                        <el-menu-item :index="menu.path" @click="navto(menu)" v-else>
+                            <span>{{ menu.meta.name }}</span>
+                        </el-menu-item>
+                    </template>
                 </el-menu>
             </el-header>
             <el-main>
@@ -41,15 +46,19 @@ export default {
         const router = useRouter()
         const navto = (menu) => {
             router.push(menu.path)
+            activeIndex.value = menu.path
         }
         onMounted(() => {
-            let arr = router.getRoutes()
-            state.routerList = arr.filter((item) => {
-                console.log(item)
-                return item.meta.hidden === false
-            })
+            console.log(router.options.routes[0].children)
+            state.routerList = router.options.routes[0].children
+            // let arr = router.getRoutes()
+            // state.routerList = arr.filter((item) => {
+            //     console.log(item)
+            //     return item.meta.hidden === false
+            // })
             console.log(state.routerList);
             navto(state.routerList[0])
+            activeIndex.value = state.routerList[0].path
         })
         return {
             state,
@@ -77,7 +86,8 @@ export default {
 .menu:hover {
     color: #409eff;
 }
+
 .flex-grow {
-  flex-grow: 1;
+    flex-grow: 1;
 }
 </style>
