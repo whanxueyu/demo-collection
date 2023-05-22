@@ -2,9 +2,9 @@
     <div class="hello">
         <h1>m3u8 Player Demo</h1>
       <p>当前地址：{{ options.src }}</p>
-      <vue3VideoPlay width="800px" title="冰河世纪" :src="options.src" :type="options.type" :autoPlay="false" />
+      <vue3VideoPlay width="90%" title="冰河世纪" :src="options.src" :type="options.type" :autoPlay="false" />
       <div class="inputbox">
-        <input type="text" v-model="url" style="width: 700px;height: 30px;margin: 40px 0;" placeholder="请输入m3u8视频地址">
+        <input type="text" v-model="url" style="width: 75%;height: 30px;margin: 40px 0;" placeholder="请输入m3u8视频地址">
         <button class="palybtn" @click="play">播放</button>
       </div>
       <div class="text">
@@ -49,12 +49,12 @@
   }
   
   .text {
-    width: 800px;
+    width: 90vw;
     text-align: left;
   }
   
   .inputbox {
-    width: 800px;
+    width: 90vw;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -62,5 +62,6 @@
   
   .palybtn {
     padding: 7px 15px;
-  }</style>
+  }
+  </style>
   

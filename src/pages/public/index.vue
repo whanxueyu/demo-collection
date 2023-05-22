@@ -3,11 +3,11 @@
         <el-container>
             <el-header>
                 <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" :ellipsis="false"
-                    @select="handleSelect">
+                    @select="handleSelect" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b">
                     <el-menu-item index="0">LOGO</el-menu-item>
                     <div class="flex-grow" />
                     <template v-for="menu in state.routerList" :key="menu.path">
-                        <el-sub-menu :index="menu.path" v-if="menu.children&&menu.children.length">
+                        <el-sub-menu :index="menu.path" v-if="menu.children && menu.children.length">
                             <template #title>
                                 <span>{{ menu.meta.name }}</span>
                             </template>
@@ -51,11 +51,6 @@ export default {
         onMounted(() => {
             console.log(router.options.routes[0].children)
             state.routerList = router.options.routes[0].children
-            // let arr = router.getRoutes()
-            // state.routerList = arr.filter((item) => {
-            //     console.log(item)
-            //     return item.meta.hidden === false
-            // })
             console.log(state.routerList);
             navto(state.routerList[0])
             activeIndex.value = state.routerList[0].path
@@ -89,5 +84,9 @@ export default {
 
 .flex-grow {
     flex-grow: 1;
+}
+
+.el-menu-demo {
+    overflow-x: auto;
 }
 </style>

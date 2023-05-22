@@ -25,7 +25,7 @@ const routes = [
                 name: 'panoramic',
                 component: () => import('@/pages/panoramic/index.vue'),
                 meta: {
-                    name: '360°全景',
+                    name: 'Pannellum 全景VR',
                     hidden:false
                 },
                 children:[
@@ -48,6 +48,15 @@ const routes = [
                         },
                     },
                 ]
+            },
+            {
+                path: '/aframe',
+                name: 'aframe',
+                component: () => import('@/pages/aFrame/aframe.vue'),
+                meta: {
+                    name: 'A-frame 全景图',
+                    hidden:false
+                },
             },
         ]
     }

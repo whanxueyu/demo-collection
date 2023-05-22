@@ -1,0 +1,138 @@
+//flex布局
+.flex {
+	display: flex;
+}
+
+.flex-wrap {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.flex-col {
+	display: flex;
+	flex-direction: column;
+}
+
+.flex-row {
+	display: flex;
+	flex-direction: row;
+}
+
+.justify-start {
+	display: flex;
+	justify-content: flex-start;
+}
+
+.justify-end {
+	display: flex;
+	justify-content: flex-end;
+}
+
+.justify-center {
+	display: flex;
+	justify-content: center;
+}
+
+.justify-between {
+	display: flex;
+	justify-content: space-between;
+}
+
+.justify-around {
+	display: flex;
+	justify-content: space-around;
+}
+
+.align-start {
+	display: flex;
+	align-items: flex-start;
+}
+
+.align-end {
+	display: flex;
+	align-items: flex-end;
+}
+
+.align-center {
+	display: flex;
+	align-items: center;
+}
+
+.align-stretch {
+	display: flex;
+	align-items: stretch;
+}
+
+// 鼠标小手
+.pointer {
+	cursor: pointer;
+}
+
+// 页面表格高度,分页高度
+.page-content {
+	.table {
+		height: 599px;
+	}
+
+	.pagination {
+		height: calc(100% - 599px);
+	}
+}
+
+// 滚动轴
+.scroll-body {
+	overflow: auto;
+
+	&::-webkit-scrollbar {
+		width: 10px;
+		background-color: transparent;
+	}
+
+	/*定义滚动条轨道 内阴影+圆角*/
+	&::-webkit-scrollbar-track {
+		background-color: transparent;
+	}
+
+	/*定义滑块 内阴影+圆角*/
+	&::-webkit-scrollbar-thumb {
+		border-radius: 10px;
+		background-color: rgba(131, 154, 175, 0.3);
+	}
+
+	/*定义最上方和最下方的按钮*/
+	&::-webkit-scrollbar-button {
+		height: 0;
+		background-color: transparent;
+	}
+}
+
+.Visible {
+	//height: 560px;
+	width: 100%;
+	overflow: auto;
+	text-align: center;
+	//padding:  0 20px;
+}
+/*滚动条整体粗细样式*/
+::-webkit-scrollbar {
+    /*高宽分别对应横竖滚动条的尺寸*/
+    width: 8px;
+    height: 8px;
+}
+
+/*滚动条里面小方块*/
+::-webkit-scrollbar-thumb {
+    border-radius: 10px !important;
+    // box-shadow: inset 0 0 5px #666 !important;
+    /* 颜色 */
+    background:#ccc!important;
+    /* 线性渐变背景 */
+    // background-image: linear-gradient(45deg, #ffbd61 25%,#ffbd61 25%, #ff8800 25%, #ff8800 50%,#ffbd61 50%, #ffbd61 75%, #ff8800 75%, #ff8800 100%)!important;
+}
+
+/*滚动条轨道*/
+::-webkit-scrollbar-track {
+    // border-radius: 10px !important;
+    // box-shadow: inset 0 0 5px #409eff !important;
+    background: #EDEDED !important;
+}
