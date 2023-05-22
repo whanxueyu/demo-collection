@@ -1,6 +1,12 @@
 <template>
-    
-    <VuePannellum ref="pannellumViewer" class="viewwe" :src="require('../../assets/house.jpg')" :hotSpots="state.options.hotSpots" />
+    <VuePannellum ref="pannellumViewer" class="viewwe" :src="{
+        pz: require('../../assets/house/pz.png'),
+        px: require('../../assets/house/px.png'),
+        nz: require('../../assets/house/nz.png'),
+        nx: require('../../assets/house/nx.png'),
+        py: require('../../assets/house/py.png'),
+        ny: require('../../assets/house/ny.png'),
+    }" :hotSpots="state.options.hotSpots" />
 </template>
 
 <script>
@@ -14,7 +20,7 @@ export default {
     name: 'pannellumVue',
     setup() {
         const state = reactive({
-            viewer: null, 
+            viewer: null,
             options: {
                 type: 'equirectangular',
                 panorama: '../assets/360.jpg',
@@ -37,12 +43,18 @@ export default {
                     },
                 ],
             },
-
+            imgobj: {
+                pz: require('../../assets/house/pz.png'),
+                px: require('../../assets/house/px.png'),
+                nz: require('../../assets/house/nz.png'),
+                nx: require('../../assets/house/nx.png'),
+                py: require('../../assets/house/py.png'),
+                ny: require('../../assets/house/ny.png'),
+            },
+            show: false
         })
         const pannellumViewer = ref()
         onMounted(() => {
-            // console.log(pannellum)
-            // state.viewer = pannellum.viewer(pannellumViewer.value, state.options);
         })
         return {
             state,
@@ -52,7 +64,7 @@ export default {
 }
 </script>
 <style>
-.viewwe{
-height: calc(100vh - 60px);
+.viewwe {
+    height: calc(100vh - 100px);
 }
 </style>

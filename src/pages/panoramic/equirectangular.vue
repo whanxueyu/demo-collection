@@ -1,6 +1,6 @@
 <template>
-    
-    <VuePannellum ref="pannellumViewer" class="viewwe" :src="require('../../assets/house.jpg')" :hotSpots="state.options.hotSpots" />
+    <VuePannellum ref="pannellumViewer" class="viewwe" :src="require('../../assets/house.jpg')"
+        :hotSpots="state.options.hotSpots" />
 </template>
 
 <script>
@@ -14,7 +14,7 @@ export default {
     name: 'pannellumVue',
     setup() {
         const state = reactive({
-            viewer: null, 
+            viewer: null,
             options: {
                 type: 'equirectangular',
                 panorama: '../assets/360.jpg',
@@ -52,7 +52,7 @@ export default {
 }
 </script>
 <style>
-.viewwe{
-height: calc(100vh - 60px);
+.viewwe {
+    height: calc(100vh - 100px);
 }
 </style>
