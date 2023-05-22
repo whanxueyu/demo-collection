@@ -1,5 +1,6 @@
 <template>
-    <VuePannellum ref="pannellumViewer" class="viewwe" :panorama="'../assets/360.jpg'" :options="state.options" />
+    
+    <VuePannellum ref="pannellumViewer" class="viewwe" :src="require('../assets/house.jpg')" :hotSpots="state.options.hotSpots" />
 </template>
 
 <script>
@@ -29,7 +30,7 @@ export default {
                     },
                     {
                         pitch: -10.8,
-                        yaw: 222.6,
+                        yaw: -42.6,
                         type: 'scene',
                         text: '第二个场景',
                         sceneId: 'scene3',
