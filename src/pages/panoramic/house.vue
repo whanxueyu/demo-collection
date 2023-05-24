@@ -39,7 +39,6 @@ export default {
             window.pannellum.viewer("panorama", {
                 default: {
                     firstScene: "first",
-                    
                     orientationOnByDefault: false, // 是否开启vr效果
                     autoLoad: true, // 自动加载
                     autoRotate: false, // 自动旋转
@@ -50,12 +49,12 @@ export default {
                     touchPanSpeedCoeffFactor: 1, // 触摸时平移速度 默认1
                     yaw: 20, // 垂直方向左右旋转角度 正值向右 负值向左
                     pitch: -10, // 水平方向左右旋转角度 正值向上 负值向下 仰视太大 导致图片拉伸
-                    minPitch: -60, // 最小pitch 默认-180
-                    maxPitch: 60, // 最大pitch 默认180
+                    // minPitch: -60, // 最小pitch 默认-180
+                    // maxPitch: 60, // 最大pitch 默认180
                     roll: 0, // z轴 横着的
-                    hfov: 60, // 摄像机视角
-                    minHfov: 10, // 摄像机最小视角
-                    maxHfov: 60, // 摄像机最大视角
+                    hfov: 180, // 摄像机视角（纵深远近关系，数值越大越远越多）
+                    // minHfov: 10, // 摄像机最小视角
+                    // maxHfov: 60, // 摄像机最大视角
                     escapeHTML: true, // HTML 将从配置字符串中转义，以帮助缓解可能的 DOM XSS 攻击。
                     crossOrigin: "anonymous", // 使用的 CORS 请求类型，可以设置为 anonymous或use-credentials。默认为anonymous.
                     sceneFadeDuration: 1000, // 切换场景时动画持续时间
@@ -70,31 +69,35 @@ export default {
                     first: {
                         type: "cubemap", // 全景图类型
                         cubeMap: [
-                        //立方体全景图六张图
-                        "https://img.alicdn.com/imgextra/i4/O1CN014TNffn1nlaTfA98Fg_!!6000000005130-0-tps-1500-1500.jpg",
-                        "https://img.alicdn.com/imgextra/i3/O1CN01LsO1Bk20QbKpFTUQr_!!6000000006844-0-tps-1500-1500.jpg",
-                        "https://img.alicdn.com/imgextra/i1/O1CN01sS5m781ya6JgLSaVk_!!6000000006594-0-tps-1500-1500.jpg",
-                        "https://img.alicdn.com/imgextra/i3/O1CN01uTWCLc1XOCOuA92H0_!!6000000002913-0-tps-1500-1500.jpg",
-                        "https://img.alicdn.com/imgextra/i4/O1CN016lU3YJ1JdrJuFTcWt_!!6000000001052-0-tps-1500-1500.jpg",
-                        "https://img.alicdn.com/imgextra/i2/O1CN01nYe2Mn1ohkmBVyKpp_!!6000000005257-0-tps-1500-1500.jpg",
-                    ],
+                            //立方体全景图六张图
+                            "https://img.alicdn.com/imgextra/i4/O1CN014TNffn1nlaTfA98Fg_!!6000000005130-0-tps-1500-1500.jpg",
+                            "https://img.alicdn.com/imgextra/i3/O1CN01LsO1Bk20QbKpFTUQr_!!6000000006844-0-tps-1500-1500.jpg",
+                            "https://img.alicdn.com/imgextra/i1/O1CN01sS5m781ya6JgLSaVk_!!6000000006594-0-tps-1500-1500.jpg",
+                            "https://img.alicdn.com/imgextra/i3/O1CN01uTWCLc1XOCOuA92H0_!!6000000002913-0-tps-1500-1500.jpg",
+                            "https://img.alicdn.com/imgextra/i4/O1CN016lU3YJ1JdrJuFTcWt_!!6000000001052-0-tps-1500-1500.jpg",
+                            "https://img.alicdn.com/imgextra/i2/O1CN01nYe2Mn1ohkmBVyKpp_!!6000000005257-0-tps-1500-1500.jpg",
+                        ],
                         hotSpots: [
                             {
                                 yaw: -185,
                                 pitch: -4,
                                 type: "scene",
+                                cssClass: "test",
                                 sceneId: "second",
                                 // id: "one",
-                                text: "卧室里面",
+                                text: "卧室",
                                 // image: require("../../assets/logo.png"),
                                 // scale: true,
                             },
                             {
-                                yaw: -6,
-                                pitch: -26,
-                                // cssClass: "test",
-                                clickHandlerFunc: '',
+                                yaw: -28,
+                                pitch: -2,
+                                cssClass: "test",
+                                // clickHandlerFunc: '',
+                                text: '大广场',
                                 scale: true,
+                                type: "scene",
+                                sceneId: "third",
                                 // image: "./images/hot.png",
                             },
                             {
@@ -131,10 +134,60 @@ export default {
                                 pitch: -5,
                                 yaw: 80,
                                 type: "scene",
+                                cssClass: "test",
                                 sceneId: "first",
                                 // id: "two",
-                                text: "客厅",
+                                text: "小客厅",
                                 // image: "./images/hot.png",
+                            },
+                        ],
+                    },
+                    third: {
+                        type: 'equirectangular',
+                        panorama: require("../../assets/360.jpg"),
+                        autoLoad: true,
+                        showControls: false,
+                        hotSpots: [
+                            {
+                                pitch: 1.1,
+                                yaw: 1.4,
+                                type: 'scene',
+                                text: '小客厅',
+                                cssClass: "test",
+                                sceneId: 'first',
+                                image: require("../../assets/logo.png"),
+                            },
+                            {
+                                pitch: -10.8,
+                                yaw: -42.6,
+                                type: 'scene',
+                                cssClass: "test",
+                                text: '大客厅',
+                                sceneId: 'four',
+                            },
+                        ],
+                    },
+                    four: {
+                        type: 'equirectangular',
+                        panorama: require("../../assets/house.jpg"),
+                        autoLoad: true,
+                        showControls: false,
+                        hotSpots: [
+                            {
+                                pitch: 1.1,
+                                yaw: 1.4,
+                                type: 'scene',
+                                text: '客厅',
+                                cssClass: "test",
+                                sceneId: 'first',
+                            },
+                            {
+                                pitch: -10.8,
+                                yaw: -42.6,
+                                type: 'scene',
+                                text: '卧室',
+                                cssClass: "test",
+                                sceneId: 'second',
                             },
                         ],
                     },
@@ -154,4 +207,33 @@ export default {
 .viewwe {
     height: calc(100vh - 60px);
 }
-</style>
+
+@keyframes small {
+    0% {
+        border: 3px solid rgb(121, 29, 173);
+        background-size: 100% 100%;
+    }
+
+    50% {
+        border: 3px solid transparent;
+        background-size: 110% 110%;
+    }
+
+    100% {
+        border: 3px solid rgb(121, 29, 173);
+        background-size: 100% 100%;
+    }
+}
+
+.test {
+    background-image: url('https://img95.699pic.com/xsj/2m/xt/d1.jpg!/fw/700/watermark/url/L3hzai93YXRlcl9kZXRhaWwyLnBuZw/align/southeast');
+    background-size: 100% 100%;
+    background-position: center;
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    animation: small 3s infinite linear;
+    box-shadow: 0 0 20px 0px rgb(121, 29, 173);
+    opacity: 0.9;
+
+}</style>
