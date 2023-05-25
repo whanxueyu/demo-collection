@@ -35,7 +35,7 @@ import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useMenu } from '@/store/menu'
 export default {
-    name: 'HelloWorld',
+    name: 'public',
     setup() {
         const state = reactive({
             routerList: []
@@ -46,11 +46,13 @@ export default {
             console.log(key, keyPath)
         }
         const router = useRouter()
-        const navto = (menu) => {
-            router.push(menu.path)
-            menu.activeIndex = menu.path
+        const navto = (item) => {
+            router.push(item.path)
+            menu.activeIndex = item.path
         }
         onMounted(() => {
+            let currentPath = router.currentRoute.value.path
+            menu.activeIndex = currentPath
         })
         return {
             state,

@@ -71,7 +71,6 @@ const routes = [
             },
         ]
     }
-
 ]
 const menu = useMenu(pinia)
 menu.routes = routes[0].children
@@ -80,5 +79,4 @@ const router = createRouter({
     history: createWebHashHistory(),
     routes
 })
-console.log(menu.routes)
 export default router

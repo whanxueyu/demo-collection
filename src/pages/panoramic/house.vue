@@ -146,7 +146,9 @@ export default {
                         type: 'equirectangular',
                         panorama: require("../../assets/360.jpg"),
                         autoLoad: true,
-                        showControls: false,
+                        showControls: true,
+                        roll: 0, // z轴 横着的
+                        hfov: 120, // 摄像机视角（纵深远近关系，数值越大越远越多）
                         hotSpots: [
                             {
                                 pitch: 1.1,
