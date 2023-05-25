@@ -42,7 +42,7 @@ export default {
                     orientationOnByDefault: false, // 是否开启vr效果
                     autoLoad: true, // 自动加载
                     autoRotate: false, // 自动旋转
-                    autoRotateInactivityDelay: 1000, // 用户操作页面后，自动旋转延迟
+                    autoRotateInactivityDelay: 5000, // 用户操作页面5s后，自动旋转延迟
                     friction: 0.15, // 控制摩擦器 0.1 到 1 值越大停的越快 默认值0.15
                     showZoomCtrl: true, // 是否显示缩放控件
                     showFullscreenCtrl: true, // 是否显示全屏控件
@@ -52,7 +52,7 @@ export default {
                     // minPitch: -60, // 最小pitch 默认-180
                     // maxPitch: 60, // 最大pitch 默认180
                     roll: 0, // z轴 横着的
-                    hfov: 180, // 摄像机视角（纵深远近关系，数值越大越远越多）
+                    hfov: 60, // 摄像机视角（纵深远近关系，数值越大越远越多）
                     // minHfov: 10, // 摄像机最小视角
                     // maxHfov: 60, // 摄像机最大视角
                     escapeHTML: true, // HTML 将从配置字符串中转义，以帮助缓解可能的 DOM XSS 攻击。
@@ -82,7 +82,7 @@ export default {
                                 yaw: -185,
                                 pitch: -4,
                                 type: "scene",
-                                cssClass: "test",
+                                cssClass: "path",
                                 sceneId: "second",
                                 // id: "one",
                                 text: "卧室",
@@ -92,7 +92,7 @@ export default {
                             {
                                 yaw: -28,
                                 pitch: -2,
-                                cssClass: "test",
+                                cssClass: "hole",
                                 // clickHandlerFunc: '',
                                 text: '大广场',
                                 scale: true,
@@ -134,7 +134,7 @@ export default {
                                 pitch: -5,
                                 yaw: 80,
                                 type: "scene",
-                                cssClass: "test",
+                                cssClass: "path",
                                 sceneId: "first",
                                 // id: "two",
                                 text: "小客厅",
@@ -153,15 +153,14 @@ export default {
                                 yaw: 1.4,
                                 type: 'scene',
                                 text: '小客厅',
-                                cssClass: "test",
+                                cssClass: "hole",
                                 sceneId: 'first',
-                                image: require("../../assets/logo.png"),
                             },
                             {
                                 pitch: -10.8,
                                 yaw: -42.6,
                                 type: 'scene',
-                                cssClass: "test",
+                                cssClass: "hole",
                                 text: '大客厅',
                                 sceneId: 'four',
                             },
@@ -178,7 +177,7 @@ export default {
                                 yaw: 1.4,
                                 type: 'scene',
                                 text: '客厅',
-                                cssClass: "test",
+                                cssClass: "path",
                                 sceneId: 'first',
                             },
                             {
@@ -186,7 +185,7 @@ export default {
                                 yaw: -42.6,
                                 type: 'scene',
                                 text: '卧室',
-                                cssClass: "test",
+                                cssClass: "path",
                                 sceneId: 'second',
                             },
                         ],
@@ -208,32 +207,84 @@ export default {
     height: calc(100vh - 60px);
 }
 
-@keyframes small {
+@keyframes move {
     0% {
-        border: 3px solid rgb(121, 29, 173);
+        border: 3px solid transparent;
         background-size: 100% 100%;
     }
 
     50% {
-        border: 3px solid transparent;
+        border: 3px solid rgb(121, 29, 173);
         background-size: 110% 110%;
     }
 
     100% {
-        border: 3px solid rgb(121, 29, 173);
+        border: 3px solid transparent;
         background-size: 100% 100%;
     }
 }
 
-.test {
+.hole {
     background-image: url('https://img95.699pic.com/xsj/2m/xt/d1.jpg!/fw/700/watermark/url/L3hzai93YXRlcl9kZXRhaWwyLnBuZw/align/southeast');
     background-size: 100% 100%;
     background-position: center;
     height: 50px;
     width: 50px;
     border-radius: 50%;
-    animation: small 3s infinite linear;
+    animation: move 3s infinite linear;
     box-shadow: 0 0 20px 0px rgb(121, 29, 173);
     opacity: 0.9;
 
-}</style>
+}
+
+.path {
+    background-image: url('@/static/img/up.png');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    height: 50px;
+    width: 50px;
+    opacity: 0.9;
+    animation: shake 1s infinite linear;
+}
+
+@keyframes shake {
+    0% {
+        background-size: 100% 80%;
+        background-position: center;
+
+    }
+
+    50% {
+        background-size: 100% 60%;
+        background-position: bottom;
+
+    }
+
+    100% {
+        background-size: 100% 80%;
+        background-position: top;
+
+    }
+}
+
+@keyframes lay {
+    0% {
+        background-size: 100% 100%;
+        background-position: bottom;
+
+    }
+
+    50% {
+        background-size: 100% 48%;
+        background-repeat: repeat;
+        background-position: bottom;
+
+    }
+
+    100% {
+        background-size: 100% 100%;
+        background-position: bottom;
+
+    }
+}
+</style>
