@@ -2,6 +2,8 @@ import {
     createRouter,
     createWebHashHistory
 } from 'vue-router'
+import pinia from '@/store'
+import { useMenu } from '@/store/menu'
 const routes = [
     {
         path: '/',
@@ -71,9 +73,12 @@ const routes = [
     }
 
 ]
+const menu = useMenu(pinia)
+menu.routes = routes[0].children
+menu.activeIndex = routes[0].children[0].path
 const router = createRouter({
     history: createWebHashHistory(),
     routes
 })
-
+console.log(menu.routes)
 export default router

@@ -2,11 +2,11 @@
     <div class="common-layout">
         <el-container>
             <el-header>
-                <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" :ellipsis="false"
+                <el-menu :default-active="menu.activeIndex" class="el-menu-demo" mode="horizontal" :ellipsis="false"
                     @select="handleSelect" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b">
                     <el-menu-item index="0">LOGO</el-menu-item>
                     <div class="flex-grow" />
-                    <template v-for="menu in state.routerList" :key="menu.path">
+                    <template v-for="menu in menu.routes" :key="menu.path">
                         <el-sub-menu :index="menu.path" v-if="menu.children && menu.children.length">
                             <template #title>
                                 <span>{{ menu.meta.name }}</span>
@@ -33,6 +33,7 @@
 <script>
 import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useMenu } from '@/store/menu'
 export default {
     name: 'HelloWorld',
     setup() {
@@ -40,26 +41,23 @@ export default {
             routerList: []
         })
         const activeIndex = ref('1')
+        const menu = useMenu()
         const handleSelect = (key, keyPath) => {
             console.log(key, keyPath)
         }
         const router = useRouter()
         const navto = (menu) => {
             router.push(menu.path)
-            activeIndex.value = menu.path
+            menu.activeIndex = menu.path
         }
         onMounted(() => {
-            console.log(router.options.routes[0].children)
-            state.routerList = router.options.routes[0].children
-            console.log(state.routerList);
-            navto(state.routerList[0])
-            activeIndex.value = state.routerList[0].path
         })
         return {
             state,
             navto,
             handleSelect,
-            activeIndex
+            activeIndex,
+            menu
         }
     }
 }
