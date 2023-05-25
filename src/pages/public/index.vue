@@ -69,7 +69,6 @@ export default {
     display: flex;
     height: 60px;
     line-height: 60px;
-    /* background-color: #409eff22; */
 }
 
 .menu {

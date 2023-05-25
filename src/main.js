@@ -10,6 +10,7 @@ import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import AFRAME from 'aframe';
 import '@/static/css/theme.scss';
 import '@/static/css/common.scss';
+import pinia from './store'
 
 app.use(vue3videoPlay)
 app.use(router)
@@ -17,5 +18,6 @@ app.use(ElementPlus, {
     locale: zhCn,
 })
 app.use(AFRAME);
+app.use(pinia)
 
 app.mount('#app')
