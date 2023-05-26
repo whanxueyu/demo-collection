@@ -52,7 +52,12 @@ export default {
         }
         onMounted(() => {
             let currentPath = router.currentRoute.value.path
-            menu.activeIndex = currentPath
+            if(currentPath==="/"){
+                router.push('/m3u8')
+                menu.activeIndex = '/m3u8'
+            }else{
+                menu.activeIndex = currentPath
+            }
         })
         return {
             state,

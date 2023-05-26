@@ -69,6 +69,15 @@ const routes = [
                     hidden:false
                 },
             },
+            {
+                path: '/cesium',
+                name: 'cesium',
+                component: () => import('@/pages/cesium/cesium.vue'),
+                meta: {
+                    name: 'cesium 地图',
+                    hidden:false
+                },
+            },
         ]
     }
 ]

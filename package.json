@@ -8,10 +8,13 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@jridgewell/sourcemap-codec": "^1.4.15",
     "@vue/shared": "^3.3.4",
     "aframe": "^1.4.2",
+    "cesium": "^1.105.2",
     "core-js": "^3.23.3",
     "element-plus": "^2.3.5",
+    "node-polyfill-webpack-plugin": "^2.0.1",
     "pannellum": "^2.5.6",
     "pinia": "^2.0.36",
     "vue": "^3.2.13",
