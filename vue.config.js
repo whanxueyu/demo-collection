@@ -29,7 +29,9 @@ module.exports = defineConfig({
       unknownContextCritical: false,
       unknownContextRegExp: /\/cesium\/cesium\/Source\/Core\/buildModuleUrl\.js/
     },
-
+    devServer: {
+      https: true
+    }
   },
 })
 
