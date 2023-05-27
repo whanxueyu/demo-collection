@@ -39,7 +39,7 @@ export default {
             window.pannellum.viewer("panorama", {
                 default: {
                     firstScene: "first",
-                    orientationOnByDefault: false, // 是否开启vr效果
+                    orientationOnByDefault: true, // 是否开启vr效果
                     autoLoad: true, // 自动加载
                     autoRotate: false, // 自动旋转
                     autoRotateInactivityDelay: 5000, // 用户操作页面5s后，自动旋转延迟
