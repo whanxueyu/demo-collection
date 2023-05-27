@@ -63,11 +63,31 @@ const routes = [
             {
                 path: '/aframe',
                 name: 'aframe',
-                component: () => import('@/pages/aFrame/aframe.vue'),
+                component: () => import('@/pages/aFrame/index.vue'),
                 meta: {
-                    name: 'A-frame 全景图',
+                    name: 'AFrame_VR',
                     hidden:false
                 },
+                children:[
+                    {
+                        path: '/aframebox',
+                        name: 'aframebox',
+                        component: () => import('@/pages/aFrame/aframe.vue'),
+                        meta: {
+                            name: 'Aframe 动画',
+                            hidden:false
+                        },
+                    },
+                    {
+                        path: '/aframehouse',
+                        name: 'aframehouse',
+                        component: () => import('@/pages/aFrame/aframehouse.vue'),
+                        meta: {
+                            name: 'Aframe 房间',
+                            hidden:false
+                        },
+                    },
+                ]
             },
             {
                 path: '/cesium',
