@@ -99,6 +99,22 @@ const routes = [
                 },
             },
         ]
+    },
+    {
+        path: '/404',
+        name:'404',
+        component: () => import('@/pages/404/notFound.vue'),
+        meta: {
+            hidden:true,
+            name:'404'
+        },
+    },
+    {
+        path: '/:pathMatch(.*)*',
+        component: () => import('@/pages/404/notFound.vue'),
+        meta: {
+            hidden:true,
+        },
     }
 ]
 const menu = useMenu(pinia)

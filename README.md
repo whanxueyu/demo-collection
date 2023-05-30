@@ -6,9 +6,7 @@
 
 ## Preview Address 预览地址
 
-```
-https://axydemo.netlify.app/
-```
+<https://axydemo.netlify.app/>
 
 ## 
 
@@ -33,11 +31,3 @@ pnpm run serve
 ```
 pnpm run build
 ```
-
-### Lints and fixes files
-```
-pnpm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

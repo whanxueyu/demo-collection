@@ -16,11 +16,32 @@ export default {
     margin: 0;
     padding: 0;
 }
+html,
+body {
+    max-height: 100vh;
+    overflow: hidden;
+}
+body {
+    padding: 0;
+    margin: 0;
+    background: #181828;
+    font-size: 14px;
+    line-height: 1;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: #ffffff;
+
+input {
+    border: 0;
+    outline: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+    background: transparent;
+    color: #9c9c9c;
+}
 }
 </style>
