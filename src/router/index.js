@@ -14,6 +14,15 @@ const routes = [
         },
         children: [
             {
+                path: '/home',
+                name: 'home',
+                component: () => import('@/pages/home/home.vue'),
+                meta: {
+                    name: '首页',
+                    hidden:false
+                },
+            },
+            {
                 path: '/m3u8',
                 name: 'm3u8',
                 component: () => import('@/pages/player/m3u8palyer.vue'),

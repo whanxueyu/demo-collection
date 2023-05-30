@@ -4,7 +4,7 @@
             <el-header>
                 <el-menu :default-active="menu.activeIndex" class="el-menu-demo" mode="horizontal" :ellipsis="false"
                     @select="handleSelect" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b">
-                    <el-menu-item index="0">LOGO</el-menu-item>
+                    <el-menu-item index="/home">LOGO</el-menu-item>
                     <div class="flex-grow" />
                     <template v-for="menu in menu.routes" :key="menu.path">
                         <el-sub-menu :index="menu.path" v-if="menu.children && menu.children.length">
@@ -53,8 +53,8 @@ export default {
         onMounted(() => {
             let currentPath = router.currentRoute.value.path
             if(currentPath==="/"){
-                router.push('/m3u8')
-                menu.activeIndex = '/m3u8'
+                router.push('/home')
+                menu.activeIndex = '/home'
             }else{
                 menu.activeIndex = currentPath
             }
