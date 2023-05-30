@@ -1,9 +1,25 @@
 <template>
+    <div class="menubox">
+        <div class="row">
+            <span>地图：</span>
+            <el-radio-group v-model="mapData.mapType" class="ml-4">
+                <el-radio label="gaode">高德</el-radio>
+                <el-radio label="tian">天地图</el-radio>
+            </el-radio-group>
+        </div>
+        <div class="row">
+            <span>标注：</span>
+            <el-radio-group v-model="mapData.markType" class="ml-4">
+                <el-radio label="gaode">高德</el-radio>
+                <el-radio label="tian">天地图</el-radio>
+            </el-radio-group>
+        </div>
+    </div>
     <div id="cesiumContainer" ref="cesiumContainer"></div>
 </template>
    
 <script>
-import { nextTick, onMounted } from "vue";
+import { nextTick, onMounted, reactive } from "vue";
 import * as Cesium from "cesium";
 import 'cesium/Source/Widgets/widgets.css';
 var viewer;
@@ -14,6 +30,11 @@ var a = 6378245.0;
 var ee = 0.00669342162296594323;
 export default {
     setup() {
+        const mapData = reactive({
+            mapType: 'gaode',
+            markType: 'gaode'
+
+        })
         const tilesets = [
             './3dTileset/a/tileset.json',
             './3dTileset/b/tileset.json',
@@ -57,8 +78,8 @@ export default {
                 maximumLevel: 18
             })
             var atLayer1 = new Cesium.UrlTemplateImageryProvider({
-                url: "https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}", //高德影像
-                // url: "http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}", //高德矢量图
+                // url: "https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}", //高德影像
+                url: "http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}", //高德矢量图
                 // url: "http://webst02.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8", //高德路网中文注记
                 minimumLevel: 1,
                 maximumLevel: 18
@@ -77,21 +98,24 @@ export default {
             });
             console.log(atLayer, atLayer1)
             viewer.imageryLayers.addImageryProvider(atLayer1);
-            // viewer.imageryLayers.addImageryProvider(atLayer);
+            viewer.imageryLayers.addImageryProvider(atLayer);
             viewer.scene.screenSpaceCameraController.zoomEventTypes = [Cesium.CameraEventType.WHEEL, Cesium.CameraEventType.PINCH];
             viewer.scene.screenSpaceCameraController.tiltEventTypes = [Cesium.CameraEventType.PINCH, Cesium.CameraEventType.RIGHT_DRAG];
             viewer.cesiumWidget.creditContainer.style.display = "none";
             // viewer.scene.screenSpaceCameraController.enableTranslate = false;
             viewer.scene.screenSpaceCameraController.enableRotate = true; //拖拽旋转
             viewer.scene.screenSpaceCameraController.enableTilt = true; //右键拖拽倾斜
-            viewer.camera.flyTo({
-                destination: Cesium.Cartesian3.fromDegrees(117.08922, 39.09498, 600),
-                orientation: {
-                    heading: Cesium.Math.toRadians(0),
-                    pitch: Cesium.Math.toRadians(-60),
-                    roll: 0.0,
-                },
-            });
+            setTimeout(() => {
+                viewer.camera.flyTo({
+                    destination: Cesium.Cartesian3.fromDegrees(117.08922, 39.09498, 600),
+                    orientation: {
+                        heading: Cesium.Math.toRadians(0),
+                        pitch: Cesium.Math.toRadians(-60),
+                        roll: 0.0,
+                    },
+                });
+            }, 2000);
+
             nextTick(() => {
                 loadModel()
                 addMark()
@@ -380,6 +404,7 @@ export default {
             initCesium()
         })
         return {
+            mapData,
             gcj02towgs84,
             shader1,
             shader
@@ -392,5 +417,12 @@ export default {
 #cesiumContainer {
     width: 100vw;
     height: calc(100vh - 60px);
+}
+.menubox{
+    position: absolute;
+    z-index: 999;
+    background-color: #fff;
+    padding: 10px 20px;
+
 }
 </style>
