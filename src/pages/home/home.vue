@@ -2,23 +2,29 @@
     <div class="container">
         <div class="hd">
             <div class="title">
-                <cyText :text="state.title"></cyText>
+                <cyberText :text="state.title"></cyberText>
             </div>
             <div class="img">
-                <cyImg :imgurl="state.imgurl">
+                <cyberImg :imgurl="state.imgurl">
                     <div class="tip">
-                        <typing word="Pure CSS Typing animation."></typing>
+                        <typing word="Pure CSS Typing animation, cyberpunk style."></typing>
                     </div>
-                </cyImg>
+                </cyberImg>
             </div>
             <div class="btn">
                 <svgBtn1 :text="state.btn1"></svgBtn1>
                 <svgBtn2 :text="state.btn2"></svgBtn2>
+                <errorbutton :text="state.btn3"></errorbutton>
+            </div>
+            <div class="btn">
+                <neonbutton1 :text="state.neonBtn"></neonbutton1>
+                <neonbutton2 :text="state.neonBtn"></neonbutton2>
+                <neonbutton3 :text="state.neonBtn"></neonbutton3>
             </div>
         </div>
         <div class="bd">
-            <div class="title">
-                <cyText :text="state.title1"></cyText>
+            <div class="title no">
+                <pinkText :text="state.title1"></pinkText>
             </div>
             <bigEye></bigEye>
         </div>
@@ -35,29 +41,41 @@
   
 <script>
 import { onMounted, reactive, ref } from 'vue'
-import cyText from '@/components/cyber/text.vue'
-import cyImg from '@/components/cyber/img.vue'
+import cyberText from '@/components/cyber/text.vue'
+import cyberImg from '@/components/cyber/img.vue'
 import svgBtn1 from '@/components/cyber/svgbutton1.vue'
 import svgBtn2 from '@/components/cyber/svgbutton2.vue'
 import typing from '@/components/typing.vue'
 import bigEye from '@/components/bigEye.vue'
+import errorbutton from '@/components/cyber/errorbutton.vue'
+import pinkText from '@/components/neon/pinktext.vue'
+import neonbutton1 from '@/components/neon/button1.vue'
+import neonbutton2 from '@/components/neon/button2.vue'
+import neonbutton3 from '@/components/neon/button3.vue'
 export default {
     components: {
-        cyImg,
+        cyberImg,
         svgBtn1,
         svgBtn2,
-        cyText,
+        cyberText,
         typing,
-        bigEye
+        bigEye,
+        errorbutton,
+        pinkText,
+        neonbutton1,
+        neonbutton2,
+        neonbutton3
     },
     name: 'home',
     setup() {
         const state = reactive({
             imgurl: require('@/static/img/Cyber2.jpg'),
-            title: 'Cyber 赛博风格',
-            title1:'3D鼠标跟随眼睛',
+            title: 'Cyberpunk 赛博朋克风格',
+            title1: '3D鼠标跟随眼睛',
             btn1: "横向按钮",
-            btn2: "竖向按钮"
+            btn2: "竖向按钮",
+            btn3: 'AVAILABLE NOW',
+            neonBtn :'NEON BUTTON'
         })
         const url = ref('')
         onMounted(() => {
@@ -75,19 +93,26 @@ export default {
 <style scoped lang="scss">
 .container {
     margin: 0;
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
+
 .title {
-        width: calc(100vw - 40px);
-        background-color: #000;
-        height: 60px;
-        line-height: 56px;
-        padding: 0 20px;
+    width: calc(100vw - 40px);
+    background-color: #000;
+    line-height: 50px;
+    padding: 0 20px;
+    text-align: left;
+    &.no{
+        background-color: transparent;
     }
+}
+
 .hd {
     width: 100%;
     height: 100%;
     display: block;
+
     .img {
         width: 100vw;
         height: 800px;
@@ -111,7 +136,8 @@ export default {
 }
 
 .bd {
-    height: calc(100vh - 60px);
+    width: 100%;
+    height: 100%;
 
     .floattitle {
         color: #fff;

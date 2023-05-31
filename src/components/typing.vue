@@ -16,9 +16,6 @@ export default defineComponent({
   },
   setup() {
     const options = reactive({
-      // 测试地址 https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
-      src: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8", //视频源
-      type: 'm3u8', //视频类型
     })
     onMounted(() => {
 
@@ -38,25 +35,25 @@ export default defineComponent({
 }
 
 .h1 {
-    font: bold 200% Consolas, Monaco, monospace;
-    border-right: 3px solid;
-    width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    animation: typing 8s steps(26, end),
-        cursor-blink 0.5s step-end infinite alternate;
-        animation-delay: 3s;
+  font: bold 200% Consolas, Monaco, monospace;
+  border-right: 3px solid;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  animation: typing 8s steps(26, end),
+    cursor-blink 0.5s step-end infinite alternate;
+  animation-delay: 3s;
 }
 
 @keyframes typing {
-    from {
-        width: 0;
-    }
+  from {
+    width: 0;
+  }
 }
 
 @keyframes cursor-blink {
-    50% {
-        border-color: transparent;
-    }
+  50% {
+    border-color: transparent;
+  }
 }
 </style>

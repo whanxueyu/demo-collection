@@ -18,7 +18,7 @@
 <script>
 import { defineComponent, reactive, toRefs } from 'vue';
 export default defineComponent({
-	name: 'text',
+	name: 'svgButton1',
 	props: {
         text:{
             type:String,
@@ -47,6 +47,7 @@ export default defineComponent({
     cursor: pointer;
     transform: translateZ(0);
     outline: 200px solid transparent;
+    z-index: 1;
 }
 
 .fe1:hover {

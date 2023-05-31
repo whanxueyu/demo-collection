@@ -28,7 +28,7 @@ export default defineComponent({
     position: relative;
     text-align: left;
     width: 100%;
-    font-size: 36px;
+    font-size: 26px;
     font-family: Raleway, Verdana, Arial;
     color: #fff;
 }
