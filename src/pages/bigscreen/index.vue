@@ -15,6 +15,10 @@ export default {
         onMounted(() => {
 
         })
+        return {
+            state,
+            list
+        }
     }
 }
 </script>
