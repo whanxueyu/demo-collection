@@ -18,8 +18,8 @@ export default {
 }
 html,
 body {
-    max-height: 100vh;
-    overflow: hidden;
+    // max-height: 100vh;
+    // overflow: hidden;
 }
 body {
     padding: 0;

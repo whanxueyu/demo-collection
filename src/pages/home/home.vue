@@ -2,17 +2,26 @@
     <div class="container">
         <div class="hd">
             <div class="title">
-                <cyText></cyText>
+                <cyText :text="state.title"></cyText>
             </div>
             <div class="img">
-                <cyImg></cyImg>
+                <cyImg :imgurl="state.imgurl">
+                    <div class="tip">
+                        <typing word="Pure CSS Typing animation."></typing>
+                    </div>
+                </cyImg>
             </div>
             <div class="btn">
-                <svgBtn1></svgBtn1>
-                <svgBtn2></svgBtn2>
+                <svgBtn1 :text="state.btn1"></svgBtn1>
+                <svgBtn2 :text="state.btn2"></svgBtn2>
             </div>
         </div>
-        <div class="bd"></div>
+        <div class="bd">
+            <div class="title">
+                <cyText :text="state.title1"></cyText>
+            </div>
+            <bigEye></bigEye>
+        </div>
         <div class="ft" v-show="false">
             <div class="main">
                 <div class="t"></div>
@@ -30,32 +39,33 @@ import cyText from '@/components/cyber/text.vue'
 import cyImg from '@/components/cyber/img.vue'
 import svgBtn1 from '@/components/cyber/svgbutton1.vue'
 import svgBtn2 from '@/components/cyber/svgbutton2.vue'
+import typing from '@/components/typing.vue'
+import bigEye from '@/components/bigEye.vue'
 export default {
     components: {
         cyImg,
         svgBtn1,
         svgBtn2,
-        cyText
+        cyText,
+        typing,
+        bigEye
     },
-    name: 'HelloWorld',
+    name: 'home',
     setup() {
-        const options = reactive({
-            name: '测试视频',
-            // 测试地址 https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
-            src: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8", //视频源
-            type: 'm3u8', //视频类型
+        const state = reactive({
+            imgurl: require('@/static/img/Cyber2.jpg'),
+            title: 'Cyber 赛博风格',
+            title1:'3D鼠标跟随眼睛',
+            btn1: "横向按钮",
+            btn2: "竖向按钮"
         })
-        const url = ref()
-        const play = () => {
-            options.src = url.value
-        }
+        const url = ref('')
         onMounted(() => {
 
         })
         return {
-            options,
+            state,
             url,
-            play
         }
     }
 }
@@ -65,24 +75,47 @@ export default {
 <style scoped lang="scss">
 .container {
     margin: 0;
+    overflow: auto;
 }
-
-.hd {
-    .title {
-        width: 100vw;
+.title {
+        width: calc(100vw - 40px);
         background-color: #000;
         height: 60px;
-
+        line-height: 56px;
+        padding: 0 20px;
     }
-    .img{
+.hd {
+    width: 100%;
+    height: 100%;
+    display: block;
+    .img {
         width: 100vw;
-        height: 600px;
+        height: 800px;
+
+        .tip {
+            background: #000;
+            position: absolute;
+            margin: 100px;
+            // width: 600px;
+            padding: 40px;
+            opacity: 1;
+        }
     }
-    .btn{
-        margin: 20px 0;
+
+    .btn {
+        padding: 20px 0;
         display: flex;
         justify-content: space-around;
         align-items: center;
+    }
+}
+
+.bd {
+    height: calc(100vh - 60px);
+
+    .floattitle {
+        color: #fff;
+        float: left;
     }
 }
 

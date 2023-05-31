@@ -31,7 +31,7 @@ import { onMounted, reactive, ref } from 'vue'
 import { CopyDocument } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 export default {
-  name: 'HelloWorld',
+  name: 'm3u8',
   components: {
     CopyDocument
   },
@@ -85,6 +85,8 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  max-width: 1200px;
+  margin: auto;
 }
 
 .title {
@@ -99,7 +101,7 @@ export default {
 }
 
 .text {
-  width: 90vw;
+  width: 100%;
   text-align: left;
   color: #cdcdcd;
 
@@ -118,7 +120,7 @@ export default {
 }
 
 .inputbox {
-  width: 90vw;
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
