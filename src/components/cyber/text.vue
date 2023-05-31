@@ -1,23 +1,40 @@
 <template>
-    <div class="text-magic" data-word="Cyber 赛博风格">
-        Cyber 赛博风格
+    <div class="text-magic" :data-word="text">
+        {{text}}
         <div class="white"></div>
     </div>
 </template>
+<script>
+import { defineComponent, reactive, toRefs } from 'vue';
+export default defineComponent({
+	name: 'text',
+	props: {
+        text:{
+            type:String,
+            default:'TEXT'
+        }
+    },
+	setup() {
+		const data = reactive({
+		});
+		return {
+			...toRefs(data),
+		};
+	},
+});
+</script>
 <style lang="scss" scoped>
 .text-magic {
-    // position: absolute;
-    // top: 50%;
-    // left: 50%;
-    transform: translate(10%, 20%) scale(1);
-    width: 263px;
+    position: relative;
+    text-align: left;
+    width: 100%;
     font-size: 36px;
     font-family: Raleway, Verdana, Arial;
     color: #fff;
 }
 
 .white {
-    // position: absolute;
+    position: absolute;
     left: -10px;
     width: 100%;
     height: 3px;
@@ -31,13 +48,13 @@
     position: absolute;
     top: 0;
     left: 0.5px;
-    height: 0px;
+    // height: 0px;
     color: rgba(255, 255, 255, 0.9);
     overflow: hidden;
     z-index: 2;
     animation: redShadow 1s ease-in infinite;
     filter: contrast(200%);
-    text-shadow: 1px 0 0 red;
+    text-shadow: 2px 0 0 rgb(255, 0, 179);
 }
 
 .text-magic::after {
@@ -45,14 +62,14 @@
     position: absolute;
     top: 0;
     left: -3px;
-    height: 36px;
+    // height: 36px;
     color: rgba(255, 255, 255, 0.8);
     overflow: hidden;
     z-index: 3;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.8);
     animation: redHeight 1.5s ease-out infinite;
     filter: contrast(200%);
-    text-shadow: -1px 0 0 cyan;
+    text-shadow: -2px 0 0 rgb(0, 195, 255);
     mix-blend-mode: darken;
 }
 

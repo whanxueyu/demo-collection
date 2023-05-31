@@ -1,10 +1,31 @@
 <template>
     <div class="imgbox">
-        <div class="cyberimg"></div>
+        <div class="cyberimg" :style="'background: url(' + imgurl + ') no-repeat;background-size: cover;'">
+            <slot></slot>
+        </div>
     </div>
 </template>
+<script>
+import { defineComponent, reactive, toRefs } from 'vue';
+export default defineComponent({
+    name: 'menuAbility',
+    props: {
+        imgurl: {
+            type: String,
+            default: 'https://mzz-files.oss-cn-shenzhen.aliyuncs.com///uploads/U1002433/0cb5e044a1f0f7fc15f61264ee97ac1f.png'
+        }
+    },
+    setup() {
+        const data = reactive({
+        });
+        return {
+            ...toRefs(data),
+        };
+    },
+});
+</script>
 <style lang="scss" scoped>
-$img: "https://mzz-files.oss-cn-shenzhen.aliyuncs.com///uploads/U1002433/0cb5e044a1f0f7fc15f61264ee97ac1f.png";
+// $img: require("@/static/img/Cyber2.jpg");
 
 @function randomNum($max, $min: 0, $u: 1) {
     @return ($min + random($max)) * $u;
@@ -18,10 +39,10 @@ $img: "https://mzz-files.oss-cn-shenzhen.aliyuncs.com///uploads/U1002433/0cb5e04
 
 .cyberimg {
     position: relative;
-    width: 70%;
+    width: 100%;
     height: 100%;
     margin: auto;
-    background: url($img) no-repeat;
+    background-repeat: no-repeat;
     background-size: cover;
     animation: main-img-hide 20s infinite step-end;
 }
@@ -29,7 +50,7 @@ $img: "https://mzz-files.oss-cn-shenzhen.aliyuncs.com///uploads/U1002433/0cb5e04
 .cyberimg::before,
 .cyberimg::after {
     position: absolute;
-    width: 70%;
+    width: 100%;
     height: 100%;
     top: 0;
     left: 0;
@@ -47,12 +68,42 @@ $img: "https://mzz-files.oss-cn-shenzhen.aliyuncs.com///uploads/U1002433/0cb5e04
 }
 
 @keyframes glitch-one {
+
     // @for $i from 20 to 30 {
     //     #{$i / 2}% {
     //         left: #{randomNum(200, -100)}px;
     //         clip-path: inset(#{randomNum(150, 30)}px 0 #{randomNum(150, 30)}px);
     //     }
     // }
+    20% {
+        left: #{randomNum(200, -100)}px;
+        clip-path: inset(#{randomNum(150, 30)}px 0 #{randomNum(150, 30)}px);
+    }
+
+    22% {
+        left: #{randomNum(200, -100)}px;
+        clip-path: inset(#{randomNum(150, 30)}px 0 #{randomNum(150, 30)}px);
+    }
+
+    24% {
+        left: #{randomNum(200, -100)}px;
+        clip-path: inset(#{randomNum(150, 30)}px 0 #{randomNum(150, 30)}px);
+    }
+
+    26% {
+        left: #{randomNum(200, -100)}px;
+        clip-path: inset(#{randomNum(150, 30)}px 0 #{randomNum(150, 30)}px);
+    }
+
+    28% {
+        left: #{randomNum(200, -100)}px;
+        clip-path: inset(#{randomNum(150, 30)}px 0 #{randomNum(150, 30)}px);
+    }
+
+    30% {
+        left: #{randomNum(200, -100)}px;
+        clip-path: inset(#{randomNum(150, 30)}px 0 #{randomNum(150, 30)}px);
+    }
 
     15.5% {
         clip-path: inset(10px 0 320px);
@@ -166,18 +217,48 @@ $img: "https://mzz-files.oss-cn-shenzhen.aliyuncs.com///uploads/U1002433/0cb5e04
         filter: none;
     }
 
-    54% {
+    84% {
         background-image: none;
     }
 }
 
 @keyframes glitch-two {
+
     // @for $i from 40 to 50 {
-    //     {$i / 2}% {
+    //     #{$i / 2}% {
     //         left: #{randomNum(200, -100)}px;
     //         clip-path: inset(#{randomNum(180)}px 0 #{randomNum(180)}px);
     //     }
     // }
+    40% {
+        left: #{randomNum(200, -100)}px;
+        clip-path: inset(#{randomNum(180)}px 0 #{randomNum(180)}px);
+    }
+
+    42% {
+        left: #{randomNum(200, -100)}px;
+        clip-path: inset(#{randomNum(180)}px 0 #{randomNum(180)}px);
+    }
+
+    44% {
+        left: #{randomNum(200, -100)}px;
+        clip-path: inset(#{randomNum(180)}px 0 #{randomNum(180)}px);
+    }
+
+    46% {
+        left: #{randomNum(200, -100)}px;
+        clip-path: inset(#{randomNum(180)}px 0 #{randomNum(180)}px);
+    }
+
+    48% {
+        left: #{randomNum(200, -100)}px;
+        clip-path: inset(#{randomNum(180)}px 0 #{randomNum(180)}px);
+    }
+
+    50% {
+        left: #{randomNum(200, -100)}px;
+        clip-path: inset(#{randomNum(180)}px 0 #{randomNum(180)}px);
+    }
 
     25.5% {
         clip-path: inset(10px 0 320px);
@@ -291,7 +372,7 @@ $img: "https://mzz-files.oss-cn-shenzhen.aliyuncs.com///uploads/U1002433/0cb5e04
         filter: none;
     }
 
-    54% {
+    84% {
         background-image: none;
     }
 }
@@ -351,7 +432,7 @@ $img: "https://mzz-files.oss-cn-shenzhen.aliyuncs.com///uploads/U1002433/0cb5e04
     }
 
     56% {
-        background-image: url($img);
+        background-image: url('@/static/img/Cyber2.jpg');
         opacity: 0.5;
     }
 
@@ -360,7 +441,7 @@ $img: "https://mzz-files.oss-cn-shenzhen.aliyuncs.com///uploads/U1002433/0cb5e04
     }
 
     57% {
-        background-image: url($img);
+        background-image: url('@/static/img/Cyber2.jpg');
         opacity: 0.8;
     }
 
@@ -370,5 +451,27 @@ $img: "https://mzz-files.oss-cn-shenzhen.aliyuncs.com///uploads/U1002433/0cb5e04
 
     58% {
         background-image: none;
+
+    }
+
+    63% {
+        background-image: url('@/static/img/Cyber2.jpg');
+        opacity: 0.8;
+    }
+
+    70% {
+        opacity: 0.3;
+    }
+
+    72% {
+        opacity: 1;
+    }
+
+    72% {
+        opacity: 0.6;
+    }
+
+    87.5% {
+        opacity: 0.3;
     }
 }</style>

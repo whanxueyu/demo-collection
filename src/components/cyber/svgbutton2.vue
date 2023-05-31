@@ -1,5 +1,5 @@
 <template>
-        <div class="btn fe2">Button</div>
+        <div class="btn fe2">{{text}}</div>
     <svg>
         <defs>
             <filter id="fe2">
@@ -15,6 +15,25 @@
         </defs>
     </svg>
 </template>
+<script>
+import { defineComponent, reactive, toRefs } from 'vue';
+export default defineComponent({
+	name: 'text',
+	props: {
+        text:{
+            type:String,
+            default:''
+        }
+    },
+	setup() {
+		const data = reactive({
+		});
+		return {
+			...toRefs(data),
+		};
+	},
+});
+</script>
 <style lang="scss" scoped>
 .btn {
     width: 200px;
@@ -24,7 +43,7 @@
     font-size: 18px;
     color: #fff;
     text-align: center;
-    background: #673ab7;
+    background: rgb(255, 0, 179);
     cursor: pointer;
     transform: translateZ(0);
     outline: 200px solid transparent;
