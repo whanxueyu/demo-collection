@@ -1,43 +1,53 @@
 # demo-collection
 
-## Project Introduction 项目介绍
+[![license](https://img.shields.io/github/license/anncwb/vue-vben-admin.svg)](LICENSE)
 
-#### 这个demo集合项目是自己闲暇的时间做的，里面包含了一些CSS、SVG特效，比如霓虹风格的文字按钮、赛博朋克风的文字按钮图片，还包含了一个m3u8播放器（推流播放视频），还有几个360度全景的东西和一些VR的页面，然后也简单的实现了一个VR看房的效果（手机可以看VR）,还有一些cesium相关的简单操作，后续应该会增加几个大数据大屏，其他的还不知道会有什么。如果觉得有参考价值的话，欢迎 **star**
+
+[中文](./README.zh_CN.md) | **English**
+
+## Project Introduction
+
+#### This demo collection project was created in my spare time and includes some CSS and SVG effects, such as neon-style text buttons and cyberpunk-style text button images. It also includes an m3u8 player for streaming and playing videos, as well as several 360-degree panoramic views and some VR pages. Additionally, I have implemented a simple VR viewing effect (which can be viewed on mobile devices) and some basic Cesium operations. In the future, I plan to add some big data dashboards, but I'm not sure what else yet. If you find it helpful, please feel free to **star** it. 
 
 ---
 
-### github 项目地址
+### Github address
 
 <https://github.com/whanxueyu/demo-collection.git>
 
-### gitee 码云地址
+### Gitee address
 
 <https://gitee.com/whaxy/demo-collection.git>
 
-### Preview Address 预览地址
+### Preview Address
 
 <https://axydemo.netlify.app/>
 
 ---
 
-## Project setup 项目启动
+## Project setup
 
-### Install pnpm 安装pnpm
+### Get the project code
+```bash
+git clone https://github.com/anncwb/vue-vben-admin.git
 ```
+
+### Install pnpm
+```bash
 npm install pnpm -g
 ```
-### Installation dependency 安装依赖
+### Installation dependency
 
-```
+```bash
 pnpm install
 ```
 
-### Compiles and hot-reloads for development 开发环境编译启动热更新
-```
+### Compiles and hot-reloads for development
+```bash
 pnpm run serve
 ```
 
-### Compiles and minifies for production 生产环境打包
-```
+### Compiles and minifies for production
+```bash
 pnpm run build
 ```
