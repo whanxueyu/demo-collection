@@ -16,11 +16,6 @@ export default {
     margin: 0;
     padding: 0;
 }
-html,
-body {
-    // max-height: 100vh;
-    // overflow: hidden;
-}
 body {
     padding: 0;
     margin: 0;
