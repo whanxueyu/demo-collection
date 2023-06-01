@@ -1,8 +1,11 @@
 <template>
-    <div class="container">
-        <div class="hd">
+    <div class="home">
+        <div class="section1">
             <div class="title">
                 <cyberText :text="state.title"></cyberText>
+            </div>
+            <div class="banner">
+                <shadowBanner></shadowBanner>
             </div>
             <div class="img">
                 <cyberImg :imgurl="state.imgurl">
@@ -10,6 +13,11 @@
                         <typing word="Pure CSS Typing animation, cyberpunk style."></typing>
                     </div>
                 </cyberImg>
+            </div>
+        </div>
+        <div class="section2">
+            <div class="title">
+                <cyberText :text="state.title1"></cyberText>
             </div>
             <div class="btn">
                 <svgBtn1 :text="state.btn1"></svgBtn1>
@@ -28,14 +36,21 @@
                 <shadowBtn4></shadowBtn4>
             </div>
         </div>
-        <div class="bd">
+        <div class="section3">
             <div class="title no">
-                <pinkText :text="state.title1"></pinkText>
+                <pinkText :text="state.title2"></pinkText>
             </div>
             <bigEye></bigEye>
         </div>
-        <div class="ft">
-            
+        <div class="section4">
+            <div class="title flex justify-between">
+                <rightShadow></rightShadow>
+                <leftShadow></leftShadow>
+            </div>
+            <div class="movetext">
+                <TDMoveText></TDMoveText>
+            </div>
+            <moveCard></moveCard>
         </div>
     </div>
 </template>
@@ -57,6 +72,11 @@ import shadowBtn1 from '@/components/neon/shadowBtn1.vue'
 import shadowBtn2 from '@/components/neon/shadowBtn2.vue'
 import shadowBtn3 from '@/components/neon/shadowBtn3.vue'
 import shadowBtn4 from '@/components/neon/shadowBtn4.vue'
+import shadowBanner from '@/components/shadowBanner.vue'
+import TDMoveText from '@/components/3D/3DMoveText.vue'
+import moveCard from '@/components/3D/moveCard.vue'
+import leftShadow from '@/components/3D/leftShadow.vue'
+import rightShadow from '@/components/3D/rightShadow.vue'
 export default {
     components: {
         cyberImg,
@@ -74,17 +94,23 @@ export default {
         shadowBtn2,
         shadowBtn3,
         shadowBtn4,
+        shadowBanner,
+        TDMoveText,
+        moveCard,
+        rightShadow,
+        leftShadow
     },
     name: 'home',
     setup() {
         const state = reactive({
             imgurl: require('@/static/img/Cyber2.jpg'),
             title: 'Cyberpunk 赛博朋克风格',
-            title1: '3D眼睛鼠标跟随',
+            title1: 'Cyberpunk Button',
+            title2: '3D眼睛鼠标跟随',
             btn1: "横向按钮",
             btn2: "竖向按钮",
             btn3: 'AVAILABLE NOW',
-            neonBtn :'NEON BUTTON'
+            neonBtn: 'NEON BUTTON'
         })
         const url = ref('')
         onMounted(() => {
@@ -100,10 +126,11 @@ export default {
   
   <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-.container {
+.home {
     margin: 0;
     overflow-x: hidden;
     overflow-y: auto;
+    height: 100%;
 }
 
 .title {
@@ -112,15 +139,20 @@ export default {
     line-height: 50px;
     padding: 0 20px;
     text-align: left;
-    &.no{
+
+    &.no {
         background-color: transparent;
     }
 }
 
-.hd {
+.section1 {
     width: 100%;
     height: 100%;
     display: block;
+
+    .banner {
+        height: 560px;
+    }
 
     .img {
         width: 100vw;
@@ -135,6 +167,12 @@ export default {
             opacity: 1;
         }
     }
+}
+
+.section2 {
+    width: 100%;
+    height: 100%;
+    display: block;
 
     .btn {
         padding: 20px 0;
@@ -144,7 +182,7 @@ export default {
     }
 }
 
-.bd {
+.section3 {
     width: 100%;
     height: 100%;
     padding-top: 160px;
@@ -155,11 +193,13 @@ export default {
     }
 }
 
-.ft {
-    display: flex;
+.section4 {
     height: calc(100vh - 60px);
     margin: 0;
-    overflow: hidden;
+
+    .movetext {
+        height: 320px;
+    }
 }
 </style>
   

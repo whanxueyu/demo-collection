@@ -24,7 +24,7 @@ body {
 body {
     padding: 0;
     margin: 0;
-    background: #181828;
+    background: #000000;
     font-size: 14px;
     line-height: 1;
 }
