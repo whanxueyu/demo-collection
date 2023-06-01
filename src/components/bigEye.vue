@@ -26,7 +26,7 @@ const multiple = 10;
 const element = ref(null);
 const transform = ref('')
 onMounted(() => {
-    console.log(element.value.getBoundingClientRect())
+    // console.log(element.value.getBoundingClientRect())
     window.addEventListener('mousemove', (e) => {
         window.requestAnimationFrame(function () {
             transformElement(e.clientX, e.clientY);
@@ -44,11 +44,12 @@ let box = {
     y: 240,
 }
 const transformElement = (x, y) => {
-
-    box = element.value.getBoundingClientRect()
-    let calcX = -(y - box.y - (box.height / 2)) / multiple;
-    let calcY = (x - box.x - (box.width / 2)) / multiple;
-    transform.value = "rotateX(" + calcX + "deg) " + "rotateY(" + calcY + "deg)";
+    if (element?.value) {
+        box = element?.value.getBoundingClientRect()
+        let calcX = -(y - box.y - (box.height / 2)) / multiple;
+        let calcY = (x - box.x - (box.width / 2)) / multiple;
+        transform.value = "rotateX(" + calcX + "deg) " + "rotateY(" + calcY + "deg)";
+    }
 }
 
 </script>
@@ -62,7 +63,8 @@ const transformElement = (x, y) => {
 :root {
     --mainColor: #02ffff;
 }
-#con{
+
+#con {
     height: 100%;
     width: 100%;
 }

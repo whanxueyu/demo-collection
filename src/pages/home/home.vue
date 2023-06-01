@@ -10,7 +10,7 @@
             <div class="img">
                 <cyberImg :imgurl="state.imgurl">
                     <div class="tip">
-                        <typing word="Pure CSS Typing animation, cyberpunk style."></typing>
+                        <typing word="Pure CSS Typing Animation Cyberpunk Style."></typing>
                     </div>
                 </cyberImg>
             </div>
