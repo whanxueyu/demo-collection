@@ -21,6 +21,12 @@
                 <neonbutton2 :text="state.neonBtn"></neonbutton2>
                 <neonbutton3 :text="state.neonBtn"></neonbutton3>
             </div>
+            <div class="btn">
+                <shadowBtn1></shadowBtn1>
+                <shadowBtn2></shadowBtn2>
+                <shadowBtn3></shadowBtn3>
+                <shadowBtn4></shadowBtn4>
+            </div>
         </div>
         <div class="bd">
             <div class="title no">
@@ -28,13 +34,8 @@
             </div>
             <bigEye></bigEye>
         </div>
-        <div class="ft" v-show="false">
-            <div class="main">
-                <div class="t"></div>
-                <div class="r"></div>
-                <div class="b"></div>
-                <div class="l"></div>
-            </div>
+        <div class="ft">
+            
         </div>
     </div>
 </template>
@@ -52,6 +53,10 @@ import pinkText from '@/components/neon/pinktext.vue'
 import neonbutton1 from '@/components/neon/button1.vue'
 import neonbutton2 from '@/components/neon/button2.vue'
 import neonbutton3 from '@/components/neon/button3.vue'
+import shadowBtn1 from '@/components/neon/shadowBtn1.vue'
+import shadowBtn2 from '@/components/neon/shadowBtn2.vue'
+import shadowBtn3 from '@/components/neon/shadowBtn3.vue'
+import shadowBtn4 from '@/components/neon/shadowBtn4.vue'
 export default {
     components: {
         cyberImg,
@@ -64,14 +69,18 @@ export default {
         pinkText,
         neonbutton1,
         neonbutton2,
-        neonbutton3
+        neonbutton3,
+        shadowBtn1,
+        shadowBtn2,
+        shadowBtn3,
+        shadowBtn4,
     },
     name: 'home',
     setup() {
         const state = reactive({
             imgurl: require('@/static/img/Cyber2.jpg'),
             title: 'Cyberpunk 赛博朋克风格',
-            title1: '3D鼠标跟随眼睛',
+            title1: '3D眼睛鼠标跟随',
             btn1: "横向按钮",
             btn2: "竖向按钮",
             btn3: 'AVAILABLE NOW',
@@ -138,6 +147,7 @@ export default {
 .bd {
     width: 100%;
     height: 100%;
+    padding-top: 160px;
 
     .floattitle {
         color: #fff;
@@ -146,179 +156,10 @@ export default {
 }
 
 .ft {
-    background: #575757;
     display: flex;
     height: calc(100vh - 60px);
     margin: 0;
     overflow: hidden;
-
-    .main {
-        /* Timing */
-        --durM: 6s;
-        --durD: 0.5s;
-        /* Tunnel itself */
-        --size: 20em;
-        --depth: calc(var(--size) * 6);
-        --bgPos: calc(var(--size) * 0.4);
-        /* Camera movement */
-        --endX1: 45%;
-        --endX2: 55%;
-        --endY1: 46%;
-        --endY2: 54%;
-        animation: po var(--durM) ease-in-out infinite;
-        margin: auto;
-        overflow: hidden;
-        perspective: 5em;
-        perspective-origin: 50% 50%;
-        position: relative;
-        width: 100%;
-        height: calc(100vh - 60px);
-        width: var(--size);
-        height: var(--size);
-        transform: scale(6);
-    }
-
-    .main:before,
-    div {
-        position: absolute;
-    }
-
-    .main:before {
-        animation: end var(--durM) ease-in-out infinite;
-        background: currentColor;
-        box-shadow: 0 0 1em 1em;
-        color: #000;
-        content: "";
-        display: block;
-        margin: -0.5em -0.5em;
-        width: 1em;
-        height: 1em;
-        top: 50%;
-        left: 50%;
-        z-index: 5;
-    }
-
-    div {
-        background: conic-gradient(#000 25%, #fff 0 50%, #000 0 75%, #fff 0) 0 0 / var(--bgPos) var(--bgPos);
-    }
-
-    .t,
-    .l {
-        top: 0;
-        left: 0;
-        transform-origin: 0 0;
-    }
-
-    .r,
-    .b {
-        right: 0;
-        bottom: 0;
-        transform-origin: 100% 100%;
-    }
-
-    .t,
-    .b {
-        width: 100%;
-        height: var(--depth);
-    }
-
-    .r,
-    .l {
-        filter: brightness(70%);
-        width: var(--depth);
-        height: 100%;
-    }
-
-    .t {
-        animation: t var(--durD) linear infinite;
-        background-position: 0 calc(var(--bgPos) / 2);
-        filter: brightness(40%);
-        transform: rotateX(-90deg);
-    }
-
-    .r {
-        animation: r var(--durD) linear infinite;
-        background-position: calc(var(--bgPos) / 2) 0;
-        transform: rotateY(-90deg);
-    }
-
-    .b {
-        animation: b var(--durD) linear infinite;
-        transform: rotateX(90deg);
-    }
-
-    .l {
-        animation: l var(--durD) linear infinite;
-        transform: rotateY(90deg);
-    }
-
-    @keyframes po {
-
-        from,
-        to {
-            perspective-origin: var(--endX1) var(--endY1)
-        }
-
-        25% {
-            perspective-origin: var(--endX2) var(--endY1)
-        }
-
-        50% {
-            perspective-origin: var(--endX2) var(--endY2)
-        }
-
-        75% {
-            perspective-origin: var(--endX1) var(--endY2)
-        }
-    }
-
-    @keyframes t {
-        to {
-            transform: rotateX(-90deg) translateY(calc(var(--bgPos) * -1))
-        }
-    }
-
-    @keyframes r {
-        to {
-            transform: rotateY(-90deg) translateX(var(--bgPos))
-        }
-    }
-
-    @keyframes b {
-        to {
-            transform: rotateX(90deg) translateY(var(--bgPos))
-        }
-    }
-
-    @keyframes l {
-        to {
-            transform: rotateY(90deg) translateX(calc(var(--bgPos) * -1))
-        }
-    }
-
-    @keyframes end {
-
-        from,
-        to {
-            top: var(--endY1);
-            left: var(--endX1);
-        }
-
-        25% {
-            top: var(--endY1);
-            left: var(--endX2);
-        }
-
-        50% {
-            top: var(--endY2);
-            left: var(--endX2);
-        }
-
-        75% {
-            top: var(--endY2);
-            left: var(--endX1);
-        }
-    }
 }
 </style>
   

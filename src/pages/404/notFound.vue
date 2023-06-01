@@ -27,7 +27,7 @@
 </template>
 <script>
 </script>
-<style>
+<style scoped>
 .top-header:before {
     background-image: url(https://1.bp.blogspot.com/-gxsOcYWghHA/Xp_izTh4sFI/AAAAAAAAU8s/y637Fwg99qAuzW9na_NT_uApny8Vce95gCEwYBhgL/s1600/header-footer-gradient-bg.png);
 }
