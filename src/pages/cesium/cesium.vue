@@ -2,16 +2,19 @@
     <div class="menubox">
         <div class="row">
             <span>地图：</span>
-            <el-radio-group v-model="mapData.mapType" class="ml-4">
-                <el-radio label="gaode">高德</el-radio>
-                <el-radio label="tian">天地图</el-radio>
+            <el-radio-group v-model="mapData.mapType" class="ml-4" @change="handleMapLayer">
+                <el-radio label="1">高德影像</el-radio>
+                <el-radio label="2">高德矢量</el-radio>
+                <el-radio label="3">天地图矢量</el-radio>
+                <el-radio label="4">天地图影像</el-radio>
+                <el-radio label="5">天地图栅格</el-radio>
+                <el-radio label="6">天地图标记</el-radio>
             </el-radio-group>
         </div>
         <div class="row">
             <span>标注：</span>
-            <el-radio-group v-model="mapData.markType" class="ml-4">
-                <el-radio label="gaode">高德</el-radio>
-                <el-radio label="tian">天地图</el-radio>
+            <el-radio-group v-model="mapData.markType" class="ml-4" @change="handleMarkLayer">
+                <el-radio label="1">路网注记</el-radio>
             </el-radio-group>
         </div>
     </div>
@@ -31,8 +34,10 @@ var ee = 0.00669342162296594323;
 export default {
     setup() {
         const mapData = reactive({
-            mapType: 'gaode',
-            markType: 'gaode'
+            mapType: '6',
+            markType: '0',
+            mapLayer: {},
+            markLayer: {}
 
         })
         const tilesets = [
@@ -69,21 +74,6 @@ export default {
         ]
         const initCesium = () => {
             Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxZDU4MDE4ZS03ODdmLTQ1NWMtYTI3Ny1kMmQxNmVkYmQxZDQiLCJpZCI6NjMxNjUsImlhdCI6MTYzMjg3OTg1NX0.AAtivmdf46L1-4MWLWjnQRgP_laeTXBMagA75_a9N9o";
-            // 高德地图影像图
-            var atLayer = new Cesium.UrlTemplateImageryProvider({
-                // url: "https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}", //高德影像
-                // url: "http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}", //高德矢量图
-                url: "http://webst02.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8", //高德路网中文注记
-                minimumLevel: 1,
-                maximumLevel: 18
-            })
-            var atLayer1 = new Cesium.UrlTemplateImageryProvider({
-                // url: "https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}", //高德影像
-                url: "http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}", //高德矢量图
-                // url: "http://webst02.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8", //高德路网中文注记
-                minimumLevel: 1,
-                maximumLevel: 18
-            })
             viewer = new Cesium.Viewer("cesiumContainer", {
                 infoBox: false,
                 selectionIndicator: false,
@@ -96,30 +86,140 @@ export default {
                 navigationHelpButton: false,  //右上角的帮助按钮，
                 fullscreenButton: false,
             });
-            console.log(atLayer, atLayer1)
-            viewer.imageryLayers.addImageryProvider(atLayer1);
-            viewer.imageryLayers.addImageryProvider(atLayer);
+            switch (mapData.mapType) {
+                case '1':
+                    // mapData.mapLayer.url = "https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"
+                    mapData.mapLayer = new Cesium.UrlTemplateImageryProvider({
+                        url: "https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
+                        minimumLevel: 1,
+                        maximumLevel: 18
+                    })
+                    viewer.imageryLayers.addImageryProvider(mapData.mapLayer);
+                    break;
+                case '2':
+                    mapData.mapLayer = new Cesium.UrlTemplateImageryProvider({
+                        url: "http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}",
+                        minimumLevel: 1,
+                        maximumLevel: 18
+                    })
+                    viewer.imageryLayers.addImageryProvider(mapData.mapLayer);
+                    break;
+                case '3':
+                    // mapData.mapLayer.url = "http://t0.tianditu.gov.cn/vec_c/wmts?LAYER=vec&tk=841234cd0d023af5c1bcb7c3d2c453c6"
+                    mapData.mapLayer = new Cesium.UrlTemplateImageryProvider({
+                        url: "http://t0.tianditu.gov.cn/vec_c/wmts?tk=841234cd0d023af5c1bcb7c3d2c453c6",
+                        minimumLevel: 1,
+                        maximumLevel: 18
+                    })
+                    viewer.imageryLayers.addImageryProvider(mapData.mapLayer);
+                    break;
+                case '4':
+                    // mapData.mapLayer.url = "http://t0.tianditu.gov.cn/img_c/wmts?LAYER=img&tk=841234cd0d023af5c1bcb7c3d2c453c6"
+                    mapData.mapLayer = new Cesium.UrlTemplateImageryProvider({
+                        url: "http://t0.tianditu.gov.cn/img_c/wmts?tk=841234cd0d023af5c1bcb7c3d2c453c6",
+                        minimumLevel: 1,
+                        maximumLevel: 18
+                    })
+                    viewer.imageryLayers.addImageryProvider(mapData.mapLayer);
+                    break;
+                case '5':
+                    // mapData.mapLayer.url = "http://t0.tianditu.gov.cn/ter_c/wmts?LAYER=ter&tk=841234cd0d023af5c1bcb7c3d2c453c6"
+                    mapData.mapLayer = new Cesium.UrlTemplateImageryProvider({
+                        url: "http://t0.tianditu.gov.cn/ter_c/wmts?tk=841234cd0d023af5c1bcb7c3d2c453c6",
+                        minimumLevel: 1,
+                        maximumLevel: 18
+                    })
+                    viewer.imageryLayers.addImageryProvider(mapData.mapLayer);
+
+                    break;
+                case '6':
+                    // mapData.mapLayer.url = "http://t0.tianditu.gov.cn/cia_c/wmts?LAYER=cia&tk=841234cd0d023af5c1bcb7c3d2c453c6"
+                    mapData.mapLayer = new Cesium.UrlTemplateImageryProvider({
+                        // url: "http://t0.tianditu.gov.cn/cia_c/wmts?tk=841234cd0d023af5c1bcb7c3d2c453c6",
+                        minimumLevel: 1,
+                        // maximumLevel: 18,
+                        url: "http://{s}.tianditu.gov.cn/cia_c/wmts?service=wmts&request=GetTile&version=1.0.0" +
+                            "&LAYER=cia&tileMatrixSet=c&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}" +
+                            "&style=default&format=tiles&tk=841234cd0d023af5c1bcb7c3d2c453c6",
+                        layer: "tdtCva",
+                        style: "default",
+                        format: "tiles",
+                        tileMatrixSetID: "c",
+                        subdomains: ["t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7"],
+                        tilingScheme: new Cesium.GeographicTilingScheme(),
+                        tileMatrixLabels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19"],
+                        maximumLevel: 18
+                    })
+                    viewer.imageryLayers.addImageryProvider(mapData.mapLayer);
+                    break;
+            }
+
             viewer.scene.screenSpaceCameraController.zoomEventTypes = [Cesium.CameraEventType.WHEEL, Cesium.CameraEventType.PINCH];
             viewer.scene.screenSpaceCameraController.tiltEventTypes = [Cesium.CameraEventType.PINCH, Cesium.CameraEventType.RIGHT_DRAG];
             viewer.cesiumWidget.creditContainer.style.display = "none";
-            // viewer.scene.screenSpaceCameraController.enableTranslate = false;
+            viewer.scene.screenSpaceCameraController.enableTranslate = false;
             viewer.scene.screenSpaceCameraController.enableRotate = true; //拖拽旋转
             viewer.scene.screenSpaceCameraController.enableTilt = true; //右键拖拽倾斜
-            setTimeout(() => {
-                viewer.camera.flyTo({
-                    destination: Cesium.Cartesian3.fromDegrees(117.08922, 39.09498, 600),
-                    orientation: {
-                        heading: Cesium.Math.toRadians(0),
-                        pitch: Cesium.Math.toRadians(-60),
-                        roll: 0.0,
-                    },
-                });
-            }, 2000);
 
+            var helper = new Cesium.EventHelper();
+            helper.add(viewer.scene.globe.tileLoadProgressEvent, function (e) {
+                if (e == 0) {
+                    console.log("矢量切片加载完成时的回调");
+                    // viewer.camera.flyTo({
+                    //     destination: Cesium.Cartesian3.fromDegrees(117.08922, 39.09498, 1000),
+                    //     orientation: {
+                    //         heading: Cesium.Math.toRadians(0),
+                    //         pitch: Cesium.Math.toRadians(-60),
+                    //         roll: 0.0,
+                    //     },
+                    // });
+                }
+            });
             nextTick(() => {
-                loadModel()
+                // loadModel()
                 addMark()
             })
+        }
+        const handleMapLayer = () => {
+            // 1>高德影像图
+            // 2>高德矢量图
+            // 3>天地图矢量图
+            // 4>天地图影像图
+            // 5>天地图栅格图
+            // 6>天地图标记图
+
+            // let tdt = {
+            //     url: "http://{s}.tianditu.gov.cn/vec_c/wmts?service=wmts&request=GetTile&version=1.0.0" +
+            // 		"&LAYER=vec&tileMatrixSet=c&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}" +
+            // 		"&style=default&format=tiles&tk=天地图的TOKEN",
+            // 	layer: "tdtCva",
+            // 	style: "default",
+            // 	format: "tiles",
+            // 	tileMatrixSetID: "c",
+            // 	subdomains: ["t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7"],
+            // 	tilingScheme: new Cesium.GeographicTilingScheme(),
+            // 	tileMatrixLabels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19"],
+            // 	maximumLevel: 18
+            // }
+            viewer.camera.flyTo({
+                destination: Cesium.Rectangle.fromDegrees(80, 26, 140.0, 35.5)
+            });
+            viewer.imageryLayers.remove(mapData.mapLayer);
+            initCesium()
+
+        }
+        const handleMarkLayer = () => {
+            if (mapData.markType === '1') {
+                mapData.markLayer = new Cesium.UrlTemplateImageryProvider({
+                    url: "http://webst02.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8", //高德路网中文注记
+                    minimumLevel: 1,
+                    maximumLevel: 18
+                })
+                viewer.imageryLayers.addImageryProvider(mapData.markLayer);
+            } else {
+                viewer.imageryLayers.remove(mapData.markLayer);
+            }
+
         }
         const addMark = () => {
             viewer.entities.add({
@@ -167,24 +267,6 @@ export default {
             for (let i = 0; i < tilesets.length; i++) {
                 Cesium.Cesium3DTileset.fromUrl(tilesets[i]).then(function (tileset) {
                     viewer.scene.primitives.add(tileset);
-                    // 1111111111111111
-                    // var mx = Cesium.Matrix3.fromRotationX(Cesium.Math.toRadians(90));
-                    // var my = Cesium.Matrix3.fromRotationY(Cesium.Math.toRadians(0));
-                    // var mz = Cesium.Matrix3.fromRotationZ(Cesium.Math.toRadians(0));
-                    // var rotationX = Cesium.Matrix4.fromRotationTranslation(mx);
-                    // var rotationY = Cesium.Matrix4.fromRotationTranslation(my);
-                    // var rotationZ = Cesium.Matrix4.fromRotationTranslation(mz);
-                    // //平移 修改经纬度
-                    // //旋转、平移矩阵相乘
-                    // Cesium.Matrix4.multiply(m, rotationX, m);
-                    // Cesium.Matrix4.multiply(m, rotationY, m);
-                    // Cesium.Matrix4.multiply(m, rotationZ, m);
-                    // var mtx = Cesium.Transforms.eastNorthUpToFixedFrame(position);
-                    // Cesium.Matrix4.multiplyByUniformScale(mtx, opt.scale, mtx);
-                    // var mx = Cesium.Matrix3.fromRotationX(Cesium.Math.toRadians(90)); //绕x轴旋转
-                    // var rotationX = Cesium.Matrix4.fromRotationTranslation(mx);
-                    // Cesium.Matrix4.multiply(mtx, rotationX, mtx);
-                    // 222222222222222222222
                     const cartographic = Cesium.Cartographic.fromCartesian(tileset.boundingSphere.center);
                     const surface = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, cartographic.height);
                     const m = Cesium.Transforms.eastNorthUpToFixedFrame(surface);
@@ -200,23 +282,6 @@ export default {
 
                     shader(tileset)
                 });
-
-                // tileset.readyPromise.then(function () {
-                //     viewer.scene.primitives.add(tileset);
-                // const cartographic = Cesium.Cartographic.fromCartesian(tileset.boundingSphere.center);
-                // const surface = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, cartographic.height);
-                // const m = Cesium.Transforms.eastNorthUpToFixedFrame(surface);
-
-                // const tempTranslation = new Cesium.Cartesian3(-650, -650);
-                // const tempTranslation = new Cesium.Cartesian3(-310, -350, 0);
-                // const offset = Cesium.Matrix4.multiplyByPoint(m, tempTranslation, new Cesium.Cartesian3(0, 0, 0));
-                // const translation = Cesium.Cartesian3.subtract(offset, surface, new Cesium.Cartesian3());
-                // tileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation);
-                // const mz = Cesium.Matrix3.fromRotationZ(Cesium.Math.toRadians(-3));
-                // const rotate = Cesium.Matrix4.fromRotationTranslation(mz);
-                // Cesium.Matrix4.multiply(m, rotate, m);
-                // tileset._root.transform = m;
-                // });
             }
         }
         const shader1 = (tile) => {
@@ -389,7 +454,6 @@ export default {
             ret += (160.0 * Math.sin(lat / 12.0 * PI) + 320 * Math.sin(lat * PI / 30.0)) * 2.0 / 3.0;
             return ret
         }
-
         const transformlng = (lng, lat) => {
             var ret = 300.0 + lng + 2.0 * lat + 0.1 * lng * lng + 0.1 * lng * lat + 0.1 * Math.sqrt(Math.abs(lng));
             ret += (20.0 * Math.sin(6.0 * lng * PI) + 20.0 * Math.sin(2.0 * lng * PI)) * 2.0 / 3.0;
@@ -407,7 +471,10 @@ export default {
             mapData,
             gcj02towgs84,
             shader1,
-            shader
+            shader,
+            handleMapLayer,
+            handleMarkLayer,
+            loadModel
         }
     }
 }
@@ -418,11 +485,11 @@ export default {
     width: 100vw;
     height: calc(100vh - 60px);
 }
-.menubox{
+
+.menubox {
     position: absolute;
     z-index: 999;
-    background-color: #fff;
+    background-color: #fff9;
     padding: 10px 20px;
-
 }
 </style>
