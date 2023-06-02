@@ -1,8 +1,13 @@
 <template>
     <div class="bigdata">
         <div class="side">
-            <el-icon :class="state.showAll?'star active':'star'" size="40px" @click="state.showAll = !state.showAll">
-                <svg t="1685694092016" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2384" width="128" height="128"><path d="M643.072 380.928v262.144H380.928V380.928h262.144z m65.536 0h196.608v262.144H708.608V380.928z m-65.536 524.288H380.928V708.608h262.144v196.608z m65.536 0V708.608h196.608v196.608H708.608z m-65.536-786.432v196.608H380.928V118.784h262.144z m65.536 0h196.608v196.608H708.608V118.784zM315.392 380.928v262.144H118.784V380.928h196.608z m0 524.288H118.784V708.608h196.608v196.608z m0-786.432v196.608H118.784V118.784h196.608z" p-id="2385"></path></svg>
+            <el-icon :class="state.showAll ? 'star active' : 'star'" size="40px" @click="state.showAll = !state.showAll">
+                <svg t="1685694092016" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                    p-id="2384" width="128" height="128">
+                    <path
+                        d="M643.072 380.928v262.144H380.928V380.928h262.144z m65.536 0h196.608v262.144H708.608V380.928z m-65.536 524.288H380.928V708.608h262.144v196.608z m65.536 0V708.608h196.608v196.608H708.608z m-65.536-786.432v196.608H380.928V118.784h262.144z m65.536 0h196.608v196.608H708.608V118.784zM315.392 380.928v262.144H118.784V380.928h196.608z m0 524.288H118.784V708.608h196.608v196.608z m0-786.432v196.608H118.784V118.784h196.608z"
+                        p-id="2385"></path>
+                </svg>
             </el-icon>
             <div class="filelist">
                 <div :class="state.url === file.path ? 'active cell' : 'cell'" v-for="file in state.fileList"
@@ -11,7 +16,8 @@
         </div>
         <div class="frame" v-if="state.showAll">
             <div class="cardList">
-                <el-card :class="state.url === file.path ? 'active card' : 'card'" :body-style="{ padding: '0px' }" v-for="file in state.fileList" :key="file.path" @click="clickFile(file)">
+                <el-card :class="state.url === file.path ? 'active card' : 'card'" :body-style="{ padding: '0px' }"
+                    v-for="file in state.fileList" :key="file.path" @click="clickFile(file)">
                     <img :src="file.img" class="image" />
                     <div style="padding: 14px">
                         <span>{{ file.name }}</span>
@@ -112,17 +118,101 @@ export default {
 </script>
   
 <style lang="scss" scoped>
-.bigdata {
-    width: 100vw;
-    height: calc(100vh - 60px);
-    display: flex;
+@media (min-width:800px) {
+    .bigdata {
+        width: 100vw;
+        height: calc(100vh - 65px);
+        display: flex;
+
+        .side {
+            width: 110px;
+            border-right: 1px solid rgb(65, 65, 65);
+
+            .star {
+                width: 40px;
+                height: 40px;
+                padding: 15px 5px;
+                cursor: pointer;
+                color: rgb(94, 94, 94);
+
+                &:hover {
+                    filter: brightness(1);
+                    color: #fff;
+                }
+
+                &.active {
+                    filter: brightness(1.2);
+                    color: #c2f1fd;
+                }
+            }
+        }
+
+        .filelist {
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+
+            .cell {
+                padding: 15px 5px;
+                font-size: 20px;
+                color: rgb(10, 145, 145);
+                cursor: pointer;
+
+                &.active {
+                    color: rgb(0, 255, 255);
+                }
+            }
+        }
+
+        .cardList {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-evenly;
+            align-content: center;
+
+            .card {
+                margin: 20px auto;
+
+                .image {
+                    width: 384px;
+                    height: 216px;
+
+                }
+
+                &:hover {
+                    box-shadow: 0 0 4px 4px rgb(10, 145, 145);
+                }
+
+                &.active {
+                    box-shadow: 0 0 4px 4px rgb(10, 145, 145);
+                    border: 2px solid rgb(0, 255, 255);
+                }
+            }
+        }
+
+        .frame {
+            background-color: #000;
+            width: calc(100vw);
+            height: calc(100vh - 65px);
+            border: medium none;
+            overflow: auto;
+        }
+    }
+}
+
+@media (max-width:800px) {
+    .bigdata {
+        width: 100vw;
+        height: calc(100vh - 65px);
+        display: flex;
+    }
 
     .side {
-        width: 110px;
+        width: 80px;
+        border-right: 1px solid rgb(65, 65, 65);
 
         .star {
-            width: 40px;
-            height: 40px;
+            width: 24px;
+            height: 24px;
             padding: 15px 5px;
             cursor: pointer;
             color: rgb(94, 94, 94);
@@ -131,6 +221,7 @@ export default {
                 filter: brightness(1);
                 color: #fff;
             }
+
             &.active {
                 filter: brightness(1.2);
                 color: #c2f1fd;
@@ -139,12 +230,12 @@ export default {
     }
 
     .filelist {
-        max-height: calc(100vh - 120px);
+        max-height: calc(100vh - 90px);
         overflow-y: auto;
 
         .cell {
             padding: 15px 5px;
-            font-size: 20px;
+            font-size: 12px;
             color: rgb(10, 145, 145);
             cursor: pointer;
 
@@ -161,16 +252,19 @@ export default {
         align-content: center;
 
         .card {
-            margin: 20px auto;
+            margin: 10px auto;
+
             .image {
-                width: 384px;
-                height: 216px;
+                width: 210px;
+                height: 120px;
 
             }
-            &:hover{
+
+            &:hover {
                 box-shadow: 0 0 4px 4px rgb(10, 145, 145);
             }
-            &.active{
+
+            &.active {
                 box-shadow: 0 0 4px 4px rgb(10, 145, 145);
                 border: 2px solid rgb(0, 255, 255);
             }
@@ -184,6 +278,5 @@ export default {
         border: medium none;
         overflow: auto;
     }
-}
-</style>
+}</style>
   

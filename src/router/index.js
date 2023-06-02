@@ -32,6 +32,15 @@ const routes = [
                 },
             },
             {
+                path: '/bigScreen',
+                name: 'bigScreen',
+                component: () => import('@/pages/bigscreen/bigscreen.vue'),
+                meta: {
+                    name: '可视化大屏',
+                    hidden:false
+                },
+            },
+            {
                 path: '/m3u8',
                 name: 'm3u8',
                 component: () => import('@/pages/player/m3u8palyer.vue'),
@@ -113,15 +122,6 @@ const routes = [
                 component: () => import('@/pages/cesium/cesium.vue'),
                 meta: {
                     name: 'cesium 地图',
-                    hidden:false
-                },
-            },
-            {
-                path: '/bigScreen',
-                name: 'bigScreen',
-                component: () => import('@/pages/bigscreen/bigscreen.vue'),
-                meta: {
-                    name: '可视化大屏',
                     hidden:false
                 },
             },

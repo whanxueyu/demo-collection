@@ -9,24 +9,17 @@
                     <div class="img img1">
                         <img src="@/static/img/Cyber.jpeg">
                     </div>
-                    <div class="img img2"><img
-                            src="@/static/img/Cyber2.jpg"></div>
-                    <div class="img img3"><img
-                            src="@/static/img/Cyber3.jpeg">
+                    <div class="img img2"><img src="@/static/img/Cyber2.jpg"></div>
+                    <div class="img img3"><img src="@/static/img/Cyber3.jpeg">
                     </div>
-                    <div class="img img4"><img
-                            src="@/static/img/Cyber4.jpeg">
+                    <div class="img img4"><img src="@/static/img/Cyber4.jpeg">
                     </div>
-                    <div class="img img5"><img
-                            src="@/static/img/Cyber5.jpeg">
+                    <div class="img img5"><img src="@/static/img/Cyber5.jpeg">
                     </div>
-                    <div class="img img6"><img
-                            src="@/static/img/Cyber6.jpg">
+                    <div class="img img6"><img src="@/static/img/Cyber6.jpg">
                     </div>
-                    <div class="img img7"><img
-                            src="@/static/img/Cyber7.jpeg"></div>
-                    <div class="img img8"><img
-                            src="@/static/img/Cyber8.jpeg">
+                    <div class="img img7"><img src="@/static/img/Cyber7.jpeg"></div>
+                    <div class="img img8"><img src="@/static/img/Cyber8.jpeg">
                     </div>
                 </div>
             </div>
@@ -60,55 +53,114 @@ $imgCount : 8;
     position: relative;
 }
 
-.stage {
-    position: relative;
-    width: 800px;
-    height: 240px;
-    margin: 20px auto;
-    perspective: 2000px;
-    transform-style: preserve-3d;
-    -webkit-box-reflect: below 10px linear-gradient(transparent, rgba(0, 0, 0, .5));
-
-    .control {
+@media (min-width:800px) {
+    .stage {
         position: relative;
-        width: 100%;
-        height: 100%;
+        width: 800px;
+        height: 240px;
+        margin: 20px auto;
+        perspective: 2000px;
         transform-style: preserve-3d;
-        transform: translateZ(-2000px) rotateY(50deg) rotateZ(0deg);
-        animation: rotate 30s linear infinite;
+        -webkit-box-reflect: below 10px linear-gradient(transparent, rgba(0, 0, 0, .5));
 
-        .imgWrap {
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+        .control {
+            position: relative;
+            width: 100%;
+            height: 100%;
             transform-style: preserve-3d;
+            transform: translateZ(-2000px) rotateY(50deg) rotateZ(0deg);
+            animation: rotate 30s linear infinite;
 
-            .img {
+            .imgWrap {
                 position: absolute;
-                width: 500px;
+                width: 400px;
                 height: 400px;
-                line-height: 400px;
-                text-align: center;
-                font-size: 120px;
-                top: 0;
-                left: 0;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
                 transform-style: preserve-3d;
-                transform-origin: 50% 50% 0px;
-            }
 
-            img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
+                .img {
+                    position: absolute;
+                    width: 500px;
+                    height: 400px;
+                    line-height: 400px;
+                    text-align: center;
+                    font-size: 120px;
+                    top: 0;
+                    left: 0;
+                    transform-style: preserve-3d;
+                    transform-origin: 50% 50% 0px;
+                }
 
-            @for $i from 1 through $imgCount {
-                .img#{$i} {
-                    // transform: rotateY(35 + ($i * 45deg)) translateZ(482.84px) ;
-                    transform: rotateY(35 + ($i * 45deg)) translateZ(650px);
+                img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+
+                @for $i from 1 through $imgCount {
+                    .img#{$i} {
+                        // transform: rotateY(35 + ($i * 45deg)) translateZ(482.84px) ;
+                        transform: rotateY(35 + ($i * 45deg)) translateZ(650px);
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width:800px) {
+    .stage {
+        position: relative;
+        width: 100vw;
+        height: 30vw;
+        margin: 10px auto;
+        perspective: 2000px;
+        transform-style: preserve-3d;
+        -webkit-box-reflect: below 10px linear-gradient(transparent, rgba(0, 0, 0, .5));
+
+        .control {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transform: translateZ(-2000px) rotateY(50deg) rotateZ(0deg);
+            animation: rotate 30s linear infinite;
+
+            .imgWrap {
+                position: absolute;
+                width: 50vw;
+                height: 50vw;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                transform-style: preserve-3d;
+
+                .img {
+                    position: absolute;
+                    width: 63vw;
+                    height: 50vw;
+                    line-height: 50vw;
+                    text-align: center;
+                    font-size: 120px;
+                    top: 0;
+                    left: 0;
+                    transform-style: preserve-3d;
+                    transform-origin: 50% 50% 0px;
+                }
+
+                img {
+                    width: 63vw;
+                    height: 50vw;
+                    object-fit: cover;
+                }
+
+                @for $i from 1 through $imgCount {
+                    .img#{$i} {
+                        // transform: rotateY(35 + ($i * 45deg)) translateZ(482.84px) ;
+                        transform: rotateY(35 + ($i * 45deg)) translateZ(650px);
+                    }
                 }
             }
         }
@@ -127,4 +179,5 @@ $imgCount : 8;
     100% {
         transform: translateZ(-2000px) rotateY(-720deg);
     }
-}</style>
+}
+</style>
