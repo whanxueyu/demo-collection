@@ -13,6 +13,15 @@ const routes = [
             name:'public'
         },
         children: [
+            // {
+            //     path: '/playground',
+            //     name: 'playground',
+            //     component: () => import('@/pages/playground/playground.vue'),
+            //     meta: {
+            //         name: '编辑器',
+            //         hidden:false
+            //     },
+            // },
             {
                 path: '/home',
                 name: 'home',
@@ -104,6 +113,15 @@ const routes = [
                 component: () => import('@/pages/cesium/cesium.vue'),
                 meta: {
                     name: 'cesium 地图',
+                    hidden:false
+                },
+            },
+            {
+                path: '/bigScreen',
+                name: 'bigScreen',
+                component: () => import('@/pages/bigscreen/bigscreen.vue'),
+                meta: {
+                    name: '可视化大屏',
                     hidden:false
                 },
             },
