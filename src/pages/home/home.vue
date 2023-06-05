@@ -163,7 +163,7 @@ export default {
                 background: #000;
                 position: absolute;
                 margin: 100px;
-                // width: 600px;
+                font-size: 24px;
                 padding: 40px;
                 opacity: 1;
             }
@@ -222,9 +222,9 @@ export default {
             .tip {
                 background: #000;
                 position: absolute;
-                margin: 100px;
-                // width: 600px;
-                padding: 40px;
+                margin: 10px;
+                font-size: 14px;
+                padding: 10px;
                 opacity: 1;
             }
         }

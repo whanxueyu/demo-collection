@@ -35,7 +35,7 @@ export default defineComponent({
 }
 
 .h1 {
-  font: bold 200% Consolas, Monaco, monospace;
+  font-weight: bold;
   border-right: 3px solid;
   width: 100%;
   white-space: nowrap;
@@ -43,7 +43,7 @@ export default defineComponent({
   animation: typing 8s steps(26, end),
     cursor-blink 0.5s step-end infinite alternate;
   animation-delay: 3s;
-  font-size: monospace;
+  font-family: Consolas, Monaco, monospace;
 }
 
 @keyframes typing {
