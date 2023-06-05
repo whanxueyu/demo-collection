@@ -1,30 +1,54 @@
 <template>
     <div class="menubox">
         <div class="row">
-            <span>地图：</span>
-            <el-radio-group v-model="mapData.mapType" class="ml-4" @change="handleMapLayer">
-                <el-radio label="1">高德影像</el-radio>
-                <el-radio label="2">高德矢量</el-radio>
-                <el-radio label="3">天地图矢量</el-radio>
-                <el-radio label="4">天地图影像</el-radio>
-                <el-radio label="5">天地图栅格</el-radio>
-                <el-radio label="6">天地图标记</el-radio>
-            </el-radio-group>
+            <el-checkbox v-model="mapData.showMark" label="开启标记" />
+            <el-button type="danger" @click="removeAll">清除全部</el-button>
         </div>
         <div class="row">
-            <span>标注：</span>
-            <el-radio-group v-model="mapData.markType" class="ml-4" @change="handleMarkLayer">
-                <el-radio label="1">路网注记</el-radio>
+            <el-radio-group v-model="mapData.markIcon">
+                <el-radio :label="1">
+                    <el-image style="width: 40px; height: 40px" :src="marker" fit="fill" />
+                </el-radio>
+                <el-radio :label="2">
+                    <el-image style="width: 40px; height: 40px" :src="pin" fit="fill" /></el-radio>
+                <el-radio :label="3">
+                    <el-image style="width: 40px; height: 40px" :src="flag" fit="fill" />
+                </el-radio>
+                <el-radio :label="4">
+                    <el-image style="width: 40px; height: 40px" :src="star" fit="fill" />
+                </el-radio>
             </el-radio-group>
         </div>
     </div>
+    <div class="popmenu" ref="target" v-if="showMenu" :style="{ 'left': position.x + 'px', 'top': position.y + 'px' }">
+        <div>
+            <el-button @click="remove" link>删除</el-button>
+        </div>
+        <div>
+            <el-button @click="showInfo" link>信息</el-button>
+        </div>
+    </div>
+    <el-dialog v-model="dialogVisible" title="标记信息" width="300px" :before-close="handleClose">
+        <el-descriptions column=1 border>
+            <el-descriptions-item label="经度">{{ position.currentEntities.lng }}</el-descriptions-item>
+            <el-descriptions-item label="纬度">{{ position.currentEntities.lat }}</el-descriptions-item>
+            <el-descriptions-item label="标记类型">{{ position.currentEntities.name }}</el-descriptions-item>
+            <el-descriptions-item label="标记ID">{{ position.currentEntities.id }}</el-descriptions-item>
+        </el-descriptions>
+        <template #footer>
+            <span class="dialog-footer">
+                <el-button @click="handleClose" type="primary">ok</el-button>
+            </span>
+        </template>
+    </el-dialog>
     <div id="cesiumContainer" ref="cesiumContainer"></div>
 </template>
    
 <script>
-import { nextTick, onMounted, reactive } from "vue";
+import { nextTick, onMounted, reactive, ref } from "vue";
 import * as Cesium from "cesium";
 import 'cesium/Source/Widgets/widgets.css';
+import { useMouse, onClickOutside } from '@vueuse/core'
 var viewer;
 //定义一些常量
 // var x_PI = 3.14159265358979324 * 3000.0 / 180.0;
@@ -34,12 +58,28 @@ var ee = 0.00669342162296594323;
 export default {
     setup() {
         const mapData = reactive({
-            mapType: '6',
-            markType: '0',
+            mapType: '1',
+            markType: '1',
             mapLayer: {},
-            markLayer: {}
-
+            markLayer: {},
+            showMark: true,
+            markIcon: 1,
+            loaded: false
         })
+        const mouseData = reactive(useMouse())
+        const position = reactive({
+            x: 0,
+            y: 0,
+            currentEntities: {
+                id: '',
+                name: '',
+                lng: '',
+                lat: '',
+            }
+        })
+        const target = ref(null)
+        const showMenu = ref(false)
+        const dialogVisible = ref(false)
         const tilesets = [
             './3dTileset/a/tileset.json',
             './3dTileset/b/tileset.json',
@@ -72,8 +112,24 @@ export default {
             './3dTileset/ac/tileset.json',
             './3dTileset/ad/tileset.json',
         ]
+        const marker = require('@/assets/icon/marker.png')
+        const flag = require('@/assets/icon/flag.png')
+        const pin = require('@/assets/icon/pin.png')
+        const star = require('@/assets/icon/star.png')
         const initCesium = () => {
             Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxZDU4MDE4ZS03ODdmLTQ1NWMtYTI3Ny1kMmQxNmVkYmQxZDQiLCJpZCI6NjMxNjUsImlhdCI6MTYzMjg3OTg1NX0.AAtivmdf46L1-4MWLWjnQRgP_laeTXBMagA75_a9N9o";
+            // 高德影像
+            var mapLayer = new Cesium.UrlTemplateImageryProvider({
+                url: "https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}", //高德影像
+                minimumLevel: 1,
+                maximumLevel: 18
+            })
+            // 高德路网中文注记
+            var markLayer = new Cesium.UrlTemplateImageryProvider({
+                url: "https://webst02.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8", //高德路网中文注记
+                minimumLevel: 1,
+                maximumLevel: 18
+            })
             viewer = new Cesium.Viewer("cesiumContainer", {
                 infoBox: false,
                 selectionIndicator: false,
@@ -86,182 +142,112 @@ export default {
                 navigationHelpButton: false,  //右上角的帮助按钮，
                 fullscreenButton: false,
             });
-            switch (mapData.mapType) {
-                case '1':
-                    // mapData.mapLayer.url = "https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"
-                    mapData.mapLayer = new Cesium.UrlTemplateImageryProvider({
-                        url: "https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
-                        minimumLevel: 1,
-                        maximumLevel: 18
-                    })
-                    viewer.imageryLayers.addImageryProvider(mapData.mapLayer);
-                    break;
-                case '2':
-                    mapData.mapLayer = new Cesium.UrlTemplateImageryProvider({
-                        url: "http://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}",
-                        minimumLevel: 1,
-                        maximumLevel: 18
-                    })
-                    viewer.imageryLayers.addImageryProvider(mapData.mapLayer);
-                    break;
-                case '3':
-                    // mapData.mapLayer.url = "http://t0.tianditu.gov.cn/vec_c/wmts?LAYER=vec&tk=841234cd0d023af5c1bcb7c3d2c453c6"
-                    mapData.mapLayer = new Cesium.UrlTemplateImageryProvider({
-                        url: "http://t0.tianditu.gov.cn/vec_c/wmts?tk=841234cd0d023af5c1bcb7c3d2c453c6",
-                        minimumLevel: 1,
-                        maximumLevel: 18
-                    })
-                    viewer.imageryLayers.addImageryProvider(mapData.mapLayer);
-                    break;
-                case '4':
-                    // mapData.mapLayer.url = "http://t0.tianditu.gov.cn/img_c/wmts?LAYER=img&tk=841234cd0d023af5c1bcb7c3d2c453c6"
-                    mapData.mapLayer = new Cesium.UrlTemplateImageryProvider({
-                        url: "http://t0.tianditu.gov.cn/img_c/wmts?tk=841234cd0d023af5c1bcb7c3d2c453c6",
-                        minimumLevel: 1,
-                        maximumLevel: 18
-                    })
-                    viewer.imageryLayers.addImageryProvider(mapData.mapLayer);
-                    break;
-                case '5':
-                    // mapData.mapLayer.url = "http://t0.tianditu.gov.cn/ter_c/wmts?LAYER=ter&tk=841234cd0d023af5c1bcb7c3d2c453c6"
-                    mapData.mapLayer = new Cesium.UrlTemplateImageryProvider({
-                        url: "http://t0.tianditu.gov.cn/ter_c/wmts?tk=841234cd0d023af5c1bcb7c3d2c453c6",
-                        minimumLevel: 1,
-                        maximumLevel: 18
-                    })
-                    viewer.imageryLayers.addImageryProvider(mapData.mapLayer);
-
-                    break;
-                case '6':
-                    // mapData.mapLayer.url = "http://t0.tianditu.gov.cn/cia_c/wmts?LAYER=cia&tk=841234cd0d023af5c1bcb7c3d2c453c6"
-                    mapData.mapLayer = new Cesium.UrlTemplateImageryProvider({
-                        // url: "http://t0.tianditu.gov.cn/cia_c/wmts?tk=841234cd0d023af5c1bcb7c3d2c453c6",
-                        minimumLevel: 1,
-                        // maximumLevel: 18,
-                        url: "http://{s}.tianditu.gov.cn/cia_c/wmts?service=wmts&request=GetTile&version=1.0.0" +
-                            "&LAYER=cia&tileMatrixSet=c&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}" +
-                            "&style=default&format=tiles&tk=841234cd0d023af5c1bcb7c3d2c453c6",
-                        layer: "tdtCva",
-                        style: "default",
-                        format: "tiles",
-                        tileMatrixSetID: "c",
-                        subdomains: ["t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7"],
-                        tilingScheme: new Cesium.GeographicTilingScheme(),
-                        tileMatrixLabels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19"],
-                        maximumLevel: 18
-                    })
-                    viewer.imageryLayers.addImageryProvider(mapData.mapLayer);
-                    break;
-            }
-
+            viewer.imageryLayers.addImageryProvider(mapLayer);
+            viewer.imageryLayers.addImageryProvider(markLayer);
             viewer.scene.screenSpaceCameraController.zoomEventTypes = [Cesium.CameraEventType.WHEEL, Cesium.CameraEventType.PINCH];
             viewer.scene.screenSpaceCameraController.tiltEventTypes = [Cesium.CameraEventType.PINCH, Cesium.CameraEventType.RIGHT_DRAG];
             viewer.cesiumWidget.creditContainer.style.display = "none";
-            viewer.scene.screenSpaceCameraController.enableTranslate = false;
+            // viewer.scene.screenSpaceCameraController.enableTranslate = false;
             viewer.scene.screenSpaceCameraController.enableRotate = true; //拖拽旋转
-            viewer.scene.screenSpaceCameraController.enableTilt = true; //右键拖拽倾斜
+            viewer.scene.screenSpaceCameraController.enableTilt = false; //右键拖拽倾斜
 
             var helper = new Cesium.EventHelper();
             helper.add(viewer.scene.globe.tileLoadProgressEvent, function (e) {
                 if (e == 0) {
                     console.log("矢量切片加载完成时的回调");
-                    // viewer.camera.flyTo({
-                    //     destination: Cesium.Cartesian3.fromDegrees(117.08922, 39.09498, 1000),
-                    //     orientation: {
-                    //         heading: Cesium.Math.toRadians(0),
-                    //         pitch: Cesium.Math.toRadians(-60),
-                    //         roll: 0.0,
-                    //     },
-                    // });
+                    if (!mapData.loaded) {
+                        nextTick(() => {
+                            viewer.camera.flyTo({
+                                destination: Cesium.Cartesian3.fromDegrees(116.39746, 39.9092, 1000),
+                                orientation: {
+                                    heading: Cesium.Math.toRadians(0),
+                                    pitch: Cesium.Math.toRadians(-90),
+                                    roll: 0.0,
+                                },
+                            });
+                        })
+                    }
                 }
             });
-            nextTick(() => {
-                // loadModel()
-                addMark()
-            })
-        }
-        const handleMapLayer = () => {
-            // 1>高德影像图
-            // 2>高德矢量图
-            // 3>天地图矢量图
-            // 4>天地图影像图
-            // 5>天地图栅格图
-            // 6>天地图标记图
+            // 
+            let handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+            handler.setInputAction(function (event) {
+                let ray = viewer.camera.getPickRay(event.position);
+                let cartesian = viewer.scene.globe.pick(ray, viewer.scene);
+                let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+                let lng = Cesium.Math.toDegrees(cartographic.longitude); // 经度
+                let lat = Cesium.Math.toDegrees(cartographic.latitude); // 纬度
+                let coordinate = {
+                    longitude: Number(lng.toFixed(6)),
+                    latitude: Number(lat.toFixed(6)),
+                };
+                console.log("origin", coordinate);
+                addMark(coordinate.longitude, coordinate.latitude)
 
-            // let tdt = {
-            //     url: "http://{s}.tianditu.gov.cn/vec_c/wmts?service=wmts&request=GetTile&version=1.0.0" +
-            // 		"&LAYER=vec&tileMatrixSet=c&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}" +
-            // 		"&style=default&format=tiles&tk=天地图的TOKEN",
-            // 	layer: "tdtCva",
-            // 	style: "default",
-            // 	format: "tiles",
-            // 	tileMatrixSetID: "c",
-            // 	subdomains: ["t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7"],
-            // 	tilingScheme: new Cesium.GeographicTilingScheme(),
-            // 	tileMatrixLabels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19"],
-            // 	maximumLevel: 18
-            // }
-            viewer.camera.flyTo({
-                destination: Cesium.Rectangle.fromDegrees(80, 26, 140.0, 35.5)
-            });
-            viewer.imageryLayers.remove(mapData.mapLayer);
-            initCesium()
-
+            }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+            handler.setInputAction(function (click) {
+                let pickedObject = viewer.scene.pick(click.position);
+                if (Cesium.defined(pickedObject)) {
+                    console.log('点击了实体:', pickedObject);
+                    rightMenu(mouseData.x, mouseData.y, pickedObject)
+                }
+            }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
         }
-        const handleMarkLayer = () => {
-            if (mapData.markType === '1') {
-                mapData.markLayer = new Cesium.UrlTemplateImageryProvider({
-                    url: "http://webst02.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8", //高德路网中文注记
-                    minimumLevel: 1,
-                    maximumLevel: 18
+        const removeAll = () => {
+            viewer.entities.removeAll()
+        }
+        const remove = () => {
+            viewer.entities.removeById(position.currentEntities.id)
+            showMenu.value = false
+        }
+        const showInfo = () => {
+            dialogVisible.value = true
+        }
+        const rightMenu = (x, y, obj) => {
+            position.x = x;
+            position.y = y;
+            position.currentEntities.id = obj.id._id;
+            position.currentEntities.name = obj.id.name;
+            let cartographic = Cesium.Cartographic.fromCartesian(obj.primitive._actualPosition);
+            let lng = Cesium.Math.toDegrees(cartographic.longitude); // 经度
+            let lat = Cesium.Math.toDegrees(cartographic.latitude); // 纬度
+            position.currentEntities.lng = lng.toFixed(4);
+            position.currentEntities.lat = lat.toFixed(4);
+            showMenu.value = true
+        }
+        const addMark = (longitude, latitude) => {
+            let icon = ''
+            let name = ''
+            if (mapData.showMark) {
+                if (mapData.markIcon === 1) {
+                    icon = marker
+                    name = "marker"
+                } else if (mapData.markIcon === 2) {
+                    icon = pin
+                    name = "pin"
+                } else if (mapData.markIcon === 3) {
+                    icon = flag
+                    name = "flag"
+                } else {
+                    icon = star
+                    name = "star"
+                }
+                viewer.entities.add({
+                    name: name,
+                    position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
+                    billboard: {
+                        image: icon,
+                        horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+                        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                        scale: 0.5,
+                    }
+
                 })
-                viewer.imageryLayers.addImageryProvider(mapData.markLayer);
-            } else {
-                viewer.imageryLayers.remove(mapData.markLayer);
             }
-
         }
-        const addMark = () => {
-            viewer.entities.add({
-                name: '公司',
-                position: Cesium.Cartesian3.fromDegrees(117.089, 39.098, 20),
-                billboard: {
-                    image: require('../../assets/icon/company.png'),
-                    horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
-                    verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-                    scale: 0.5,
-                }
-            })
-            viewer.entities.add({
-                name: '房子',
-                position: Cesium.Cartesian3.fromDegrees(117.03, 39.08, 100),
-                billboard: {
-                    image: require('../../assets/icon/house.png'),
-                    horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
-                    verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-                    scale: 0.5,
-                }
-            })
-            viewer.entities.add({
-                name: '天安门',
-                position: Cesium.Cartesian3.fromDegrees(116.40, 39.91, 100),
-                billboard: {
-                    image: require('../../assets/icon/star.png'),
-                    horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
-                    verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-                    scale: 0.5,
-                }
-            })
-            viewer.entities.add({
-                name: '家',
-                position: Cesium.Cartesian3.fromDegrees(103.96, 35.80, 100),
-                billboard: {
-                    image: require('../../assets/icon/home.png'),
-                    horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
-                    verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-                    scale: 0.5,
-                }
-            })
+        const handleClose = () => {
+            showMenu.value = false
+            dialogVisible.value = false
         }
         const loadModel = () => {
             for (let i = 0; i < tilesets.length; i++) {
@@ -279,106 +265,9 @@ export default {
                     const offset = Cesium.Matrix4.multiplyByPoint(m, tempTranslation, new Cesium.Cartesian3(0, 0, 0));
                     const translation = Cesium.Cartesian3.subtract(offset, surface, new Cesium.Cartesian3());
                     tileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation);
-
                     shader(tileset)
                 });
             }
-        }
-        const shader1 = (tile) => {
-            tile.tileVisible.addEventListener(function (res) {
-                let content = res.content;
-                let featuresLength = content.featuresLength;
-                console.log(content)
-                for (let i = 0; i < featuresLength; i += 2) {
-                    let feature = content.getFeature(i);
-                    let model = feature.content._model;
-                    if (model && model._pipelineResources) {
-                        let program = model._pipelineResources[1];
-                        const color = `vec4(0,127.5/255.,1.,1.)`;
-                        program._fragmentShaderSource.sources[0] = `
-							uniform vec2 model_iblFactor;
-							uniform mat3 model_iblReferenceFrameMatrix;
-							uniform float model_luminanceAtZenith;
-							uniform float u_metallicFactor;
-							uniform float u_roughnessFactor;
-							uniform int model_featuresLength;
-							uniform sampler2D model_batchTexture;
-							uniform vec4 model_textureStep;
-							uniform float model_colorBlend;
-							uniform bool model_commandTranslucent;
-							uniform sampler2D model_pickTexture;
-							varying vec3 v_positionWC;
-							varying vec3 v_positionEC;
-							varying vec3 v_normalEC;
-							varying vec3 v_positionMC;
-							varying float v_featureId_0;
-							struct SelectedFeature
-							{
-								int id;
-								vec2 st;
-								vec4 color;
-							};
-							struct FeatureIds
-							{
-								int featureId_0;
-							};
-							vec2 computeSt(float featureId)
-							{
-								float stepX = model_textureStep.x;
-								float centerX = model_textureStep.y;
-
-								#ifdef MULTILINE_BATCH_TEXTURE
-								float stepY = model_textureStep.z;
-								float centerY = model_textureStep.w;
-
-								float xId = mod(featureId, model_textureDimensions.x); 
-								float yId = floor(featureId / model_textureDimensions.x);
-								
-								return vec2(centerX + (xId * stepX), centerY + (yId * stepY));
-								#else
-								return vec2(centerX + (featureId * stepX), 0.5);
-								#endif
-							}
-							void selectedFeatureIdStage(out SelectedFeature feature, FeatureIds featureIds)
-							{   
-								int featureId = featureIds.SELECTED_FEATURE_ID;
-								if (featureId < model_featuresLength)
-								{
-									vec2 featureSt = computeSt(float(featureId));
-
-									feature.id = featureId;
-									feature.st = featureSt;
-									feature.color = texture2D(model_batchTexture, featureSt);
-								}
-								else
-								{
-									feature.id = model_featuresLength + 1;
-									feature.st = vec2(0.0);
-									feature.color = vec4(1.0);
-								}
-
-								#ifdef HAS_NULL_FEATURE_ID
-								if (featureId == model_nullFeatureId) {
-									feature.id = featureId;
-									feature.st = vec2(0.0);
-									feature.color = vec4(1.0);
-								}
-								#endif
-							}
-							SelectedFeature selectedFeature;
-							void main(){
-								vec4 position = czm_inverseModelView * vec4(v_positionEC,1.);//获取模型的世界坐标
-								float buildMaxHeight = 300.0;//建筑群最高高度 配渐变色
-								gl_FragColor = ${color};//赋予基础底色
-								gl_FragColor *= vec4(vec3(position.y / buildMaxHeight ), 1.0);//根据楼层高度比例渲染渐变色
-								float time = abs(fract(czm_frameNumber / 360.0)-0.5)*2.;//动画频率 约束在(0,1) 更改频率修改360.0
-								float diffuse = step(0.005, abs(clamp(position.y / buildMaxHeight, 0.0, 1.0) - time));//根据帧数变化,光圈颜色白色,由底部朝上一丢丢(0.05)开始逐渐上移显现.
-								gl_FragColor.rgb += gl_FragColor.rgb * (1.0 - diffuse );//单纯叠加颜色 感兴趣的可以mix混合下
-							}
-						`;
-                    }
-                }
-            })
         }
         const shader = (tile) => {
             console.log(tile)
@@ -442,9 +331,11 @@ export default {
                 var sqrtmagic = Math.sqrt(magic);
                 dlat = (dlat * 180.0) / ((a * (1 - ee)) / (magic * sqrtmagic) * PI);
                 dlng = (dlng * 180.0) / (a / sqrtmagic * Math.cos(radlat) * PI);
+
                 var mglat = lat + dlat;
                 var mglng = lng + dlng;
-                return [lng * 2 - mglng, lat * 2 - mglat]
+                return [mglng, mglat];
+                // return [lng * 2 - mglng, lat * 2 - mglat]
             }
         }
         const transformlat = (lng, lat) => {
@@ -465,16 +356,34 @@ export default {
             return (lng < 72.004 || lng > 137.8347) || ((lat < 0.8293 || lat > 55.8271) || false);
         }
         onMounted(() => {
+            // 禁用浏览器默认右键菜单，避免与自定义操作冲突
+            document.oncontextmenu = new Function("event.returnValue=false");
             initCesium()
+            // 监听点击目标元素外部事件
+            onClickOutside(target, (event) => {
+                console.log(event)
+                showMenu.value = false
+            })
         })
         return {
             mapData,
+            mouseData,
             gcj02towgs84,
-            shader1,
             shader,
-            handleMapLayer,
-            handleMarkLayer,
-            loadModel
+            loadModel,
+            removeAll,
+            remove,
+            rightMenu,
+            showMenu,
+            position,
+            showInfo,
+            target,
+            marker,
+            flag,
+            pin,
+            star,
+            handleClose,
+            dialogVisible
         }
     }
 }
@@ -489,7 +398,20 @@ export default {
 .menubox {
     position: absolute;
     z-index: 999;
-    background-color: #fff9;
+    background-color: #000c;
+    border-bottom-right-radius: 10px;
     padding: 10px 20px;
+}
+.row{
+display: flex;
+justify-content: space-between;
+margin: 10px 0;
+}
+.popmenu {
+    position: fixed;
+    z-index: 1004;
+    background-color: #000c;
+    padding: 5px 10px;
+    border-radius: 5px;
 }
 </style>
