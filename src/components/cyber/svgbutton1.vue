@@ -1,5 +1,7 @@
 <template>
-    <div class="btn fe1">{{text}}</div>
+    <div class="btn fe1">
+        <slot></slot>
+    </div>
     <svg>
         <defs>
             <filter id="fe1">
@@ -19,12 +21,6 @@
 import { defineComponent, reactive, toRefs } from 'vue';
 export default defineComponent({
 	name: 'svgButton1',
-	props: {
-        text:{
-            type:String,
-            default:''
-        }
-    },
 	setup() {
 		const data = reactive({
 		});

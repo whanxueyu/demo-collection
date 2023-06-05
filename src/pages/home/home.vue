@@ -2,55 +2,55 @@
     <div class="home">
         <div class="section1">
             <div class="title">
-                <cyberText :text="state.title"></cyberText>
+                <cyber-text :text="state.title"></cyber-text>
             </div>
             <div class="banner">
-                <shadowBanner></shadowBanner>
+                <shadow-banner></shadow-banner>
             </div>
             <div class="img">
-                <cyberImg :imgurl="state.imgurl">
+                <cyber-img :imgurl="state.imgurl">
                     <div class="tip">
                         <typing word="Pure CSS Typing Animation Cyberpunk Style."></typing>
                     </div>
-                </cyberImg>
+                </cyber-img>
             </div>
         </div>
         <div class="section2">
             <div class="title">
-                <cyberText :text="state.title1"></cyberText>
+                <cyber-text :text="state.title1"></cyber-text>
             </div>
             <div class="btn">
-                <svgBtn1 :text="state.btn1"></svgBtn1>
-                <svgBtn2 :text="state.btn2"></svgBtn2>
-                <errorbutton :text="state.btn3"></errorbutton>
+                <svg-btn1>{{state.btn1}}</svg-btn1>
+                <svg-btn2>{{state.btn2}}</svg-btn2>
+                <errorbutton>{{state.btn3}}</errorbutton>
             </div>
             <div class="btn">
-                <neonbutton1 :text="state.neonBtn"></neonbutton1>
-                <neonbutton2 :text="state.neonBtn"></neonbutton2>
-                <neonbutton3 :text="state.neonBtn"></neonbutton3>
+                <neon-button1>{{state.neonBtn}}</neon-button1>
+                <neon-button2>{{state.neonBtn}}</neon-button2>
+                <neon-button3>{{state.neonBtn}}</neon-button3>
             </div>
             <div class="btn">
-                <shadowBtn1></shadowBtn1>
-                <shadowBtn2></shadowBtn2>
-                <shadowBtn3></shadowBtn3>
-                <shadowBtn4></shadowBtn4>
+                <shadow-btn1 class="shadow">NEON</shadow-btn1>
+                <shadow-btn2 class="shadow">NEON</shadow-btn2>
+                <shadow-btn3 class="shadow">NEON</shadow-btn3>
+                <shadow-btn4 class="shadow">NEON</shadow-btn4>
             </div>
         </div>
         <div class="section3">
             <div class="title no">
-                <pinkText :text="state.title2"></pinkText>
+                <pink-text :text="state.title2"></pink-text>
             </div>
-            <bigEye></bigEye>
+            <big-eye></big-eye>
         </div>
         <div class="section4">
             <div class="title flex justify-between">
-                <rightShadow></rightShadow>
-                <leftShadow></leftShadow>
+                <right-shadow></right-shadow>
+                <left-shadow></left-shadow>
             </div>
             <div class="movetext">
-                <TDMoveText></TDMoveText>
+                <move-text></move-text>
             </div>
-            <moveCard></moveCard>
+            <move-card></move-card>
         </div>
     </div>
 </template>
@@ -65,15 +65,15 @@ import typing from '@/components/typing.vue'
 import bigEye from '@/components/bigEye.vue'
 import errorbutton from '@/components/cyber/errorbutton.vue'
 import pinkText from '@/components/neon/pinktext.vue'
-import neonbutton1 from '@/components/neon/button1.vue'
-import neonbutton2 from '@/components/neon/button2.vue'
-import neonbutton3 from '@/components/neon/button3.vue'
+import neonButton1 from '@/components/neon/button1.vue'
+import neonButton2 from '@/components/neon/button2.vue'
+import neonButton3 from '@/components/neon/button3.vue'
 import shadowBtn1 from '@/components/neon/shadowBtn1.vue'
 import shadowBtn2 from '@/components/neon/shadowBtn2.vue'
 import shadowBtn3 from '@/components/neon/shadowBtn3.vue'
 import shadowBtn4 from '@/components/neon/shadowBtn4.vue'
 import shadowBanner from '@/components/shadowBanner.vue'
-import TDMoveText from '@/components/3D/3DMoveText.vue'
+import moveText from '@/components/3D/moveText.vue'
 import moveCard from '@/components/3D/moveCard.vue'
 import leftShadow from '@/components/3D/leftShadow.vue'
 import rightShadow from '@/components/3D/rightShadow.vue'
@@ -87,15 +87,15 @@ export default {
         bigEye,
         errorbutton,
         pinkText,
-        neonbutton1,
-        neonbutton2,
-        neonbutton3,
+        neonButton1,
+        neonButton2,
+        neonButton3,
         shadowBtn1,
         shadowBtn2,
         shadowBtn3,
         shadowBtn4,
         shadowBanner,
-        TDMoveText,
+        moveText,
         moveCard,
         rightShadow,
         leftShadow
@@ -180,14 +180,15 @@ export default {
             display: flex;
             justify-content: space-around;
             align-items: center;
+            .shadow{
+                margin-bottom: 110px;
+            }
         }
     }
 
     .section3 {
         width: 100%;
         height: 100%;
-        padding-top: 160px;
-
         .floattitle {
             color: #fff;
             float: left;
@@ -240,13 +241,15 @@ export default {
             flex-wrap: wrap;
             justify-content: space-around;
             align-items: center;
+            .shadow{
+                margin-bottom: 110px;
+            }
         }
     }
 
     .section3 {
         width: 100%;
         height: 100%;
-        padding-top: 160px;
 
         .floattitle {
             color: #fff;

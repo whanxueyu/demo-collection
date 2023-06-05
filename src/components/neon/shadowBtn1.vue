@@ -1,16 +1,12 @@
 <template>
-    <div class="btn">{{ text }}</div>
+    <div class="btn">
+    <slot></slot>
+    </div>
 </template>
 <script>
 import { defineComponent, reactive, toRefs } from 'vue';
 export default defineComponent({
-    name: 'shadowBtn',
-    props: {
-        text: {
-            type: String,
-            default: 'Neon'
-        }
-    },
+    name: 'shadowBtn1',
     setup() {
         const data = reactive({
         });

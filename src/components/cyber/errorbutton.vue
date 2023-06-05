@@ -1,6 +1,8 @@
 <template>
     <div class="black">
-        <div class="button">{{text}}</div>
+        <div class="button">
+            <slot></slot>    
+        </div>
     </div>
   </template>
   
@@ -8,12 +10,6 @@
   import { defineComponent, onMounted, reactive } from 'vue'
   export default defineComponent({
     name: 'errorButton',
-    props: {
-        text: {
-        type: String,
-        default: ''
-      }
-    },
     setup() {
       const options = reactive({
       })

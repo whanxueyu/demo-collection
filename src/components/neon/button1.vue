@@ -4,19 +4,13 @@
         <div></div>
         <div></div>
         <div></div>
-        {{ text }}
+        <slot></slot>
     </div>
 </template>
 <script>
 import { defineComponent, reactive, toRefs } from 'vue';
 export default defineComponent({
     name: 'button1',
-    props: {
-        text: {
-            type: String,
-            default: 'TEXT'
-        }
-    },
     setup() {
         const data = reactive({
         });
