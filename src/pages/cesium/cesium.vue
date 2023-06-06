@@ -2,6 +2,7 @@
     <div class="menubox">
         <div class="row">
             <el-checkbox v-model="mapData.showMark" label="开启标记" />
+            <el-button type="primary" @click="saveAll">保存标记</el-button>
             <el-button type="danger" @click="removeAll">清除全部</el-button>
         </div>
         <div class="row">
@@ -80,6 +81,9 @@ export default {
         const target = ref(null)
         const showMenu = ref(false)
         const dialogVisible = ref(false)
+        const markerArr = reactive({
+            list:[]
+        })
         const tilesets = [
             './3dTileset/a/tileset.json',
             './3dTileset/b/tileset.json',
@@ -164,8 +168,10 @@ export default {
                                     pitch: Cesium.Math.toRadians(-90),
                                     roll: 0.0,
                                 },
+                                duration: 8
                             });
                         })
+                        mapData.loaded = true
                     }
                 }
             });
@@ -193,12 +199,20 @@ export default {
                 }
             }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
         }
+        const saveAll = () => {
+            sessionStorage.setItem("markers", JSON.stringify(markerArr.list))
+        }
         const removeAll = () => {
             viewer.entities.removeAll()
         }
         const remove = () => {
             viewer.entities.removeById(position.currentEntities.id)
+            // todo
+            markerArr.list = markerArr.list.filter((item)=>{
+                return item.longitude!==position.currentEntities.lng&&item.latitude!==position.currentEntities.lat
+            })
             showMenu.value = false
+            saveAll()
         }
         const showInfo = () => {
             dialogVisible.value = true
@@ -241,8 +255,13 @@ export default {
                         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
                         scale: 0.5,
                     }
-
                 })
+                let obj = {
+                    name: name,
+                    longitude: longitude,
+                    latitude: latitude
+                }
+                markerArr.list.push(obj)
             }
         }
         const handleClose = () => {
@@ -364,13 +383,22 @@ export default {
                 console.log(event)
                 showMenu.value = false
             })
+            markerArr.list = JSON.parse(sessionStorage.getItem("markers"))||[]
+            console.log(markerArr.list)
+            if(markerArr.list.length>0){
+                markerArr.list.forEach((item)=>{
+                    addMark(item.longitude,item.latitude)
+                })
+            }
         })
         return {
             mapData,
             mouseData,
             gcj02towgs84,
             shader,
+            markerArr,
             loadModel,
+            saveAll,
             removeAll,
             remove,
             rightMenu,
@@ -402,11 +430,13 @@ export default {
     border-bottom-right-radius: 10px;
     padding: 10px 20px;
 }
-.row{
-display: flex;
-justify-content: space-between;
-margin: 10px 0;
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
 }
+
 .popmenu {
     position: fixed;
     z-index: 1004;
