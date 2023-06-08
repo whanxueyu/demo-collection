@@ -82,7 +82,7 @@ export default {
         const showMenu = ref(false)
         const dialogVisible = ref(false)
         const markerArr = reactive({
-            list:[]
+            list: []
         })
         const tilesets = [
             './3dTileset/a/tileset.json',
@@ -208,8 +208,8 @@ export default {
         const remove = () => {
             viewer.entities.removeById(position.currentEntities.id)
             // todo
-            markerArr.list = markerArr.list.filter((item)=>{
-                return item.longitude!==position.currentEntities.lng&&item.latitude!==position.currentEntities.lat
+            markerArr.list = markerArr.list.filter((item) => {
+                return item.longitude !== position.currentEntities.lng && item.latitude !== position.currentEntities.lat
             })
             showMenu.value = false
             saveAll()
@@ -262,6 +262,31 @@ export default {
                     latitude: latitude
                 }
                 markerArr.list.push(obj)
+            }
+        }
+        const defaultMark = (longitude, latitude, name) => {
+            let icon = ''
+            let name = ''
+            if (mapData.showMark) {
+                if (name === "marker") {
+                    icon = marker
+                } else if (name === "pin") {
+                    icon = pin
+                } else if (name === "flag") {
+                    icon = flag
+                } else {
+                    icon = star
+                }
+                viewer.entities.add({
+                    name: name,
+                    position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
+                    billboard: {
+                        image: icon,
+                        horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+                        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                        scale: 0.5,
+                    }
+                })
             }
         }
         const handleClose = () => {
@@ -383,11 +408,11 @@ export default {
                 console.log(event)
                 showMenu.value = false
             })
-            markerArr.list = JSON.parse(sessionStorage.getItem("markers"))||[]
+            markerArr.list = JSON.parse(sessionStorage.getItem("markers")) || []
             console.log(markerArr.list)
-            if(markerArr.list.length>0){
-                markerArr.list.forEach((item)=>{
-                    addMark(item.longitude,item.latitude)
+            if (markerArr.list.length > 0) {
+                markerArr.list.forEach((item) => {
+                    defaultMark(item.longitude, item.latitude, item.name)
                 })
             }
         })
