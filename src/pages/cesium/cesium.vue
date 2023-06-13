@@ -122,18 +122,18 @@ export default {
         const star = require('@/assets/icon/star.png')
         const initCesium = () => {
             Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxZDU4MDE4ZS03ODdmLTQ1NWMtYTI3Ny1kMmQxNmVkYmQxZDQiLCJpZCI6NjMxNjUsImlhdCI6MTYzMjg3OTg1NX0.AAtivmdf46L1-4MWLWjnQRgP_laeTXBMagA75_a9N9o";
-            // 高德影像
-            var mapLayer = new Cesium.UrlTemplateImageryProvider({
-                url: "https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}", //高德影像
-                minimumLevel: 1,
-                maximumLevel: 18
-            })
-            // 高德路网中文注记
-            var markLayer = new Cesium.UrlTemplateImageryProvider({
-                url: "https://webst02.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8", //高德路网中文注记
-                minimumLevel: 1,
-                maximumLevel: 18
-            })
+            // // 高德影像
+            // var mapLayer = new Cesium.UrlTemplateImageryProvider({
+            //     url: "https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}", //高德影像
+            //     minimumLevel: 1,
+            //     maximumLevel: 18
+            // })
+            // // 高德路网中文注记
+            // var markLayer = new Cesium.UrlTemplateImageryProvider({
+            //     url: "https://webst02.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8", //高德路网中文注记
+            //     minimumLevel: 1,
+            //     maximumLevel: 18
+            // })
             viewer = new Cesium.Viewer("cesiumContainer", {
                 infoBox: false,
                 selectionIndicator: false,
@@ -146,30 +146,75 @@ export default {
                 navigationHelpButton: false,  //右上角的帮助按钮，
                 fullscreenButton: false,
             });
-            viewer.imageryLayers.addImageryProvider(mapLayer);
-            viewer.imageryLayers.addImageryProvider(markLayer);
+            
+            // 服务负载子域
+            var subdomains = ["0", "1", "2", "3", "4", "5", "6", "7"];
+            // viewer.imageryLayers.addImageryProvider(
+            //     new Cesium.WebMapTileServiceImageryProvider({
+            //         //影像底图
+            //         url: "http://t{s}.tianditu.com/cia_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=cia&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=indigo&format=tiles&tk=841234cd0d023af5c1bcb7c3d2c453c6",
+            //         subdomains: subdomains,
+            //         layer: "tdtImgLayer",
+            //         style: "default",
+            //         format: "image/jpeg",
+            //         tileMatrixSetID: "GoogleMapsCompatible", //使用谷歌的瓦片切片方式
+            //         show: true,
+            //     })
+            // );
+            // viewer.imageryLayers.addImageryProvider(mapLayer);
+            // viewer.imageryLayers.addImageryProvider(markLayer);
+            // viewer.imageryLayers.addImageryProvider(
+            //     new Cesium.WebMapTileServiceImageryProvider({
+            //         //影像底图
+            //         url: "http://t{s}.tianditu.com/vec_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=vec&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=indigo&format=tiles&tk=841234cd0d023af5c1bcb7c3d2c453c6",
+            //         subdomains: subdomains,
+            //         layer: "tdtImgLayer",
+            //         style: "default",
+            //         format: "image/jpeg",
+            //         tileMatrixSetID: "GoogleMapsCompatible", //使用谷歌的瓦片切片方式
+            //         show: true,
+            //     })
+            // );
+            viewer.imageryLayers.addImageryProvider(
+      new Cesium.WebMapTileServiceImageryProvider({
+        // 加载多个图层
+        url: "http://t{s}.tianditu.com/cia_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=cia&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default.jpg&tk=841234cd0d023af5c1bcb7c3d2c453c6",
+        subdomains: subdomains,
+        layer: "tdtCiaLayer",
+        style: "default",
+        format: "image/jpeg",
+        tileMatrixSetID: "GoogleMapsCompatible",
+        show: true,
+      })
+    );
+            
             viewer.scene.screenSpaceCameraController.zoomEventTypes = [Cesium.CameraEventType.WHEEL, Cesium.CameraEventType.PINCH];
             viewer.scene.screenSpaceCameraController.tiltEventTypes = [Cesium.CameraEventType.PINCH, Cesium.CameraEventType.RIGHT_DRAG];
             viewer.cesiumWidget.creditContainer.style.display = "none";
             // viewer.scene.screenSpaceCameraController.enableTranslate = false;
             viewer.scene.screenSpaceCameraController.enableRotate = true; //拖拽旋转
             viewer.scene.screenSpaceCameraController.enableTilt = false; //右键拖拽倾斜
-
             var helper = new Cesium.EventHelper();
             helper.add(viewer.scene.globe.tileLoadProgressEvent, function (e) {
                 if (e == 0) {
                     console.log("矢量切片加载完成时的回调");
                     if (!mapData.loaded) {
                         nextTick(() => {
-                            viewer.camera.flyTo({
-                                destination: Cesium.Cartesian3.fromDegrees(116.39746, 39.9092, 1000),
-                                orientation: {
-                                    heading: Cesium.Math.toRadians(0),
-                                    pitch: Cesium.Math.toRadians(-90),
-                                    roll: 0.0,
-                                },
-                                duration: 8
+                            // viewer.camera.flyTo({
+                            //     destination: Cesium.Cartesian3.fromDegrees(116.39746, 39.9092, 1000),
+                            //     orientation: {
+                            //         heading: Cesium.Math.toRadians(0),
+                            //         pitch: Cesium.Math.toRadians(-90),
+                            //         roll: 0.0,
+                            //     },
+                            //     duration: 8
+                            // });
+                            const tileset = new Cesium.Cesium3DTileset({
+                                url: "https://zouyaoji.top/vue-cesium/SampleData/Cesium3DTiles/Tilesets/dayanta/tileset.json",
+
                             });
+                            viewer.scene.primitives.add(tileset);
+                            viewer.zoomTo(tileset);
                         })
                         mapData.loaded = true
                     }
@@ -264,15 +309,15 @@ export default {
                 markerArr.list.push(obj)
             }
         }
-        const defaultMark = (longitude, latitude, name) => {
+        const defaultMark = (longitude, latitude, mark) => {
             let icon = ''
             let name = ''
             if (mapData.showMark) {
-                if (name === "marker") {
+                if (mark === "marker") {
                     icon = marker
-                } else if (name === "pin") {
+                } else if (mark === "pin") {
                     icon = pin
-                } else if (name === "flag") {
+                } else if (mark === "flag") {
                     icon = flag
                 } else {
                     icon = star
