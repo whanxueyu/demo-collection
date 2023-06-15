@@ -1,27 +1,103 @@
 <template>
     <div class="menubox">
-        <div class="row">
-            <el-checkbox v-model="mapData.showMark" label="开启标记" />
-            <el-button type="primary" @click="saveAll">保存标记</el-button>
-            <el-button type="danger" @click="removeAll">清除全部</el-button>
-            <el-button type="warning" @click="loadPipenet">管网生成</el-button>
-            <el-button type="success" @click="load3DTileset">模型加载</el-button>
-        </div>
-        <div class="row">
-            <el-radio-group v-model="mapData.markIcon" v-if="mapData.showMark">
-                <el-radio :label="1">
-                    <el-image style="width: 40px; height: 40px" :src="marker" fit="fill" />
-                </el-radio>
-                <el-radio :label="2">
-                    <el-image style="width: 40px; height: 40px" :src="pin" fit="fill" /></el-radio>
-                <el-radio :label="3">
-                    <el-image style="width: 40px; height: 40px" :src="flag" fit="fill" />
-                </el-radio>
-                <el-radio :label="4">
-                    <el-image style="width: 40px; height: 40px" :src="star" fit="fill" />
-                </el-radio>
-            </el-radio-group>
-        </div>
+        <el-tabs type="border-card" class="demo-tabs">
+            <el-tab-pane>
+                <template #label>
+                    <span class="custom-tabs-label">
+                        <el-tooltip class="box-item" effect="dark" content="添加标记" placement="bottom">
+                            <el-icon>
+                                <LocationInformation />
+                            </el-icon>
+                        </el-tooltip>
+                    </span>
+                </template>
+                <div class="tab-body">
+                    <div class="row">
+                        <el-checkbox v-model="mapData.showMark" label="开启标记" />
+                        <el-button type="primary" @click="saveAll">保存标记</el-button>
+                    </div>
+                    <div class="row">
+                        <el-radio-group v-model="mapData.markIcon" v-if="mapData.showMark">
+                            <el-radio :label="1">
+                                <el-image style="width: 24px; height: 24px" :src="marker" fit="fill" />
+                            </el-radio>
+                            <el-radio :label="2">
+                                <el-image style="width: 24px; height: 24px" :src="pin" fit="fill" /></el-radio>
+                            <el-radio :label="3">
+                                <el-image style="width: 24px; height: 24px" :src="flag" fit="fill" />
+                            </el-radio>
+                            <el-radio :label="4">
+                                <el-image style="width: 24px; height: 24px" :src="star" fit="fill" />
+                            </el-radio>
+                        </el-radio-group>
+                    </div>
+                </div>
+            </el-tab-pane>
+            <el-tab-pane>
+                <template #label>
+                    <span class="custom-tabs-label">
+                        <el-tooltip class="box-item" effect="dark" content="管网数据" placement="bottom">
+                            <el-icon>
+                                <Rank />
+                            </el-icon>
+                        </el-tooltip>
+                    </span>
+                </template>
+                <div class="tab-body">
+                    <el-button type="warning" @click="loadPipenet">管网生成</el-button>
+                    <el-divider content-position="left">说明</el-divider>
+                    <div class="text">简单编了几条数据，可能看不出来是管网，其实就是圆锥（柱）、立方体、体积折线等拼起来的</div>
+                </div>
+            </el-tab-pane>
+            <el-tab-pane>
+                <template #label>
+                    <span class="custom-tabs-label">
+                        <el-tooltip class="box-item" effect="dark" content="加载大雁塔模型" placement="bottom">
+                            <el-icon>
+                                <OfficeBuilding />
+                            </el-icon>
+                        </el-tooltip>
+                    </span>
+                </template>
+                <div class="tab-body">
+                    <el-button type="success" @click="load3DTileset">模型加载</el-button>
+                    <el-divider content-position="left">说明</el-divider>
+                    <div class="text">3DTileset模型资源使用的是在线数据，所以首次模型加载较慢</div>
+                </div>
+            </el-tab-pane>
+            <el-tab-pane>
+                <template #label>
+                    <span class="custom-tabs-label">
+                        <el-tooltip class="box-item" effect="dark" content="全部清除" placement="bottom">
+                            <el-icon>
+                                <Delete />
+                            </el-icon>
+                        </el-tooltip>
+                    </span>
+                </template>
+                <div class="tab-body">
+                    <el-button type="danger" @click="removeAll">清除全部</el-button>
+                    <el-divider content-position="left">说明</el-divider>
+                    <div class="text">将清除所有的实体，如标签、模型、管网等</div>
+                </div>
+            </el-tab-pane>
+            <el-tab-pane>
+                <template #label>
+                    <span class="custom-tabs-label">
+                        <el-tooltip class="box-item" effect="dark" content="初始位置" placement="bottom">
+                            <el-icon>
+                                <Refresh />
+                            </el-icon>
+                        </el-tooltip>
+                    </span>
+                </template>
+                <div class="tab-body">
+                    <el-button type="info" @click="reset">初始位置</el-button>
+                    <el-divider content-position="left">说明</el-divider>
+                    <div class="text">定位到天安门正上方</div>
+                </div>
+            </el-tab-pane>
+        </el-tabs>
     </div>
     <div class="popmenu" ref="target" v-if="showMenu" :style="{ 'left': position.x + 'px', 'top': position.y + 'px' }">
         <div>
@@ -53,15 +129,23 @@ import * as Cesium from "cesium";
 import 'cesium/Source/Widgets/widgets.css';
 import { useMouse, onClickOutside } from '@vueuse/core'
 import { pointList, lineList } from '@/static/fakedata/fakedata'
+import { LocationInformation, Delete, Refresh, OfficeBuilding, Rank } from '@element-plus/icons-vue'
 var viewer;
 export default {
+    components: {
+        LocationInformation,
+        Refresh,
+        Delete,
+        OfficeBuilding,
+        Rank
+    },
     setup() {
         const mapData = reactive({
             mapType: '1',
             markType: '1',
             mapLayer: {},
             markLayer: {},
-            showMark: true,
+            showMark: false,
             markIcon: 1,
             loaded: false,
             allLines: [],
@@ -96,8 +180,8 @@ export default {
                 sceneModePicker: false,
                 animation: false,    //左下角的动画仪表盘
                 baseLayerPicker: false,  //右上角的图层选择按钮
-                geocoder: false,  //搜索框
-                homeButton: false,  //home按钮
+                geocoder: true,  //搜索框
+                homeButton: true,  //home按钮
                 timeline: false,    //底部的时间轴
                 navigationHelpButton: false,  //右上角的帮助按钮，
                 fullscreenButton: false,
@@ -163,7 +247,7 @@ export default {
                     longitude: Number(lng.toFixed(6)),
                     latitude: Number(lat.toFixed(6)),
                 };
-                console.log("origin", coordinate);
+                console.log("origin", coordinate.longitude, coordinate.latitude);
                 addMark(coordinate.longitude, coordinate.latitude)
 
             }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
@@ -191,6 +275,7 @@ export default {
         }
         const removeAll = () => {
             viewer.entities.removeAll()
+            sessionStorage.removeItem('markers')
         }
         const remove = () => {
             viewer.entities.removeById(position.currentEntities.id)
@@ -292,12 +377,17 @@ export default {
         // 管点管线数据
         const loadPipenet = () => {
             let position = {
-                lat:pointList[0].latitude,
-                lng:pointList[0].longitude
+                lat: 39.895383,
+                lng: 116.391825
             }
             viewer.camera.flyTo({
                 destination: Cesium.Cartesian3.fromDegrees(Number(position.lng), Number(position.lat), 1000), // 可见矩形
                 duration: 3, //飞行时间
+                orientation: {
+                    heading: Cesium.Math.toRadians(0.0),
+                    pitch: Cesium.Math.toRadians(-45.0),
+                    roll: 0.0
+                }
             });
             console.log(pointList.length, lineList.length)
             let points = pointList.filter((item) => {
@@ -385,7 +475,7 @@ export default {
                 position: Cesium.Cartesian3.fromDegrees(
                     Number(obj["pointY"]),
                     Number(obj["pointX"]),
-                    -Number(obj["bury"]) / 2
+                    Number(obj["bury"]) / 2
                 ),
                 point: {
                     pixelSize: 3,
@@ -398,8 +488,8 @@ export default {
                 },
                 cylinder: {
                     length: buryHeight,
-                    topRadius: 0.6,
-                    bottomRadius: 0.9,
+                    topRadius: 6,
+                    bottomRadius: 10,
                     material:
                         obj.type === "3"
                             ? new Cesium.Color.fromCssColorString("#ffff00")
@@ -431,7 +521,7 @@ export default {
                 position: Cesium.Cartesian3.fromDegrees(
                     Number(obj["pointY"]),
                     Number(obj["pointX"]),
-                    -Number(obj["bury"]) / 2
+                    Number(obj["bury"]) / 2
                 ),
                 point: {
                     pixelSize: 3,
@@ -443,7 +533,7 @@ export default {
                                 : new Cesium.Color.fromCssColorString("#0000ff"),
                 },
                 box: {
-                    dimensions: new Cesium.Cartesian3(0.8, 1, Number(obj["bury"])),
+                    dimensions: new Cesium.Cartesian3(12, 12, Number(obj["bury"])),
                     material:
                         obj.type === "3"
                             ? new Cesium.Color.fromCssColorString("#ffff00")
@@ -480,15 +570,15 @@ export default {
                     positions: Cesium.Cartesian3.fromDegreesArrayHeights([
                         Number(obj["startY"]),
                         Number(obj["startX"]),
-                        -Number(obj["startBury"]) + Number(obj["pipeDiameter"]) / 2000,
+                        Number(obj["startBury"]) + Number(obj["pipeDiameter"]) / 2000,
                         Number(obj["endY"]),
                         Number(obj["endX"]),
-                        -Number(obj["endBury"]) + Number(obj["pipeDiameter"]) / 2000,
+                        Number(obj["endBury"]) + Number(obj["pipeDiameter"]) / 2000,
                     ]),
-                    width: Number(obj["pipeDiameter"]) / 1000,
+                    width: Number(obj["pipeDiameter"]) / 100,
                     material:
                         obj.type === "3"
-                            ? new Cesium.Color.fromCssColorString("#ffff00")
+                            ? new Cesium.Color.fromCssColorString("#00ff00")
                             : obj.type === "1"
                                 ? new Cesium.Color.fromCssColorString("#ff0000")
                                 : new Cesium.Color.fromCssColorString("#0000ff"),
@@ -498,10 +588,10 @@ export default {
                         // fromDegreesArrayHeights // fromDegreesArray
                         Number(obj["startY"]),
                         Number(obj["startX"]),
-                        -Number(obj["startBury"]),
+                        Number(obj["startBury"]),
                         Number(obj["endY"]),
                         Number(obj["endX"]),
-                        -Number(obj["endBury"]),
+                        Number(obj["endBury"]),
                     ]),
                     shape: positions,
                     material:
@@ -596,13 +686,14 @@ export default {
             loadPipenet,
             lineShowOrHide,
             pointShowOrHide,
-            takeScreenshot
+            takeScreenshot,
+            reset
         }
     }
 }
 </script>
-   
-<style>
+
+<style lang="scss" scoped>
 #cesiumContainer {
     width: 100vw;
     height: calc(100vh - 60px);
@@ -611,9 +702,18 @@ export default {
 .menubox {
     position: absolute;
     z-index: 999;
-    background-color: #000c;
     border-bottom-right-radius: 10px;
-    padding: 10px 20px;
+    padding: 20px;
+
+    .tab-body {
+        width: 250px;
+
+        .text {
+            line-height: 24px;
+            text-indent: 24px;
+            text-align: start;
+        }
+    }
 }
 
 .row {
