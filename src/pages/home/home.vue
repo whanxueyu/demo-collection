@@ -1,5 +1,5 @@
 <template>
-    <div class="home">
+    <div class="homePage">
         <div class="section1">
             <div class="title">
                 <cyber-text :text="state.title"></cyber-text>
@@ -20,14 +20,14 @@
                 <cyber-text :text="state.title1"></cyber-text>
             </div>
             <div class="btn">
-                <svg-btn1>{{state.btn1}}</svg-btn1>
-                <svg-btn2>{{state.btn2}}</svg-btn2>
-                <errorbutton>{{state.btn3}}</errorbutton>
+                <svg-btn1>{{ state.btn1 }}</svg-btn1>
+                <svg-btn2>{{ state.btn2 }}</svg-btn2>
+                <errorbutton>{{ state.btn3 }}</errorbutton>
             </div>
             <div class="btn">
-                <neon-button1>{{state.neonBtn}}</neon-button1>
-                <neon-button2>{{state.neonBtn}}</neon-button2>
-                <neon-button3>{{state.neonBtn}}</neon-button3>
+                <neon-button1>{{ state.neonBtn }}</neon-button1>
+                <neon-button2>{{ state.neonBtn }}</neon-button2>
+                <neon-button3>{{ state.neonBtn }}</neon-button3>
             </div>
             <div class="btn">
                 <shadow-btn1 class="shadow">NEON</shadow-btn1>
@@ -51,6 +51,87 @@
                 <move-text></move-text>
             </div>
             <move-card></move-card>
+        </div>
+        <div class="section5">
+            <div class="container stage">
+                <div class="container">
+                    <div class="tabbar tab-style3">
+                        <ul class="flex-center">
+                            <li class="home active" data-where="home"><span class="material-icons-outlined">home </span>
+                            </li>
+                            <li class="products" data-where="products"><span class="material-icons-outlined">shopping_bag
+                                </span></li>
+                            <li class="services" data-where="services"><span class="material-icons-outlined">plumbing
+                                </span></li>
+                            <li class="about" data-where="about"><span class="material-icons-outlined">business </span></li>
+                            <li class="help" data-where="help"><span class="material-icons-outlined">help_outline </span>
+                            </li>
+                            <li class="follow">&nbsp;</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="container">
+                    <div class="tabbar tab-style2">
+                        <ul class="flex-center">
+                            <li class="home active" data-where="home"><span class="material-icons-outlined">home </span>
+                            </li>
+                            <li class="products" data-where="products"><span class="material-icons-outlined">shopping_bag
+                                </span></li>
+                            <li class="services" data-where="services"><span class="material-icons-outlined">plumbing
+                                </span></li>
+                            <li class="about" data-where="about"><span class="material-icons-outlined">business </span></li>
+                            <li class="help" data-where="help"><span class="material-icons-outlined">help_outline </span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="container">
+                    <div class="tabbar tab-style1">
+                        <ul class="flex-center">
+                            <li class="home active" data-where="home"><span class="material-icons-outlined">home </span>
+                            </li>
+                            <li class="products" data-where="products"><span class="material-icons-outlined">shopping_bag
+                                </span></li>
+                            <li class="services" data-where="services"><span class="material-icons-outlined">plumbing
+                                </span></li>
+                            <li class="about" data-where="about"><span class="material-icons-outlined">business </span></li>
+                            <li class="help" data-where="help"><span class="material-icons-outlined">help_outline </span>
+                            </li>
+                            <li class="follow">&nbsp;</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="container">
+                    <div class="tabbar tab-style4">
+                        <ul class="flex-center">
+                            <li class="home active" data-where="home"><span class="material-icons-outlined">home </span>
+                            </li>
+                            <li class="products" data-where="products"><span class="material-icons-outlined">shopping_bag
+                                </span></li>
+                            <li class="services" data-where="services"><span class="material-icons-outlined">plumbing
+                                </span></li>
+                            <li class="about" data-where="about"><span class="material-icons-outlined">business </span></li>
+                            <li class="help" data-where="help"><span class="material-icons-outlined">help_outline </span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="container">
+                    <div class="tabbar tab-style5">
+                        <ul class="flex-center">
+                            <li class="home active" data-where="home"><span class="material-icons-outlined">home </span>
+                            </li>
+                            <li class="products" data-where="products"><span class="material-icons-outlined">shopping_bag
+                                </span></li>
+                            <li class="services" data-where="services"><span class="material-icons-outlined">plumbing
+                                </span></li>
+                            <li class="about" data-where="about"><span class="material-icons-outlined">business </span></li>
+                            <li class="help" data-where="help"><span class="material-icons-outlined">help_outline </span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -114,7 +195,38 @@ export default {
         })
         const url = ref('')
         onMounted(() => {
+            const uls = document.querySelectorAll("ul");
+            uls.forEach((ul) => {
+                const resetClass = ul.parentNode.getAttribute("class");
+                const lis = ul.querySelectorAll("li");
+                lis.forEach((li) => {
+                    li.addEventListener("click", (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const target = e.currentTarget;
+                        if (
+                            target.classList.contains("active") ||
+                            target.classList.contains("follow")
+                        ) {
+                            return;
+                        }
+                        ul.parentNode.setAttribute(
+                            "class",
+                            `${resetClass} ${target.getAttribute("data-where")}-style`
+                        );
 
+                        lis.forEach((item) => clearClass(item, "active"));
+
+                        setClass(target, "active");
+                    });
+                });
+            });
+            function clearClass(node, className) {
+                node.classList.remove(className);
+            }
+            function setClass(node, className) {
+                node.classList.add(className);
+            }
         })
         return {
             state,
@@ -126,7 +238,8 @@ export default {
   
   <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-.home {
+@import url('./style.css');
+.homePage {
     margin: 0;
     overflow-x: hidden;
     overflow-y: auto;
@@ -180,7 +293,8 @@ export default {
             display: flex;
             justify-content: space-around;
             align-items: center;
-            .shadow{
+
+            .shadow {
                 margin-bottom: 110px;
             }
         }
@@ -189,6 +303,7 @@ export default {
     .section3 {
         width: 100%;
         height: 100%;
+
         .floattitle {
             color: #fff;
             float: left;
@@ -203,6 +318,9 @@ export default {
             height: 320px;
         }
     }
+    .section5{
+        
+    }
 }
 
 @media (max-width:800px) {
@@ -212,7 +330,8 @@ export default {
         display: block;
 
         .banner {
-            height: 70vw;;
+            height: 70vw;
+            ;
         }
 
         .img {
@@ -241,7 +360,8 @@ export default {
             flex-wrap: wrap;
             justify-content: space-around;
             align-items: center;
-            .shadow{
+
+            .shadow {
                 margin-bottom: 110px;
             }
         }

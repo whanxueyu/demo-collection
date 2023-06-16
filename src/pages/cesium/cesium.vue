@@ -212,7 +212,6 @@ export default {
                     format: "image/jpeg",
                     tileMatrixSetID: "GoogleMapsCompatible",
                     show: true,
-                    maximumLevel: 18
                 })
             );
 
