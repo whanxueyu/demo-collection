@@ -4,7 +4,7 @@
             <el-tab-pane>
                 <template #label>
                     <span class="custom-tabs-label">
-                        <el-tooltip class="box-item" effect="dark" content="添加标记" placement="bottom">
+                        <el-tooltip class="box-item" effect="dark" content="添加标记" placement="top">
                             <el-icon>
                                 <LocationInformation />
                             </el-icon>
@@ -36,7 +36,7 @@
             <el-tab-pane>
                 <template #label>
                     <span class="custom-tabs-label">
-                        <el-tooltip class="box-item" effect="dark" content="管网数据" placement="bottom">
+                        <el-tooltip class="box-item" effect="dark" content="管网数据" placement="top">
                             <el-icon>
                                 <Rank />
                             </el-icon>
@@ -46,13 +46,13 @@
                 <div class="tab-body">
                     <el-button type="warning" @click="loadPipenet">管网生成</el-button>
                     <el-divider content-position="left">说明</el-divider>
-                    <div class="text">简单编了几条数据，可能看不出来是管网，其实就是圆锥（柱）、立方体、体积折线等拼起来的</div>
+                    <div class="text">数据截取自某管网项目中极少的一部分，并对数据进行了修改，仅供学习参考，勿做其他用途</div>
                 </div>
             </el-tab-pane>
             <el-tab-pane>
                 <template #label>
                     <span class="custom-tabs-label">
-                        <el-tooltip class="box-item" effect="dark" content="加载大雁塔模型" placement="bottom">
+                        <el-tooltip class="box-item" effect="dark" content="加载大雁塔模型" placement="top">
                             <el-icon>
                                 <OfficeBuilding />
                             </el-icon>
@@ -68,7 +68,7 @@
             <el-tab-pane>
                 <template #label>
                     <span class="custom-tabs-label">
-                        <el-tooltip class="box-item" effect="dark" content="全部清除" placement="bottom">
+                        <el-tooltip class="box-item" effect="dark" content="全部清除" placement="top">
                             <el-icon>
                                 <Delete />
                             </el-icon>
@@ -84,7 +84,7 @@
             <el-tab-pane>
                 <template #label>
                     <span class="custom-tabs-label">
-                        <el-tooltip class="box-item" effect="dark" content="初始位置" placement="bottom">
+                        <el-tooltip class="box-item" effect="dark" content="初始位置" placement="top">
                             <el-icon>
                                 <Refresh />
                             </el-icon>
@@ -128,7 +128,7 @@ import { nextTick, onMounted, reactive, ref } from "vue";
 import * as Cesium from "cesium";
 import 'cesium/Source/Widgets/widgets.css';
 import { useMouse, onClickOutside } from '@vueuse/core'
-import { pointList, lineList } from '@/static/fakedata/fakedata'
+import { pointList, lineList, filterPoints, filterLines } from '@/static/fakedata/fakedata'
 import { LocationInformation, Delete, Refresh, OfficeBuilding, Rank } from '@element-plus/icons-vue'
 var viewer;
 export default {
@@ -366,19 +366,34 @@ export default {
         }
         // 加载3DTileset
         const load3DTileset = () => {
-            const tileset = new Cesium.Cesium3DTileset({
+            const tilesets = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
                 url: "https://zouyaoji.top/vue-cesium/SampleData/Cesium3DTiles/Tilesets/dayanta/tileset.json",
-
-            });
-            viewer.scene.primitives.add(tileset);
-            viewer.zoomTo(tileset);
+            }));
+            var height = 738.0
+            tilesets.readyPromise
+                .then(function (tileset) {
+                    // 贴地
+                    //计算中心点位置
+                    var cartographic = Cesium.Cartographic.fromCartesian(tileset.boundingSphere.center)
+                    var lng = Cesium.Math.toDegrees(cartographic.longitude) //使用经纬度和弧度的转换，将WGS84弧度坐标系转换到目标值，弧度转度
+                    var lat = Cesium.Math.toDegrees(cartographic.latitude)
+                    // var lat = 34.219588
+                    // var lng = 108.959397
+                    //计算中心点位置的地表坐标
+                    var surface = Cesium.Cartesian3.fromRadians(lng, lat, 0.0)
+                    //偏移后的坐标
+                    var offset = Cesium.Cartesian3.fromRadians(lng+0.0022, lat+0.0053, height)
+                    var translation = Cesium.Cartesian3.subtract(offset, surface, new Cesium.Cartesian3())
+                    tileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation)
+                })
+            viewer.zoomTo(tilesets);
         }
 
         // 管点管线数据
         const loadPipenet = () => {
             let position = {
-                lat: 39.895383,
-                lng: 116.391825
+                lat: 38.986086,
+                lng: 117.358494
             }
             viewer.camera.flyTo({
                 destination: Cesium.Cartesian3.fromDegrees(Number(position.lng), Number(position.lat), 1000), // 可见矩形
@@ -389,8 +404,8 @@ export default {
                     roll: 0.0
                 }
             });
-            console.log(pointList.length, lineList.length)
-            let points = pointList.filter((item) => {
+            console.log(filterPoints.length, filterLines.length, pointList.length, lineList.length)
+            let points = filterPoints.filter((item) => {
                 return item.latitude && item.longitude;
             });
             points.map((item) => {
@@ -412,7 +427,7 @@ export default {
                 };
                 drawPointByAttachment(viewer, obj);
             });
-            let lines = lineList.filter((item) => {
+            let lines = filterLines.filter((item) => {
                 mapData.allLines.push(item.id);
                 return (
                     item.id &&
@@ -488,8 +503,8 @@ export default {
                 },
                 cylinder: {
                     length: buryHeight,
-                    topRadius: 6,
-                    bottomRadius: 10,
+                    topRadius: 1,
+                    bottomRadius: 1.5,
                     material:
                         obj.type === "3"
                             ? new Cesium.Color.fromCssColorString("#ffff00")
@@ -533,7 +548,7 @@ export default {
                                 : new Cesium.Color.fromCssColorString("#0000ff"),
                 },
                 box: {
-                    dimensions: new Cesium.Cartesian3(12, 12, Number(obj["bury"])),
+                    dimensions: new Cesium.Cartesian3(2, 3, Number(obj["bury"])),
                     material:
                         obj.type === "3"
                             ? new Cesium.Color.fromCssColorString("#ffff00")
@@ -570,12 +585,12 @@ export default {
                     positions: Cesium.Cartesian3.fromDegreesArrayHeights([
                         Number(obj["startY"]),
                         Number(obj["startX"]),
-                        Number(obj["startBury"]) + Number(obj["pipeDiameter"]) / 2000,
+                        Number(obj["startBury"]) - Number(obj["pipeDiameter"]) / 2000,
                         Number(obj["endY"]),
                         Number(obj["endX"]),
-                        Number(obj["endBury"]) + Number(obj["pipeDiameter"]) / 2000,
+                        Number(obj["endBury"]) - Number(obj["pipeDiameter"]) / 2000,
                     ]),
-                    width: Number(obj["pipeDiameter"]) / 100,
+                    width: Number(obj["pipeDiameter"]) / 200,
                     material:
                         obj.type === "3"
                             ? new Cesium.Color.fromCssColorString("#00ff00")
@@ -588,10 +603,10 @@ export default {
                         // fromDegreesArrayHeights // fromDegreesArray
                         Number(obj["startY"]),
                         Number(obj["startX"]),
-                        Number(obj["startBury"]),
+                        Number(obj["startBury"]) - Number(obj["pipeDiameter"]) / 1000,
                         Number(obj["endY"]),
                         Number(obj["endX"]),
-                        Number(obj["endBury"]),
+                        Number(obj["endBury"]) - Number(obj["pipeDiameter"]) / 1000,
                     ]),
                     shape: positions,
                     material:
