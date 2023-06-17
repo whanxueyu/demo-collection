@@ -1,36 +1,23 @@
 
-@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
-@import url("https://fonts.googleapis.com/icon?family=Material+Icons+Outlined");
+@import url("@/static/css/icon?family=Material+Icons+Outlined");
 
-:root {
-    --accent-color: #1fa8f5;
-    --accent-color-fg: #fefefe;
-    --backdrop-color: #89d4fe;
-    --app-content-background-color: #c0d8ec;
-    --inset-shadow: rgba(7, 43, 74, 0.3);
-    --outset-shadow: rgba(223, 240, 255, 0.25);
-    --clay-box-shadow: rgba(7, 43, 74, 0.3);
-    --clay-background-color: #c0d8ec;
-    --clay-fg-color: #444
-}
-/* body{font-size:10px;font-family:"Roboto",sans-serif} */
-.flex-center {
-    display: flex;
-    justify-content: space-around;
-    align-items: center
-}
 
-.container {
-    padding: 1rem 1rem 1.5rem
-}
 
 .stage {
     max-width: 400px;
     width: 400px;
-    margin: 0 auto
+    margin: 0 auto;
+    .container {
+        padding: 1rem 1rem 1.5rem
+    }
 }
 
 .home.active {
+    --inset-shadow: rgba(7, 43, 74, 0.3);
+    --outset-shadow: rgba(223, 240, 255, 0.25);
+    --clay-box-shadow: rgba(7, 43, 74, 0.3);
+    --clay-background-color: #c0d8ec;
+    --clay-fg-color: #444;
     color: #1fa8f5;
 }
 
@@ -91,7 +78,7 @@
 }
 
 .tabbar {
-    background-color: var(--app-content-background-color);
+    background-color: #c0d8ec;
     border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
@@ -161,8 +148,8 @@
     content: " ";
     width: 60px;
     height: 60px;
-    border: 10px solid var(--app-content-background-color);
-    background-color: var(--app-content-background-color);
+    border: 10px solid #c0d8ec;
+    background-color: #c0d8ec;
     top: -3rem;
     transition: left .4s ease-in, background-color .4s, border-color .4s
 }
@@ -173,7 +160,7 @@
     position: absolute;
     top: 27px;
     right: -27px;
-    border-top: 11px solid var(--app-content-background-color);
+    border-top: 11px solid #c0d8ec;
     background-color: #f9f8fa;
     width: 20px;
     height: 20px;
@@ -389,7 +376,7 @@
     top: -1rem;
     background-color: var(--clay-background-color);
     box-shadow: 1px 2px 4px 0 var(--clay-box-shadow), 2px 4px 8px 0 var(--clay-box-shadow), inset 2px 2px 8px var(--outset-shadow), inset -2px -2px 8px var(--inset-shadow);
-    color: var(--clay-fg-color)
+    color: #fff
 }
 
 .tab-style5 .active span {

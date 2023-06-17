@@ -1,12 +1,12 @@
 <template>
-    <div class="pink">{{ text }}</div>
+    <div class="pink">{{ textStr }}</div>
 </template>
 <script>
 import { defineComponent, reactive, toRefs } from 'vue';
 export default defineComponent({
 	name: 'pinktext',
 	props: {
-        text:{
+    textStr:{
             type:String,
             default:'TEXT'
         }

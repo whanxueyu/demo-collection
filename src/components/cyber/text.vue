@@ -1,15 +1,15 @@
 <template>
-    <div class="text-magic" :data-word="text">
-        {{text}}
+    <div class="text-magic" :data-word="textStr">
+        {{textStr}}
         <div class="white"></div>
     </div>
 </template>
 <script>
 import { defineComponent, reactive, toRefs } from 'vue';
 export default defineComponent({
-	name: 'text',
+	name: 'cybertext',
 	props: {
-        text:{
+        textStr:{
             type:String,
             default:'TEXT'
         }

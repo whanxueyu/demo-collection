@@ -63,6 +63,12 @@
 	align-items: stretch;
 }
 
+.flex-center {
+    display: flex;
+    justify-content: space-around;
+    align-items: center
+}
+
 // 鼠标小手
 .pointer {
 	cursor: pointer;

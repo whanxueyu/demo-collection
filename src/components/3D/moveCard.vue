@@ -12,9 +12,9 @@
 <script>
 import { defineComponent, reactive, toRefs } from 'vue';
 export default defineComponent({
-	name: 'text',
+	name: 'moveCard',
 	props: {
-		text: {
+		movetext: {
 			type: String,
 			default: 'TEXT'
 		}

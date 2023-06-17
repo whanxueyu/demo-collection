@@ -1,12 +1,12 @@
 <template>
-    <div class="rightShadow">{{text}}</div>
+    <div class="rightShadow">{{shadowtext}}</div>
 </template>
 <script>
 import { defineComponent, reactive, toRefs } from 'vue';
 export default defineComponent({
-	name: 'text',
+	name: 'rightShadow',
 	props: {
-        text:{
+        shadowtext:{
             type:String,
             default:'Right Txt Shadow'
         }

@@ -1,23 +1,23 @@
 <template>
 	<div class="glow">
-		<h1>{{ text }}</h1>
-		<h1>{{ text }}</h1>
-		<h1>{{ text }}</h1>
-		<h1>{{ text }}</h1>
-		<h1>{{ text }}</h1>
-		<h1>{{ text }}</h1>
-		<h1>{{ text }}</h1>
-		<h1>{{ text }}</h1>
-		<h1>{{ text }}</h1>
-		<h1>{{ text }}</h1>
+		<h1>{{ moveText }}</h1>
+		<h1>{{ moveText }}</h1>
+		<h1>{{ moveText }}</h1>
+		<h1>{{ moveText }}</h1>
+		<h1>{{ moveText }}</h1>
+		<h1>{{ moveText }}</h1>
+		<h1>{{ moveText }}</h1>
+		<h1>{{ moveText }}</h1>
+		<h1>{{ moveText }}</h1>
+		<h1>{{ moveText }}</h1>
 	</div>
 </template>
 <script>
 import { defineComponent, reactive, toRefs } from 'vue';
 export default defineComponent({
-	name: 'text',
+	name: 'moveText',
 	props: {
-		text: {
+		moveText: {
 			type: String,
 			default: 'Glowing 3D TEXT'
 		}
@@ -32,13 +32,12 @@ export default defineComponent({
 });
 </script>
 <style lang="scss" scoped>
-@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300&display=swap');
 
 .glow {
 	animation: wobble 5s ease-in-out infinite;
 	transform-origin: center center;
 	transform-style: preserve-3d;
-	font-family: 'Rajdhani', sans-serif;
+	font-family: sans-serif;
 }
 
 @keyframes wobble {

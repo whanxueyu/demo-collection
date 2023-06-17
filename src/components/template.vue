@@ -5,9 +5,9 @@
 <script>
 import { defineComponent, reactive, toRefs } from 'vue';
 export default defineComponent({
-	name: 'text',
+	name: 'component',
 	props: {
-        text:{
+        prop:{
             type:String,
             default:'TEXT'
         }

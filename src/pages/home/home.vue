@@ -2,7 +2,7 @@
     <div class="homePage">
         <div class="section1">
             <div class="title">
-                <cyber-text :text="state.title"></cyber-text>
+                <cyber-text :textStr="state.title"></cyber-text>
             </div>
             <div class="banner">
                 <shadow-banner></shadow-banner>
@@ -17,7 +17,7 @@
         </div>
         <div class="section2">
             <div class="title">
-                <cyber-text :text="state.title1"></cyber-text>
+                <cyber-text :textStr="state.title1"></cyber-text>
             </div>
             <div class="btn">
                 <svg-btn1>{{ state.btn1 }}</svg-btn1>
@@ -38,7 +38,7 @@
         </div>
         <div class="section3">
             <div class="title no">
-                <pink-text :text="state.title2"></pink-text>
+                <pink-text :textStr="state.title2"></pink-text>
             </div>
             <big-eye></big-eye>
         </div>
@@ -53,9 +53,9 @@
             <move-card></move-card>
         </div>
         <div class="section5">
-            <div class="container stage">
+            <div class="stage">
                 <div class="container">
-                    <div class="tabbar tab-style3">
+                    <div class="tabbar tab-style1">
                         <ul class="flex-center">
                             <li class="home active" data-where="home"><span class="material-icons-outlined">home </span>
                             </li>
@@ -86,7 +86,7 @@
                     </div>
                 </div>
                 <div class="container">
-                    <div class="tabbar tab-style1">
+                    <div class="tabbar tab-style3">
                         <ul class="flex-center">
                             <li class="home active" data-where="home"><span class="material-icons-outlined">home </span>
                             </li>
@@ -238,7 +238,7 @@ export default {
   
   <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-@import url('./style.css');
+@import url('./style.scss');
 .homePage {
     margin: 0;
     overflow-x: hidden;

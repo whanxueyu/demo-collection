@@ -8,7 +8,7 @@
 <script>
 import { defineComponent, reactive, toRefs } from 'vue';
 export default defineComponent({
-    name: 'menuAbility',
+    name: 'cyberImg',
     props: {
         imgurl: {
             type: String,
