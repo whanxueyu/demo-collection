@@ -53,7 +53,7 @@
             <move-card></move-card>
         </div>
         <div class="section5">
-            <div class="stage">
+            <div class="stages">
                 <div class="container">
                     <div class="tabbar tab-style1">
                         <ul class="flex-center">
@@ -239,6 +239,7 @@ export default {
   <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 @import url('./style.scss');
+
 .homePage {
     margin: 0;
     overflow-x: hidden;
@@ -318,8 +319,17 @@ export default {
             height: 320px;
         }
     }
-    .section5{
-        
+
+    .section5 {
+        .stages {
+            max-width: 400px;
+            width: 400px;
+            margin: 0 auto;
+
+            .container {
+                padding: 1rem 1rem 1.5rem
+            }
+        }
     }
 }
 

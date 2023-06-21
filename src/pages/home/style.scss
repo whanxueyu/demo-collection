@@ -1,17 +1,6 @@
 
 @import url("@/static/css/icon?family=Material+Icons+Outlined");
 
-
-
-.stage {
-    max-width: 400px;
-    width: 400px;
-    margin: 0 auto;
-    .container {
-        padding: 1rem 1rem 1.5rem
-    }
-}
-
 .home.active {
     --inset-shadow: rgba(7, 43, 74, 0.3);
     --outset-shadow: rgba(223, 240, 255, 0.25);
