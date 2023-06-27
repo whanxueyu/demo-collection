@@ -541,19 +541,19 @@ export default {
                     pixelSize: 3,
                     color:
                         obj.type === "3"
-                            ? new Cesium.Color.fromCssColorString("#ffff00")
+                            ? new Cesium.Color.fromCssColorString("#FFFAF0")
                             : obj.type === "1"
                                 ? new Cesium.Color.fromCssColorString("#ff0000")
-                                : new Cesium.Color.fromCssColorString("#0000ff"),
+                                : new Cesium.Color.fromCssColorString("#778899"),
                 },
                 box: {
                     dimensions: new Cesium.Cartesian3(2, 3, Number(obj["bury"])),
                     material:
                         obj.type === "3"
-                            ? new Cesium.Color.fromCssColorString("#ffff00")
+                            ? new Cesium.Color.fromCssColorString("#FFFAF0")
                             : obj.type === "1"
                                 ? new Cesium.Color.fromCssColorString("#ff0000")
-                                : new Cesium.Color.fromCssColorString("#0000ff"),
+                                : new Cesium.Color.fromCssColorString("#778899"),
                 },
             });
         }
@@ -592,10 +592,10 @@ export default {
                     width: Number(obj["pipeDiameter"]) / 200,
                     material:
                         obj.type === "3"
-                            ? new Cesium.Color.fromCssColorString("#00ff00")
+                            ? new Cesium.Color.fromCssColorString("#FFFAF0")
                             : obj.type === "1"
                                 ? new Cesium.Color.fromCssColorString("#ff0000")
-                                : new Cesium.Color.fromCssColorString("#0000ff"),
+                                : new Cesium.Color.fromCssColorString("#778899"),
                 },
                 polylineVolume: {
                     positions: Cesium.Cartesian3.fromDegreesArrayHeights([
@@ -610,10 +610,10 @@ export default {
                     shape: positions,
                     material:
                         obj.type === "3"
-                            ? new Cesium.Color.fromCssColorString("#00ff00")
+                            ? new Cesium.Color.fromCssColorString("#FFFAF0")
                             : obj.type === "1"
                                 ? new Cesium.Color.fromCssColorString("#ff0000")
-                                : new Cesium.Color.fromCssColorString("#0000ff"),
+                                : new Cesium.Color.fromCssColorString("#778899"),
                 },
             });
         }
