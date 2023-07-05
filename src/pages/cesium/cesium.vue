@@ -19,15 +19,28 @@
                     <div class="row">
                         <el-radio-group v-model="mapData.markIcon" v-if="mapData.showMark">
                             <el-radio :label="1">
-                                <el-image style="width: 24px; height: 24px" :src="marker" fit="fill" />
+                                <div class="align-center flex">
+                                    <span>Mark</span>
+                                    <el-image style="width: 24px; height: 24px" :src="marker" fit="fill" />
+                                </div>
                             </el-radio>
                             <el-radio :label="2">
-                                <el-image style="width: 24px; height: 24px" :src="pin" fit="fill" /></el-radio>
+                                <div class="align-center flex">
+                                    <span>Pin</span>
+                                    <el-image style="width: 24px; height: 24px" :src="pin" fit="fill" />
+                                </div>
+                            </el-radio>
                             <el-radio :label="3">
-                                <el-image style="width: 24px; height: 24px" :src="flag" fit="fill" />
+                                <div class="align-center flex">
+                                    <span>Flag</span>
+                                    <el-image style="width: 24px; height: 24px" :src="flag" fit="fill" />
+                                </div>
                             </el-radio>
                             <el-radio :label="4">
-                                <el-image style="width: 24px; height: 24px" :src="star" fit="fill" />
+                                <div class="align-center flex">
+                                    <span>Star</span>
+                                    <el-image style="width: 24px; height: 24px" :src="star" fit="fill" />
+                                </div>
                             </el-radio>
                         </el-radio-group>
                     </div>
@@ -44,7 +57,82 @@
                     </span>
                 </template>
                 <div class="tab-body">
-                    <el-button type="warning" @click="loadPipenet">管网生成</el-button>
+                    <div class="flex align-center justify-between">
+                        <div>
+                            <el-button type="success" @click="loadPipenet">管网生成</el-button>
+                        </div>
+                        <div>
+                            <div>
+                                <span>管线：</span><el-switch v-model="mapData.showLine" inline-prompt active-text="显示"
+                                    inactive-text="隐藏" @change="lineShowOrHide"></el-switch>
+                            </div>
+                            <div>
+                                <span>管点：</span><el-switch v-model="mapData.showPoint" inline-prompt active-text="显示"
+                                    inactive-text="隐藏" @change="pointShowOrHide"></el-switch>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <el-button type="danger" plain size="small" @click="lineClear"><el-icon class="el-icon--right">
+                                <Delete />
+                            </el-icon> 清除管线</el-button>
+                        <el-button type="danger" plain size="small" @click="pointClear"><el-icon class="el-icon--right">
+                                <Delete />
+                            </el-icon> 清除管点</el-button>
+                    </div>
+                    <el-divider content-position="left"></el-divider>
+                    <div class="colorSection">
+                        <div class="sectiontitle">
+                            <h3>修改管网颜色材质</h3>
+                            <el-button type="primary" plain size="small" @click="changeMaterial">修改</el-button>
+                        </div>
+                        <el-row>
+                            <el-col :span="6" style="line-height: 32px;">椎体：</el-col>
+                            <el-col :span="6">
+                                <span>1：</span>
+                                <el-color-picker v-model="mapData.colorOption.cylinder1" />
+                            </el-col>
+                            <el-col :span="6">
+                                <span>2：</span>
+                                <el-color-picker v-model="mapData.colorOption.cylinder2" />
+                            </el-col>
+                            <el-col :span="6">
+                                <span>3：</span>
+                                <el-color-picker v-model="mapData.colorOption.cylinder3" />
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="6" style="line-height: 32px;">立方体：</el-col>
+                            <el-col :span="6">
+                                <span>1：</span>
+                                <el-color-picker v-model="mapData.colorOption.box1" />
+                            </el-col>
+                            <el-col :span="6">
+                                <span>2：</span>
+                                <el-color-picker v-model="mapData.colorOption.box2" />
+                            </el-col>
+                            <el-col :span="6">
+                                <span>3：</span>
+                                <el-color-picker v-model="mapData.colorOption.box3" />
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="6" style="line-height: 32px;">管道：</el-col>
+                            <el-col :span="6">
+                                <span>1：</span>
+                                <el-color-picker v-model="mapData.colorOption.line1" />
+                            </el-col>
+                            <el-col :span="6">
+                                <span>2：</span>
+                                <el-color-picker v-model="mapData.colorOption.line2" />
+                            </el-col>
+                            <el-col :span="6">
+                                <span>3：</span>
+                                <el-color-picker v-model="mapData.colorOption.line3" />
+                            </el-col>
+                        </el-row>
+                    </div>
+
                     <el-divider content-position="left">说明</el-divider>
                     <div class="text">数据截取自某管网项目中极少的一部分，并对数据进行了修改，仅供学习参考，勿做其他用途</div>
                 </div>
@@ -99,6 +187,31 @@
             </el-tab-pane>
         </el-tabs>
     </div>
+    <div class="addition">
+        <div class="align-center flex">
+            <div :class="mapData.screenShotActive?'menuBtn active':'menuBtn'" @click="takeScreenshot">
+                <el-tooltip class="box-item" effect="dark" content="保存图片" placement="top">
+                    <el-icon>
+                        <Picture />
+                    </el-icon>
+                </el-tooltip>
+            </div>
+            <div :class="mapData.drawLineActive?'menuBtn active':'menuBtn'" @click="handleDrawLine">
+                <el-tooltip class="box-item" effect="dark" content="画线" placement="top">
+                    <el-icon>
+                        <EditPen />
+                    </el-icon>
+                </el-tooltip>
+            </div>
+            <div :class="mapData.measurementActive?'menuBtn active':'menuBtn'" @click="handleMeasurement">
+                <el-tooltip class="box-item" effect="dark" content="测量" placement="top">
+                    <el-icon>
+                        <Share />
+                    </el-icon>
+                </el-tooltip>
+            </div>
+        </div>
+    </div>
     <div class="popmenu" ref="target" v-if="showMenu" :style="{ 'left': position.x + 'px', 'top': position.y + 'px' }">
         <div>
             <el-button @click="remove" link>删除</el-button>
@@ -127,9 +240,10 @@
 import { nextTick, onMounted, reactive, ref } from "vue";
 import * as Cesium from "cesium";
 import 'cesium/Source/Widgets/widgets.css';
-import { useMouse, onClickOutside } from '@vueuse/core'
+import { useMouse, onClickOutside, useNow, useDateFormat } from '@vueuse/core'
 import { pointList, lineList, filterPoints, filterLines } from '@/static/fakedata/fakedata'
-import { LocationInformation, Delete, Refresh, OfficeBuilding, Rank } from '@element-plus/icons-vue'
+import { LocationInformation, Delete, Refresh, OfficeBuilding, Rank, Picture, EditPen, Share } from '@element-plus/icons-vue'
+import { ElMessage } from "element-plus";
 var viewer;
 export default {
     components: {
@@ -137,7 +251,10 @@ export default {
         Refresh,
         Delete,
         OfficeBuilding,
-        Rank
+        Rank,
+        Picture,
+        EditPen,
+        Share
     },
     setup() {
         const mapData = reactive({
@@ -149,9 +266,26 @@ export default {
             markIcon: 1,
             loaded: false,
             allLines: [],
-            allPoints: []
+            allPoints: [],
+            showLine: true,
+            showPoint: true,
+            colorOption: {
+                box1: '#930000',
+                box2: '#004C93',
+                box3: '#015F3C',
+                cylinder1: '#FF8706',
+                cylinder2: '#2E90FF',
+                cylinder3: '#9EFC32',
+                line1: '#FF2E50',
+                line2: '#06DEFF',
+                line3: '#2EFF8B',
+            },
+            screenShotActive:false,
+            drawLineActive:false,
+            measurementActive:false
         })
         const mouseData = reactive(useMouse())
+        const formatDate = useDateFormat(useNow(), 'YYYY-MM-DD HH:mm:ss')
         const position = reactive({
             x: 0,
             y: 0,
@@ -381,11 +515,15 @@ export default {
                     //计算中心点位置的地表坐标
                     var surface = Cesium.Cartesian3.fromRadians(lng, lat, 0.0)
                     //偏移后的坐标
-                    var offset = Cesium.Cartesian3.fromRadians(lng+0.0022, lat+0.0053, height)
+                    var offset = Cesium.Cartesian3.fromRadians(lng + 0.0022, lat + 0.0053, height)
                     var translation = Cesium.Cartesian3.subtract(offset, surface, new Cesium.Cartesian3())
                     tileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation)
                 })
             viewer.zoomTo(tilesets);
+        }
+        const changeMaterial = () => {
+            viewer.entities.removeAll()
+            loadPipenet()
         }
 
         // 管点管线数据
@@ -403,6 +541,10 @@ export default {
                     roll: 0.0
                 }
             });
+            if (mapData.allPoints.length > 0) {
+                ElMessage.warning("请勿重复生成管网")
+                return
+            }
             console.log(filterPoints.length, filterLines.length, pointList.length, lineList.length)
             let points = filterPoints.filter((item) => {
                 return item.latitude && item.longitude;
@@ -495,10 +637,10 @@ export default {
                     pixelSize: 3,
                     color:
                         obj.type === "3"
-                            ? new Cesium.Color.fromCssColorString("#ffff00")
+                            ? new Cesium.Color.fromCssColorString(mapData.colorOption.cylinder3)
                             : obj.type === "1"
-                                ? new Cesium.Color.fromCssColorString("#ff0000")
-                                : new Cesium.Color.fromCssColorString("#0000ff"),
+                                ? new Cesium.Color.fromCssColorString(mapData.colorOption.cylinder1)
+                                : new Cesium.Color.fromCssColorString(mapData.colorOption.cylinder2),
                 },
                 cylinder: {
                     length: buryHeight,
@@ -506,10 +648,10 @@ export default {
                     bottomRadius: 1.5,
                     material:
                         obj.type === "3"
-                            ? new Cesium.Color.fromCssColorString("#ffff00")
+                            ? new Cesium.Color.fromCssColorString(mapData.colorOption.cylinder3)
                             : obj.type === "1"
-                                ? new Cesium.Color.fromCssColorString("#ff0000")
-                                : new Cesium.Color.fromCssColorString("#0000ff"),
+                                ? new Cesium.Color.fromCssColorString(mapData.colorOption.cylinder1)
+                                : new Cesium.Color.fromCssColorString(mapData.colorOption.cylinder2),
                     outline: false,//外部轮廓线
                     outlineColor: new Cesium.Color(
                         Number(obj.red) / 255,
@@ -541,19 +683,19 @@ export default {
                     pixelSize: 3,
                     color:
                         obj.type === "3"
-                            ? new Cesium.Color.fromCssColorString("#FFFAF0")
+                            ? new Cesium.Color.fromCssColorString(mapData.colorOption.box3)
                             : obj.type === "1"
-                                ? new Cesium.Color.fromCssColorString("#ff0000")
-                                : new Cesium.Color.fromCssColorString("#778899"),
+                                ? new Cesium.Color.fromCssColorString(mapData.colorOption.box1)
+                                : new Cesium.Color.fromCssColorString(mapData.colorOption.box2),
                 },
                 box: {
                     dimensions: new Cesium.Cartesian3(2, 3, Number(obj["bury"])),
                     material:
                         obj.type === "3"
-                            ? new Cesium.Color.fromCssColorString("#FFFAF0")
+                            ? new Cesium.Color.fromCssColorString(mapData.colorOption.box3)
                             : obj.type === "1"
-                                ? new Cesium.Color.fromCssColorString("#ff0000")
-                                : new Cesium.Color.fromCssColorString("#778899"),
+                                ? new Cesium.Color.fromCssColorString(mapData.colorOption.box1)
+                                : new Cesium.Color.fromCssColorString(mapData.colorOption.box2),
                 },
             });
         }
@@ -592,10 +734,10 @@ export default {
                     width: Number(obj["pipeDiameter"]) / 200,
                     material:
                         obj.type === "3"
-                            ? new Cesium.Color.fromCssColorString("#FFFAF0")
+                            ? new Cesium.Color.fromCssColorString(mapData.colorOption.line3)
                             : obj.type === "1"
-                                ? new Cesium.Color.fromCssColorString("#ff0000")
-                                : new Cesium.Color.fromCssColorString("#778899"),
+                                ? new Cesium.Color.fromCssColorString(mapData.colorOption.line1)
+                                : new Cesium.Color.fromCssColorString(mapData.colorOption.line2),
                 },
                 polylineVolume: {
                     positions: Cesium.Cartesian3.fromDegreesArrayHeights([
@@ -610,12 +752,28 @@ export default {
                     shape: positions,
                     material:
                         obj.type === "3"
-                            ? new Cesium.Color.fromCssColorString("#FFFAF0")
+                            ? new Cesium.Color.fromCssColorString(mapData.colorOption.line3)
                             : obj.type === "1"
-                                ? new Cesium.Color.fromCssColorString("#ff0000")
-                                : new Cesium.Color.fromCssColorString("#778899"),
+                                ? new Cesium.Color.fromCssColorString(mapData.colorOption.line1)
+                                : new Cesium.Color.fromCssColorString(mapData.colorOption.line2),
                 },
             });
+        }
+        const lineClear = () => {
+            mapData.allLines.forEach((item) => {
+                var entity = viewer.entities.getById(item);
+                if (entity) {
+                    viewer.entities.removeById(item);
+                }
+            })
+        }
+        const pointClear = () => {
+            mapData.allPoints.forEach((item) => {
+                var entity = viewer.entities.getById(item);
+                if (entity) {
+                    viewer.entities.removeById(item);
+                }
+            })
         }
         const lineShowOrHide = (show) => {
             mapData.allLines.forEach((item) => {
@@ -651,7 +809,7 @@ export default {
                     const screenshot = canvas.toDataURL("image/png")
                     const link = document.createElement("a");
                     document.body.appendChild(link);
-                    link.download = "screenshot.png";
+                    link.download = formatDate.value + "screenshot.png";
                     link.href = screenshot;
                     link.click();
                     document.body.removeChild(link);
@@ -660,6 +818,22 @@ export default {
                     console.log(e)
                 }
             });
+            mapData.screenShotActive = true
+            mapData.drawLineActive = false
+            mapData.measurementActive = false
+            setTimeout(()=>{
+                mapData.screenShotActive = false
+            },500)
+        }
+        const handleDrawLine = () => {
+            mapData.screenShotActive = false
+            mapData.drawLineActive = true
+            mapData.measurementActive = false
+        }
+        const handleMeasurement = () => {
+            mapData.screenShotActive = false
+            mapData.drawLineActive = false
+            mapData.measurementActive = true
         }
         onMounted(() => {
             // 禁用浏览器默认右键菜单，避免与自定义操作冲突
@@ -700,8 +874,13 @@ export default {
             loadPipenet,
             lineShowOrHide,
             pointShowOrHide,
+            lineClear,
+            pointClear,
             takeScreenshot,
-            reset
+            reset,
+            changeMaterial,
+            handleDrawLine,
+            handleMeasurement
         }
     }
 }
@@ -730,6 +909,31 @@ export default {
     }
 }
 
+.addition {
+    position: absolute;
+    z-index: 999;
+    border-bottom-right-radius: 10px;
+    padding: 20px;
+    left: 300px;
+
+    .menuBtn {
+        color: #A3A6AD;
+        font-size: 18px;
+        margin-right: 10px;
+        padding: 10px;
+        cursor: pointer;
+        background-color: #333436;
+
+        &:hover{
+            background-color: #1d1e1f;
+        }
+        &.active {
+            color: #409eff;
+            background-color: #1d1e1f;
+        }
+    }
+}
+
 .row {
     display: flex;
     justify-content: space-between;
@@ -739,8 +943,18 @@ export default {
 .popmenu {
     position: fixed;
     z-index: 1004;
-    background-color: #000c;
+    background-color: rgba(9, 33, 49, 0.8);
     padding: 5px 10px;
-    border-radius: 5px;
+    border-radius: 2px;
 }
-</style>
+
+.colorSection {
+    margin-top: 10px;
+
+    .sectiontitle {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        align-items: center;
+    }
+}</style>
