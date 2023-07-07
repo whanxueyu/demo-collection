@@ -29,9 +29,10 @@ module.exports = defineConfig({
       unknownContextCritical: false,
       unknownContextRegExp: /\/cesium\/cesium\/Source\/Core\/buildModuleUrl\.js/
     },
-    devServer: {
-      https: true
-    }
+    // 开发环境强制开启https，可用于内网体验VR
+    // devServer: {
+    //   https: true
+    // }
   },
 })
 

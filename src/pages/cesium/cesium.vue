@@ -189,22 +189,22 @@
     </div>
     <div class="addition">
         <div class="align-center flex">
-            <div :class="mapData.screenShotActive?'menuBtn active':'menuBtn'" @click="takeScreenshot">
+            <div :class="mapData.screenShotActive ? 'menuBtn active' : 'menuBtn'" @click="takeScreenshot">
                 <el-tooltip class="box-item" effect="dark" content="保存图片" placement="top">
                     <el-icon>
                         <Picture />
                     </el-icon>
                 </el-tooltip>
             </div>
-            <div :class="mapData.drawLineActive?'menuBtn active':'menuBtn'" @click="handleDrawLine">
+            <div :class="mapData.drawLineActive ? 'menuBtn active' : 'menuBtn'" @click="handleDrawLine">
                 <el-tooltip class="box-item" effect="dark" content="画线" placement="top">
                     <el-icon>
                         <EditPen />
                     </el-icon>
                 </el-tooltip>
             </div>
-            <div :class="mapData.measurementActive?'menuBtn active':'menuBtn'" @click="handleMeasurement">
-                <el-tooltip class="box-item" effect="dark" content="测量" placement="top">
+            <div :class="mapData.measurementActive ? 'menuBtn active' : 'menuBtn'" @click="handleMeasurement">
+                <el-tooltip class="box-item" effect="dark" content="测量(还有问题)" placement="top">
                     <el-icon>
                         <Share />
                     </el-icon>
@@ -280,9 +280,11 @@ export default {
                 line2: '#06DEFF',
                 line3: '#2EFF8B',
             },
-            screenShotActive:false,
-            drawLineActive:false,
-            measurementActive:false
+            screenShotActive: false,
+            drawLineActive: false,
+            measurementActive: false,
+            tempSketch: [],
+            tempCalculate: [],
         })
         const mouseData = reactive(useMouse())
         const formatDate = useDateFormat(useNow(), 'YYYY-MM-DD HH:mm:ss')
@@ -370,6 +372,7 @@ export default {
             });
             // 监听点击事件
             let handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+            // 左
             handler.setInputAction(function (event) {
                 let ray = viewer.camera.getPickRay(event.position);
                 let cartesian = viewer.scene.globe.pick(ray, viewer.scene);
@@ -382,8 +385,50 @@ export default {
                 };
                 console.log("origin", coordinate.longitude, coordinate.latitude);
                 addMark(coordinate.longitude, coordinate.latitude)
-
+                if (mapData.drawLineActive) {
+                    mapData.tempSketch.push(cartesian);
+                    drawSketch()
+                }
+                if (mapData.measurementActive) {
+                    mapData.tempCalculate.push(cartesian);
+                    drawCalculate(viewer)
+                }
             }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+            // 移
+            handler.setInputAction(function (movement) {
+                var cartesian = viewer.scene.camera.pickEllipsoid(
+                    movement.endPosition,
+                    viewer.scene.globe.ellipsoid
+                );
+                if (mapData.drawLineActive) {
+                    if (mapData.tempSketch.length >= 0) {
+                        if (cartesian != undefined) {
+                            mapData.tempSketch.pop();
+                            mapData.tempSketch.push(cartesian);
+                        }
+                    }
+                }
+                if (mapData.measurementActive) {
+                    if (mapData.tempCalculate.length >= 0) {
+                        if (cartesian != undefined) {
+                            mapData.tempCalculate.pop();
+                            mapData.tempCalculate.push(cartesian);
+                        }
+                    }
+                }
+
+            }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+            // 左双
+            handler.setInputAction(function (movement) {
+                console.log("左键双击事件", movement)
+                if (mapData.drawLineActive) {
+                    mapData.drawLineActive = false;
+                }
+                if (mapData.measurementActive) {
+                    mapData.measurementActive = false
+                }
+            }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+            // 右
             handler.setInputAction(function (click) {
                 let pickedObject = viewer.scene.pick(click.position);
                 if (Cesium.defined(pickedObject)) {
@@ -391,6 +436,186 @@ export default {
                     rightMenu(mouseData.x, mouseData.y, pickedObject)
                 }
             }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+        }
+        const drawSketch = () => {
+            //   let uuid = generateUniqueId()
+            var _update = function () {
+                return mapData.tempSketch
+            };
+            viewer.entities.add({
+                // id: 'line_' + uuid,
+                name: '直线',
+                polyline: {
+                    positions: new Cesium.CallbackProperty(
+                        _update,
+                        false
+                    ),
+                    material: Cesium.Color.fromCssColorString('#22ff00'),
+                    width: 2,
+                },
+                show: true,
+            })
+        }
+        const drawCalculate = (viewer) => {
+            drawLineString(viewer, function (positions) {
+                var wgs84_positions = [];
+                for (var i = 0; i < positions.length; i += 4) {
+                    var wgs84_point = Cartesian3_to_WGS84({
+                        x: positions[i].x,
+                        y: positions[i].y,
+                        z: positions[i].z,
+                    });
+                    wgs84_positions.push(wgs84_point);
+                }
+            });
+        }
+        const drawLineString = (viewer, callback) => {
+            var PolyLinePrimitive = (function () {
+                function _(positions) {
+                    this.options = {
+                        polyline: {
+                            show: true,
+                            positions: [],
+                            material: Cesium.Color.RED,
+                            width: 3,
+                        },
+                    };
+                    this.positions = positions;
+                    this._init();
+                }
+
+                _.prototype._init = function () {
+                    var _self = this;
+                    var _update = function () {
+                        return _self.positions;
+                    };
+                    //实时更新polyline.positions
+                    this.options.polyline.positions = new Cesium.CallbackProperty(
+                        _update,
+                        false
+                    );
+                    viewer.entities.add(this.options);
+                };
+                return _;
+            })();
+
+            var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+            var positions = mapData.tempCalculate;
+            var poly = undefined;
+            var distance = 0;
+            var lastDistance = 0;
+            //鼠标左键单击画点
+            handler.setInputAction(function (movement) {
+                var cartesian = viewer.scene.camera.pickEllipsoid(
+                    movement.position,
+                    viewer.scene.globe.ellipsoid
+                );
+                if (positions.length == 0) {
+                    positions.push(cartesian.clone());
+                } else {
+                    distance = getSpaceDistance(positions);
+                }
+                positions.push(cartesian);
+                // 在三维场景中添加Label
+                let textDisance = (distance - lastDistance).toFixed(2) + "米";
+                nextTick(() => {
+                    lastDistance = distance;
+                })
+                console.log(textDisance)
+                let flag = true;
+                if (distance === 0) {
+                    flag = false;
+                    return
+                }
+                if (distance == lastDistance) {
+                    return false
+                }
+                viewer.entities.add({
+                    name: "空间直线距离",
+                    position: positions[positions.length - 1],
+                    point: {
+                        pixelSize: 5,
+                        color: Cesium.Color.RED,
+                        outlineColor: Cesium.Color.WHITE,
+                        outlineWidth: 2,
+                        heightReference: Cesium.HeightReference.NONE,
+                    },
+                    label: {
+                        text: textDisance,
+                        font: "18px sans-serif",
+                        fillColor: Cesium.Color.GOLD,
+                        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                        outlineWidth: 2,
+                        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                        pixelOffset: new Cesium.Cartesian2(20, -20),
+                        heightReference: Cesium.HeightReference.NONE,
+                        show: flag,
+                    },
+                    properties: {
+                        aaa: "11",
+                    },
+                    height: 20,
+                });
+                lastDistance = distance;
+            }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+            //鼠标移动
+            handler.setInputAction(function (movement) {
+                var cartesian = viewer.scene.camera.pickEllipsoid(
+                    movement.endPosition,
+                    viewer.scene.globe.ellipsoid
+                );
+                if (positions.length >= 2) {
+                    if (!Cesium.defined(poly)) {
+                        poly = new PolyLinePrimitive(positions);
+                    } else {
+                        if (cartesian != undefined) {
+                            positions.pop();
+                            cartesian.y += 1 + Math.random();
+                            positions.push(cartesian);
+                        }
+                    }
+                }
+            }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+            //单击鼠标右键结束画线
+            handler.setInputAction(function (movement) {
+                handler.destroy();
+                handler = undefined;
+                positions.pop(); //最后一个点无效
+                callback(positions, movement);
+            }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+        }
+        // 空间两点距离计算函数
+        const getSpaceDistance = (positions) => {
+            let distance = 0;
+            for (let i = 0; i < positions.length - 1; i++) {
+                let point1cartographic = Cesium.Cartographic.fromCartesian(positions[i]);
+                let point2cartographic = Cesium.Cartographic.fromCartesian(
+                    positions[i + 1]
+                );
+                /** 根据经纬度计算出距离**/
+                let geodesic = new Cesium.EllipsoidGeodesic();
+                geodesic.setEndPoints(point1cartographic, point2cartographic);
+                let s = geodesic.surfaceDistance;
+                // 返回两点之间的距离
+                s = Math.sqrt(
+                    Math.pow(s, 2) +
+                    Math.pow(point2cartographic.height - point1cartographic.height, 2)
+                );
+                distance = distance + s;
+            }
+            return distance.toFixed(2);
+        }
+        const Cartesian3_to_WGS84 = (point) => {
+            var cartesian33 = new Cesium.Cartesian3(point.x, point.y, point.z);
+            var cartographic = Cesium.Cartographic.fromCartesian(cartesian33);
+            var lat = Cesium.Math.toDegrees(cartographic.latitude);
+            var lng = Cesium.Math.toDegrees(cartographic.longitude);
+            var alt = cartographic.height;
+            return {
+                lat: lat,
+                lng: lng,
+                alt: alt,
+            };
         }
         const reset = () => {
             viewer.camera.flyTo({
@@ -821,19 +1046,34 @@ export default {
             mapData.screenShotActive = true
             mapData.drawLineActive = false
             mapData.measurementActive = false
-            setTimeout(()=>{
+            setTimeout(() => {
                 mapData.screenShotActive = false
-            },500)
+            }, 500)
         }
         const handleDrawLine = () => {
-            mapData.screenShotActive = false
-            mapData.drawLineActive = true
-            mapData.measurementActive = false
+            switch (mapData.drawLineActive) {
+                case true:
+                    mapData.drawLineActive = false
+                    break;
+                case false:
+                    mapData.screenShotActive = false
+                    mapData.drawLineActive = true
+                    mapData.measurementActive = false
+                    break;
+            }
+
         }
         const handleMeasurement = () => {
-            mapData.screenShotActive = false
-            mapData.drawLineActive = false
-            mapData.measurementActive = true
+            switch (mapData.measurementActive) {
+                case true:
+                    mapData.measurementActive = false
+                    break;
+                case false:
+                    mapData.screenShotActive = false
+                    mapData.drawLineActive = false
+                    mapData.measurementActive = true
+                    break;
+            }
         }
         onMounted(() => {
             // 禁用浏览器默认右键菜单，避免与自定义操作冲突
@@ -924,9 +1164,10 @@ export default {
         cursor: pointer;
         background-color: #333436;
 
-        &:hover{
+        &:hover {
             background-color: #1d1e1f;
         }
+
         &.active {
             color: #409eff;
             background-color: #1d1e1f;
@@ -957,4 +1198,5 @@ export default {
         padding: 10px 0;
         align-items: center;
     }
-}</style>
+}
+</style>
