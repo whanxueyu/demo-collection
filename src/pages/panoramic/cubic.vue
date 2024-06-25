@@ -63,7 +63,7 @@ export default {
     }
 }
 </script>
-<style>
+<style scoped lang="scss">
 .viewwe {
     height: calc(100vh - 60px);
 }

@@ -1,9 +1,7 @@
 <!-- aframehouse -->
 <template>
     <div>
-        <el-button class="aframeBtn" type="danger" plain @click="state.viewer = false" v-if="state.viewer">退出</el-button>
-        <el-button class="aframeBtn" type="primary" @click="state.viewer = true" v-if="!state.viewer">进入</el-button>
-        <a-scene class="viewwe" v-if="state.viewer">
+        <a-scene class="viewwe">
             <a-sky :src="require('../../assets/house.jpg')"></a-sky>
         </a-scene>
     </div>
@@ -25,9 +23,9 @@ export default {
     }
 }
 </script>
-<style>
+<style scoped>
 .viewwe {
-    height: calc(100vh - 100px);
+    height: calc(100vh - 60px);
     overflow: hidden;
 }
 
@@ -36,5 +34,11 @@ export default {
     position: fixed;
     margin-top: 15px;
     left: 20px;
+}
+
+:deep(.viewwe .a-canvas) {
+    position: absolute !important;
+    height: 100%;
+    width: 100%;
 }
 </style>

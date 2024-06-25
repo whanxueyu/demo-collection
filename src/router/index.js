@@ -40,21 +40,21 @@ const routes = [
                     hidden:false
                 },
             },
-            {
-                path: '/m3u8',
-                name: 'm3u8',
-                component: () => import('@/pages/player/m3u8palyer.vue'),
-                meta: {
-                    name: 'm3u8播放器',
-                    hidden:false
-                },
-            },
+            // {
+            //     path: '/m3u8',
+            //     name: 'm3u8',
+            //     component: () => import('@/pages/player/m3u8palyer.vue'),
+            //     meta: {
+            //         name: 'm3u8播放器',
+            //         hidden:true
+            //     },
+            // },
             {
                 path: '/panoramic',
                 name: 'panoramic',
                 component: () => import('@/pages/panoramic/index.vue'),
                 meta: {
-                    name: 'Pannellum 全景VR',
+                    name: '全景VR',
                     hidden:false
                 },
                 children:[
@@ -81,27 +81,7 @@ const routes = [
                         name: 'house',
                         component: () => import('@/pages/panoramic/house.vue'),
                         meta: {
-                            name: '看房',
-                            hidden:false
-                        },
-                    },
-                ]
-            },
-            {
-                path: '/aframe',
-                name: 'aframe',
-                component: () => import('@/pages/aFrame/index.vue'),
-                meta: {
-                    name: 'AFrame_VR',
-                    hidden:false
-                },
-                children:[
-                    {
-                        path: '/aframebox',
-                        name: 'aframebox',
-                        component: () => import('@/pages/aFrame/aframe.vue'),
-                        meta: {
-                            name: 'Aframe 动画',
+                            name: 'VR看房',
                             hidden:false
                         },
                     },
@@ -116,6 +96,35 @@ const routes = [
                     },
                 ]
             },
+            // {
+            //     path: '/aframe',
+            //     name: 'aframe',
+            //     component: () => import('@/pages/aFrame/index.vue'),
+            //     meta: {
+            //         name: 'AFrame_VR',
+            //         hidden:false
+            //     },
+            //     children:[
+            //         {
+            //             path: '/aframebox',
+            //             name: 'aframebox',
+            //             component: () => import('@/pages/aFrame/aframe.vue'),
+            //             meta: {
+            //                 name: 'Aframe 动画',
+            //                 hidden:false
+            //             },
+            //         },
+            //         {
+            //             path: '/aframehouse',
+            //             name: 'aframehouse',
+            //             component: () => import('@/pages/aFrame/aframehouse.vue'),
+            //             meta: {
+            //                 name: 'Aframe 房间',
+            //                 hidden:false
+            //             },
+            //         },
+            //     ]
+            // },
             {
                 path: '/cesium',
                 name: 'cesium',
