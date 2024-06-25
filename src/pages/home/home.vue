@@ -2,12 +2,16 @@
     <div class="homePage">
         <div class="section1">
             <div class="title">
-                <cyber-text :textStr="state.title"></cyber-text>
+                <cyber-text textStr="Cyberpunk Banner"></cyber-text>
             </div>
             <div class="banner">
                 <shadow-banner></shadow-banner>
             </div>
+                <div class="title">
+                <cyber-text textStr="Cyberpunk Image"></cyber-text>
+            </div>
             <div class="img">
+
                 <cyber-img :imgurl="state.imgurl">
                     <div class="tip">
                         <typing word="Pure CSS Typing Animation Cyberpunk Style."></typing>

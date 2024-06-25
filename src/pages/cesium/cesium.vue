@@ -235,7 +235,7 @@
     </el-dialog>
     <div id="cesiumContainer" ref="cesiumContainer"></div>
 </template>
-   
+
 <script>
 import { nextTick, onMounted, reactive, ref } from "vue";
 import * as Cesium from "cesium";
@@ -244,6 +244,7 @@ import { useMouse, onClickOutside, useNow, useDateFormat } from '@vueuse/core'
 import { pointList, lineList, filterPoints, filterLines } from '@/static/fakedata/fakedata'
 import { LocationInformation, Delete, Refresh, OfficeBuilding, Rank, Picture, EditPen, Share } from '@element-plus/icons-vue'
 import { ElMessage } from "element-plus";
+import AmapMercatorTilingScheme from '@/modules/AmapMercatorTilingScheme/AmapMercatorTilingScheme'
 var viewer;
 export default {
     components: {
@@ -309,45 +310,58 @@ export default {
         const pin = require('@/assets/icon/pin.png')
         const star = require('@/assets/icon/star.png')
         const initCesium = () => {
-            Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxZDU4MDE4ZS03ODdmLTQ1NWMtYTI3Ny1kMmQxNmVkYmQxZDQiLCJpZCI6NjMxNjUsImlhdCI6MTYzMjg3OTg1NX0.AAtivmdf46L1-4MWLWjnQRgP_laeTXBMagA75_a9N9o";
+            // Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxZDU4MDE4ZS03ODdmLTQ1NWMtYTI3Ny1kMmQxNmVkYmQxZDQiLCJpZCI6NjMxNjUsImlhdCI6MTYzMjg3OTg1NX0.AAtivmdf46L1-4MWLWjnQRgP_laeTXBMagA75_a9N9o";
             viewer = new Cesium.Viewer("cesiumContainer", {
                 infoBox: false,
                 selectionIndicator: false,
                 sceneModePicker: false,
                 animation: false,    //左下角的动画仪表盘
                 baseLayerPicker: false,  //右上角的图层选择按钮
-                geocoder: true,  //搜索框
-                homeButton: true,  //home按钮
+                geocoder: false,  //搜索框
+                homeButton: false,  //home按钮
                 timeline: false,    //底部的时间轴
                 navigationHelpButton: false,  //右上角的帮助按钮，
                 fullscreenButton: false,
+                imageryProvider: new Cesium.SingleTileImageryProvider({
+                    url:
+                        "data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==",
+                }),
             });
 
             // 服务负载子域
-            var subdomains = ["0", "1", "2", "3", "4", "5", "6", "7"];
+            // var subdomains = ["0", "1", "2", "3", "4", "5", "6", "7"];
+            // viewer.imageryLayers.addImageryProvider(
+            //     new Cesium.WebMapTileServiceImageryProvider({
+            //         // 加载多个图层
+            //         url: "https://t{s}.tianditu.gov.cn/cia_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=cia&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default.jpg&tk=841234cd0d023af5c1bcb7c3d2c453c6",
+            //         subdomains: subdomains,
+            //         layer: "tdtCiaLayer",
+            //         style: "default",
+            //         format: "image/jpeg",
+            //         tileMatrixSetID: "GoogleMapsCompatible",
+            //         show: true,
+            //         maximumLevel: 24
+            //     })
+            // );
+            // https://t5.tianditu.gov.cn/cva_c/wmts?service=WMTS&version=1.0.0&request=GetTile&tilematrix=8&layer=cva&style=default&tilerow=47&tilecol=223&tilematrixset=c&format=tiles&
             viewer.imageryLayers.addImageryProvider(
-                new Cesium.WebMapTileServiceImageryProvider({
-                    // 加载多个图层
-                    url: "https://t{s}.tianditu.gov.cn/cia_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=cia&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default.jpg&tk=841234cd0d023af5c1bcb7c3d2c453c6",
-                    subdomains: subdomains,
-                    layer: "tdtCiaLayer",
-                    style: "default",
-                    format: "image/jpeg",
-                    tileMatrixSetID: "GoogleMapsCompatible",
-                    show: true,
-                    maximumLevel: 18
-                })
-            );
-            viewer.imageryLayers.addImageryProvider(
-                new Cesium.WebMapTileServiceImageryProvider({
-                    // 加载多个图层
-                    url: "https://t{s}.tianditu.gov.cn/cva_c/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=cia&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default.jpg&tk=841234cd0d023af5c1bcb7c3d2c453c6",
-                    subdomains: subdomains,
-                    layer: "tdtCiaLayer",
-                    style: "default",
-                    format: "image/jpeg",
-                    tileMatrixSetID: "GoogleMapsCompatible",
-                    show: true,
+                // new Cesium.WebMapTileServiceImageryProvider({
+                //     // 加载多个图层
+                //     url: "https://t{s}.tianditu.gov.cn/cva_c/wmts?service=WMTS&request=GetTile&version=1.0.0&layer=cva&tilematrixset=c&tilematrix={TileMatrix}&tilerow={TileRow}&tilecol={TileCol}&style=default&format=tiles&tk=436ce7e50d27eede2f2929307e6b33c0",
+                //     subdomains: subdomains,
+                //     layer: "tdtCiaLayer",
+                //     style: "default",
+                //     format: "image/jpeg",
+                //     tileMatrixSetID: "GoogleMapsCompatible",
+                //     show: true,
+                // })
+                 // style 6-影像 7-矢量 8-标注
+                new Cesium.UrlTemplateImageryProvider({
+                    url: 'https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}&lang=zh_cn&size=1',
+                    subdomains: ['1', '2', '3', '4'], // 如果有多个子域名用于负载均衡，可以在这里指定  
+                    // tilingScheme: new Cesium.WebMercatorTilingScheme(),
+                    tilingScheme: new AmapMercatorTilingScheme(),
+                    maximumLevel: 18, // 根据高德地图的实际最大层级设置  
                 })
             );
 
