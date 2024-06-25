@@ -15,19 +15,19 @@
                         </el-icon>
                     </div>
                     <div class="flex-grow" />
-                    <template v-for="menu in menu.routes" :key="menu.path">
-                        <el-sub-menu :index="menu.path" v-if="menu.children && menu.children.length">
+                    <template v-for="item in menu.routes" :key="item.path">
+                        <el-sub-menu :index="item.path" v-if="item.children && item.children.length">
                             <template #title>
-                                <span>{{ menu.meta.name }}</span>
+                                <span>{{ item.meta.name }}</span>
                             </template>
-                            <template v-for="item in menu.children" :key="item.path">
-                                <el-menu-item :index="item.path" @click="navto(item)">
-                                    <span>{{ item.meta.name }}</span>
+                            <template v-for="it in item.children" :key="it.path">
+                                <el-menu-item :index="it.path" @click="navto(it)">
+                                    <span>{{ it.meta.name }}</span>
                                 </el-menu-item>
                             </template>
                         </el-sub-menu>
-                        <el-menu-item :index="menu.path" @click="navto(menu)" v-else>
-                            <span>{{ menu.meta.name }}</span>
+                        <el-menu-item :index="item.path" @click="navto(item)" v-else>
+                            <span>{{ item.meta.name }}</span>
                         </el-menu-item>
                     </template>
                 </el-menu>
@@ -39,7 +39,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useMenu } from '@/store/menu'
