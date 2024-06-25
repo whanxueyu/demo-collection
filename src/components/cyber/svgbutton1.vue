@@ -17,18 +17,8 @@
         </defs>
     </svg>
 </template>
-<script>
-import { defineComponent, reactive, toRefs } from 'vue';
-export default defineComponent({
-	name: 'svgButton1',
-	setup() {
-		const data = reactive({
-		});
-		return {
-			...toRefs(data),
-		};
-	},
-});
+<script setup>
+
 </script>
 <style lang="scss" scoped>
 .btn {

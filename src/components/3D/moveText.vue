@@ -1,35 +1,25 @@
 <template>
 	<div class="glow">
-		<h1>{{ moveText }}</h1>
-		<h1>{{ moveText }}</h1>
-		<h1>{{ moveText }}</h1>
-		<h1>{{ moveText }}</h1>
-		<h1>{{ moveText }}</h1>
-		<h1>{{ moveText }}</h1>
-		<h1>{{ moveText }}</h1>
-		<h1>{{ moveText }}</h1>
-		<h1>{{ moveText }}</h1>
-		<h1>{{ moveText }}</h1>
+		<h1>{{ props.moveText }}</h1>
+		<h1>{{ props.moveText }}</h1>
+		<h1>{{ props.moveText }}</h1>
+		<h1>{{ props.moveText }}</h1>
+		<h1>{{ props.moveText }}</h1>
+		<h1>{{ props.moveText }}</h1>
+		<h1>{{ props.moveText }}</h1>
+		<h1>{{ props.moveText }}</h1>
+		<h1>{{ props.moveText }}</h1>
+		<h1>{{ props.moveText }}</h1>
 	</div>
 </template>
-<script>
-import { defineComponent, reactive, toRefs } from 'vue';
-export default defineComponent({
-	name: 'moveText',
-	props: {
-		moveText: {
-			type: String,
-			default: 'Glowing 3D TEXT'
-		}
-	},
-	setup() {
-		const data = reactive({
-		});
-		return {
-			...toRefs(data),
-		};
-	},
-});
+<script setup>
+import { defineProps} from 'vue'
+const props = defineProps({
+	moveText: {
+		type: String,
+		default: 'TEXT'
+	}
+})
 </script>
 <style lang="scss" scoped>
 

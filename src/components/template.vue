@@ -1,25 +1,17 @@
 <template>
-    <div>
-    </div>
+	<div>
+	</div>
 </template>
-<script>
-import { defineComponent, reactive, toRefs } from 'vue';
-export default defineComponent({
-	name: 'component',
-	props: {
-        prop:{
-            type:String,
-            default:'TEXT'
-        }
-    },
-	setup() {
-		const data = reactive({
-		});
-		return {
-			...toRefs(data),
-		};
-	},
+<script setup>
+import { defineProps, ref } from 'vue';
+const props = defineProps({
+	text: {
+		type: String,
+		default: 'TEXT'
+	}
+})
+const data = ref({
 });
+const 
 </script>
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

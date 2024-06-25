@@ -236,7 +236,7 @@
     <div id="cesiumContainer" ref="cesiumContainer"></div>
 </template>
 
-<script>
+<script setup>
 import { nextTick, onMounted, reactive, ref } from "vue";
 import * as Cesium from "cesium";
 import 'cesium/Source/Widgets/widgets.css';
@@ -246,898 +246,855 @@ import { LocationInformation, Delete, Refresh, OfficeBuilding, Rank, Picture, Ed
 import { ElMessage } from "element-plus";
 import AmapMercatorTilingScheme from '@/modules/AmapMercatorTilingScheme/AmapMercatorTilingScheme'
 var viewer;
-export default {
-    components: {
-        LocationInformation,
-        Refresh,
-        Delete,
-        OfficeBuilding,
-        Rank,
-        Picture,
-        EditPen,
-        Share
+
+const mapData = reactive({
+    mapType: '1',
+    markType: '1',
+    mapLayer: {},
+    markLayer: {},
+    showMark: false,
+    markIcon: 1,
+    loaded: false,
+    allLines: [],
+    allPoints: [],
+    showLine: true,
+    showPoint: true,
+    colorOption: {
+        box1: '#930000',
+        box2: '#004C93',
+        box3: '#015F3C',
+        cylinder1: '#FF8706',
+        cylinder2: '#2E90FF',
+        cylinder3: '#9EFC32',
+        line1: '#FF2E50',
+        line2: '#06DEFF',
+        line3: '#2EFF8B',
     },
-    setup() {
-        const mapData = reactive({
-            mapType: '1',
-            markType: '1',
-            mapLayer: {},
-            markLayer: {},
-            showMark: false,
-            markIcon: 1,
-            loaded: false,
-            allLines: [],
-            allPoints: [],
-            showLine: true,
-            showPoint: true,
-            colorOption: {
-                box1: '#930000',
-                box2: '#004C93',
-                box3: '#015F3C',
-                cylinder1: '#FF8706',
-                cylinder2: '#2E90FF',
-                cylinder3: '#9EFC32',
-                line1: '#FF2E50',
-                line2: '#06DEFF',
-                line3: '#2EFF8B',
-            },
-            screenShotActive: false,
-            drawLineActive: false,
-            measurementActive: false,
-            tempSketch: [],
-            tempCalculate: [],
+    screenShotActive: false,
+    drawLineActive: false,
+    measurementActive: false,
+    tempSketch: [],
+    tempCalculate: [],
+})
+const mouseData = reactive(useMouse())
+const formatDate = useDateFormat(useNow(), 'YYYY-MM-DD HH:mm:ss')
+const position = reactive({
+    x: 0,
+    y: 0,
+    currentEntities: {
+        id: '',
+        name: '',
+        lng: '',
+        lat: '',
+    }
+})
+const target = ref(null)
+const showMenu = ref(false)
+const dialogVisible = ref(false)
+const markerArr = reactive({
+    list: []
+})
+const marker = require('@/assets/icon/marker.png')
+const flag = require('@/assets/icon/flag.png')
+const pin = require('@/assets/icon/pin.png')
+const star = require('@/assets/icon/star.png')
+const initCesium = () => {
+    // Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxZDU4MDE4ZS03ODdmLTQ1NWMtYTI3Ny1kMmQxNmVkYmQxZDQiLCJpZCI6NjMxNjUsImlhdCI6MTYzMjg3OTg1NX0.AAtivmdf46L1-4MWLWjnQRgP_laeTXBMagA75_a9N9o";
+    viewer = new Cesium.Viewer("cesiumContainer", {
+        infoBox: false,
+        selectionIndicator: false,
+        sceneModePicker: false,
+        animation: false,    //左下角的动画仪表盘
+        baseLayerPicker: false,  //右上角的图层选择按钮
+        geocoder: false,  //搜索框
+        homeButton: false,  //home按钮
+        timeline: false,    //底部的时间轴
+        navigationHelpButton: false,  //右上角的帮助按钮，
+        fullscreenButton: false,
+        imageryProvider: new Cesium.SingleTileImageryProvider({
+            url:
+                "data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==",
+        }),
+    });
+
+    // 服务负载子域
+    // var subdomains = ["0", "1", "2", "3", "4", "5", "6", "7"];
+    // viewer.imageryLayers.addImageryProvider(
+    //     new Cesium.WebMapTileServiceImageryProvider({
+    //         // 加载多个图层
+    //         url: "https://t{s}.tianditu.gov.cn/cia_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=cia&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default.jpg&tk=841234cd0d023af5c1bcb7c3d2c453c6",
+    //         subdomains: subdomains,
+    //         layer: "tdtCiaLayer",
+    //         style: "default",
+    //         format: "image/jpeg",
+    //         tileMatrixSetID: "GoogleMapsCompatible",
+    //         show: true,
+    //         maximumLevel: 24
+    //     })
+    // );
+    // https://t5.tianditu.gov.cn/cva_c/wmts?service=WMTS&version=1.0.0&request=GetTile&tilematrix=8&layer=cva&style=default&tilerow=47&tilecol=223&tilematrixset=c&format=tiles&
+    viewer.imageryLayers.addImageryProvider(
+        // new Cesium.WebMapTileServiceImageryProvider({
+        //     // 加载多个图层
+        //     url: "https://t{s}.tianditu.gov.cn/cva_c/wmts?service=WMTS&request=GetTile&version=1.0.0&layer=cva&tilematrixset=c&tilematrix={TileMatrix}&tilerow={TileRow}&tilecol={TileCol}&style=default&format=tiles&tk=436ce7e50d27eede2f2929307e6b33c0",
+        //     subdomains: subdomains,
+        //     layer: "tdtCiaLayer",
+        //     style: "default",
+        //     format: "image/jpeg",
+        //     tileMatrixSetID: "GoogleMapsCompatible",
+        //     show: true,
+        // })
+        // style 6-影像 7-矢量 8-标注
+        new Cesium.UrlTemplateImageryProvider({
+            url: 'https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}&lang=zh_cn&size=1',
+            subdomains: ['1', '2', '3', '4'], // 如果有多个子域名用于负载均衡，可以在这里指定  
+            // tilingScheme: new Cesium.WebMercatorTilingScheme(),
+            tilingScheme: new AmapMercatorTilingScheme(),
+            maximumLevel: 18, // 根据高德地图的实际最大层级设置  
         })
-        const mouseData = reactive(useMouse())
-        const formatDate = useDateFormat(useNow(), 'YYYY-MM-DD HH:mm:ss')
-        const position = reactive({
-            x: 0,
-            y: 0,
-            currentEntities: {
-                id: '',
-                name: '',
-                lng: '',
-                lat: '',
-            }
-        })
-        const target = ref(null)
-        const showMenu = ref(false)
-        const dialogVisible = ref(false)
-        const markerArr = reactive({
-            list: []
-        })
-        const marker = require('@/assets/icon/marker.png')
-        const flag = require('@/assets/icon/flag.png')
-        const pin = require('@/assets/icon/pin.png')
-        const star = require('@/assets/icon/star.png')
-        const initCesium = () => {
-            // Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxZDU4MDE4ZS03ODdmLTQ1NWMtYTI3Ny1kMmQxNmVkYmQxZDQiLCJpZCI6NjMxNjUsImlhdCI6MTYzMjg3OTg1NX0.AAtivmdf46L1-4MWLWjnQRgP_laeTXBMagA75_a9N9o";
-            viewer = new Cesium.Viewer("cesiumContainer", {
-                infoBox: false,
-                selectionIndicator: false,
-                sceneModePicker: false,
-                animation: false,    //左下角的动画仪表盘
-                baseLayerPicker: false,  //右上角的图层选择按钮
-                geocoder: false,  //搜索框
-                homeButton: false,  //home按钮
-                timeline: false,    //底部的时间轴
-                navigationHelpButton: false,  //右上角的帮助按钮，
-                fullscreenButton: false,
-                imageryProvider: new Cesium.SingleTileImageryProvider({
-                    url:
-                        "data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==",
-                }),
-            });
+    );
 
-            // 服务负载子域
-            // var subdomains = ["0", "1", "2", "3", "4", "5", "6", "7"];
-            // viewer.imageryLayers.addImageryProvider(
-            //     new Cesium.WebMapTileServiceImageryProvider({
-            //         // 加载多个图层
-            //         url: "https://t{s}.tianditu.gov.cn/cia_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=cia&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default.jpg&tk=841234cd0d023af5c1bcb7c3d2c453c6",
-            //         subdomains: subdomains,
-            //         layer: "tdtCiaLayer",
-            //         style: "default",
-            //         format: "image/jpeg",
-            //         tileMatrixSetID: "GoogleMapsCompatible",
-            //         show: true,
-            //         maximumLevel: 24
-            //     })
-            // );
-            // https://t5.tianditu.gov.cn/cva_c/wmts?service=WMTS&version=1.0.0&request=GetTile&tilematrix=8&layer=cva&style=default&tilerow=47&tilecol=223&tilematrixset=c&format=tiles&
-            viewer.imageryLayers.addImageryProvider(
-                // new Cesium.WebMapTileServiceImageryProvider({
-                //     // 加载多个图层
-                //     url: "https://t{s}.tianditu.gov.cn/cva_c/wmts?service=WMTS&request=GetTile&version=1.0.0&layer=cva&tilematrixset=c&tilematrix={TileMatrix}&tilerow={TileRow}&tilecol={TileCol}&style=default&format=tiles&tk=436ce7e50d27eede2f2929307e6b33c0",
-                //     subdomains: subdomains,
-                //     layer: "tdtCiaLayer",
-                //     style: "default",
-                //     format: "image/jpeg",
-                //     tileMatrixSetID: "GoogleMapsCompatible",
-                //     show: true,
-                // })
-                 // style 6-影像 7-矢量 8-标注
-                new Cesium.UrlTemplateImageryProvider({
-                    url: 'https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}&lang=zh_cn&size=1',
-                    subdomains: ['1', '2', '3', '4'], // 如果有多个子域名用于负载均衡，可以在这里指定  
-                    // tilingScheme: new Cesium.WebMercatorTilingScheme(),
-                    tilingScheme: new AmapMercatorTilingScheme(),
-                    maximumLevel: 18, // 根据高德地图的实际最大层级设置  
-                })
-            );
-
-            viewer.scene.screenSpaceCameraController.zoomEventTypes = [Cesium.CameraEventType.WHEEL, Cesium.CameraEventType.PINCH];
-            viewer.scene.screenSpaceCameraController.tiltEventTypes = [Cesium.CameraEventType.PINCH, Cesium.CameraEventType.RIGHT_DRAG];
-            viewer.cesiumWidget.creditContainer.style.display = "none";
-            // viewer.scene.screenSpaceCameraController.enableTranslate = false;
-            viewer.scene.screenSpaceCameraController.enableRotate = true; //拖拽旋转
-            viewer.scene.screenSpaceCameraController.enableTilt = true; //右键拖拽倾斜
-            var helper = new Cesium.EventHelper();
-            helper.add(viewer.scene.globe.tileLoadProgressEvent, function (e) {
-                if (e == 0) {
-                    console.log("矢量切片加载完成时的回调");
-                    if (!mapData.loaded) {
-                        nextTick(() => {
-                            // 首次加载完成
-                            reset()
-                        })
-                        mapData.loaded = true
-                    }
-                }
-            });
-            // 监听点击事件
-            let handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
-            // 左
-            handler.setInputAction(function (event) {
-                let ray = viewer.camera.getPickRay(event.position);
-                let cartesian = viewer.scene.globe.pick(ray, viewer.scene);
-                let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
-                let lng = Cesium.Math.toDegrees(cartographic.longitude); // 经度
-                let lat = Cesium.Math.toDegrees(cartographic.latitude); // 纬度
-                let coordinate = {
-                    longitude: Number(lng.toFixed(6)),
-                    latitude: Number(lat.toFixed(6)),
-                };
-                console.log("origin", coordinate.longitude, coordinate.latitude);
-                addMark(coordinate.longitude, coordinate.latitude)
-                if (mapData.drawLineActive) {
-                    mapData.tempSketch.push(cartesian);
-                    drawSketch()
-                }
-                if (mapData.measurementActive) {
-                    mapData.tempCalculate.push(cartesian);
-                    drawCalculate(viewer)
-                }
-            }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
-            // 移
-            handler.setInputAction(function (movement) {
-                var cartesian = viewer.scene.camera.pickEllipsoid(
-                    movement.endPosition,
-                    viewer.scene.globe.ellipsoid
-                );
-                if (mapData.drawLineActive) {
-                    if (mapData.tempSketch.length >= 0) {
-                        if (cartesian != undefined) {
-                            mapData.tempSketch.pop();
-                            mapData.tempSketch.push(cartesian);
-                        }
-                    }
-                }
-                if (mapData.measurementActive) {
-                    if (mapData.tempCalculate.length >= 0) {
-                        if (cartesian != undefined) {
-                            mapData.tempCalculate.pop();
-                            mapData.tempCalculate.push(cartesian);
-                        }
-                    }
-                }
-
-            }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
-            // 左双
-            handler.setInputAction(function (movement) {
-                console.log("左键双击事件", movement)
-                if (mapData.drawLineActive) {
-                    mapData.drawLineActive = false;
-                }
-                if (mapData.measurementActive) {
-                    mapData.measurementActive = false
-                }
-            }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
-            // 右
-            handler.setInputAction(function (click) {
-                let pickedObject = viewer.scene.pick(click.position);
-                if (Cesium.defined(pickedObject)) {
-                    console.log('点击了实体:', pickedObject);
-                    rightMenu(mouseData.x, mouseData.y, pickedObject)
-                }
-            }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
-        }
-        const drawSketch = () => {
-            //   let uuid = generateUniqueId()
-            var _update = function () {
-                return mapData.tempSketch
-            };
-            viewer.entities.add({
-                // id: 'line_' + uuid,
-                name: '直线',
-                polyline: {
-                    positions: new Cesium.CallbackProperty(
-                        _update,
-                        false
-                    ),
-                    material: Cesium.Color.fromCssColorString('#22ff00'),
-                    width: 2,
-                },
-                show: true,
-            })
-        }
-        const drawCalculate = (viewer) => {
-            drawLineString(viewer, function (positions) {
-                var wgs84_positions = [];
-                for (var i = 0; i < positions.length; i += 4) {
-                    var wgs84_point = Cartesian3_to_WGS84({
-                        x: positions[i].x,
-                        y: positions[i].y,
-                        z: positions[i].z,
-                    });
-                    wgs84_positions.push(wgs84_point);
-                }
-            });
-        }
-        const drawLineString = (viewer, callback) => {
-            var PolyLinePrimitive = (function () {
-                function _(positions) {
-                    this.options = {
-                        polyline: {
-                            show: true,
-                            positions: [],
-                            material: Cesium.Color.RED,
-                            width: 3,
-                        },
-                    };
-                    this.positions = positions;
-                    this._init();
-                }
-
-                _.prototype._init = function () {
-                    var _self = this;
-                    var _update = function () {
-                        return _self.positions;
-                    };
-                    //实时更新polyline.positions
-                    this.options.polyline.positions = new Cesium.CallbackProperty(
-                        _update,
-                        false
-                    );
-                    viewer.entities.add(this.options);
-                };
-                return _;
-            })();
-
-            var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
-            var positions = mapData.tempCalculate;
-            var poly = undefined;
-            var distance = 0;
-            var lastDistance = 0;
-            //鼠标左键单击画点
-            handler.setInputAction(function (movement) {
-                var cartesian = viewer.scene.camera.pickEllipsoid(
-                    movement.position,
-                    viewer.scene.globe.ellipsoid
-                );
-                if (positions.length == 0) {
-                    positions.push(cartesian.clone());
-                } else {
-                    distance = getSpaceDistance(positions);
-                }
-                positions.push(cartesian);
-                // 在三维场景中添加Label
-                let textDisance = (distance - lastDistance).toFixed(2) + "米";
+    viewer.scene.screenSpaceCameraController.zoomEventTypes = [Cesium.CameraEventType.WHEEL, Cesium.CameraEventType.PINCH];
+    viewer.scene.screenSpaceCameraController.tiltEventTypes = [Cesium.CameraEventType.PINCH, Cesium.CameraEventType.RIGHT_DRAG];
+    viewer.cesiumWidget.creditContainer.style.display = "none";
+    // viewer.scene.screenSpaceCameraController.enableTranslate = false;
+    viewer.scene.screenSpaceCameraController.enableRotate = true; //拖拽旋转
+    viewer.scene.screenSpaceCameraController.enableTilt = true; //右键拖拽倾斜
+    var helper = new Cesium.EventHelper();
+    helper.add(viewer.scene.globe.tileLoadProgressEvent, function (e) {
+        if (e == 0) {
+            console.log("矢量切片加载完成时的回调");
+            if (!mapData.loaded) {
                 nextTick(() => {
-                    lastDistance = distance;
+                    // 首次加载完成
+                    reset()
                 })
-                console.log(textDisance)
-                let flag = true;
-                if (distance === 0) {
-                    flag = false;
-                    return
-                }
-                if (distance == lastDistance) {
-                    return false
-                }
-                viewer.entities.add({
-                    name: "空间直线距离",
-                    position: positions[positions.length - 1],
-                    point: {
-                        pixelSize: 5,
-                        color: Cesium.Color.RED,
-                        outlineColor: Cesium.Color.WHITE,
-                        outlineWidth: 2,
-                        heightReference: Cesium.HeightReference.NONE,
-                    },
-                    label: {
-                        text: textDisance,
-                        font: "18px sans-serif",
-                        fillColor: Cesium.Color.GOLD,
-                        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-                        outlineWidth: 2,
-                        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-                        pixelOffset: new Cesium.Cartesian2(20, -20),
-                        heightReference: Cesium.HeightReference.NONE,
-                        show: flag,
-                    },
-                    properties: {
-                        aaa: "11",
-                    },
-                    height: 20,
-                });
-                lastDistance = distance;
-            }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
-            //鼠标移动
-            handler.setInputAction(function (movement) {
-                var cartesian = viewer.scene.camera.pickEllipsoid(
-                    movement.endPosition,
-                    viewer.scene.globe.ellipsoid
-                );
-                if (positions.length >= 2) {
-                    if (!Cesium.defined(poly)) {
-                        poly = new PolyLinePrimitive(positions);
-                    } else {
-                        if (cartesian != undefined) {
-                            positions.pop();
-                            cartesian.y += 1 + Math.random();
-                            positions.push(cartesian);
-                        }
-                    }
-                }
-            }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
-            //单击鼠标右键结束画线
-            handler.setInputAction(function (movement) {
-                handler.destroy();
-                handler = undefined;
-                positions.pop(); //最后一个点无效
-                callback(positions, movement);
-            }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
-        }
-        // 空间两点距离计算函数
-        const getSpaceDistance = (positions) => {
-            let distance = 0;
-            for (let i = 0; i < positions.length - 1; i++) {
-                let point1cartographic = Cesium.Cartographic.fromCartesian(positions[i]);
-                let point2cartographic = Cesium.Cartographic.fromCartesian(
-                    positions[i + 1]
-                );
-                /** 根据经纬度计算出距离**/
-                let geodesic = new Cesium.EllipsoidGeodesic();
-                geodesic.setEndPoints(point1cartographic, point2cartographic);
-                let s = geodesic.surfaceDistance;
-                // 返回两点之间的距离
-                s = Math.sqrt(
-                    Math.pow(s, 2) +
-                    Math.pow(point2cartographic.height - point1cartographic.height, 2)
-                );
-                distance = distance + s;
-            }
-            return distance.toFixed(2);
-        }
-        const Cartesian3_to_WGS84 = (point) => {
-            var cartesian33 = new Cesium.Cartesian3(point.x, point.y, point.z);
-            var cartographic = Cesium.Cartographic.fromCartesian(cartesian33);
-            var lat = Cesium.Math.toDegrees(cartographic.latitude);
-            var lng = Cesium.Math.toDegrees(cartographic.longitude);
-            var alt = cartographic.height;
-            return {
-                lat: lat,
-                lng: lng,
-                alt: alt,
-            };
-        }
-        const reset = () => {
-            viewer.camera.flyTo({
-                destination: Cesium.Cartesian3.fromDegrees(116.391257, 39.907204, 1000),
-                orientation: {
-                    heading: Cesium.Math.toRadians(0),
-                    pitch: Cesium.Math.toRadians(-90),
-                    roll: 0.0,
-                },
-                duration: 8
-            });
-        }
-        const saveAll = () => {
-            sessionStorage.setItem("markers", JSON.stringify(markerArr.list))
-        }
-        const removeAll = () => {
-            viewer.entities.removeAll()
-            sessionStorage.removeItem('markers')
-        }
-        const remove = () => {
-            viewer.entities.removeById(position.currentEntities.id)
-            markerArr.list = markerArr.list.filter((item) => {
-                return item.longitude !== position.currentEntities.lng && item.latitude !== position.currentEntities.lat
-            })
-            showMenu.value = false
-            saveAll()
-        }
-        const showInfo = () => {
-            dialogVisible.value = true
-        }
-        const rightMenu = (x, y, obj) => {
-            position.x = x;
-            position.y = y;
-            position.currentEntities.id = obj.id._id;
-            position.currentEntities.name = obj.id.name;
-            let cartographic = Cesium.Cartographic.fromCartesian(obj.primitive._actualPosition);
-            let lng = Cesium.Math.toDegrees(cartographic.longitude); // 经度
-            let lat = Cesium.Math.toDegrees(cartographic.latitude); // 纬度
-            position.currentEntities.lng = lng.toFixed(4);
-            position.currentEntities.lat = lat.toFixed(4);
-            showMenu.value = true
-        }
-        const addMark = (longitude, latitude) => {
-            let icon = ''
-            let name = ''
-            if (mapData.showMark) {
-                if (mapData.markIcon === 1) {
-                    icon = marker
-                    name = "marker"
-                } else if (mapData.markIcon === 2) {
-                    icon = pin
-                    name = "pin"
-                } else if (mapData.markIcon === 3) {
-                    icon = flag
-                    name = "flag"
-                } else {
-                    icon = star
-                    name = "star"
-                }
-                viewer.entities.add({
-                    name: name,
-                    position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
-                    billboard: {
-                        image: icon,
-                        horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
-                        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-                        scale: 0.5,
-                    }
-                })
-                let obj = {
-                    name: name,
-                    longitude: longitude,
-                    latitude: latitude
-                }
-                markerArr.list.push(obj)
+                mapData.loaded = true
             }
         }
-        const defaultMark = (longitude, latitude, mark) => {
-            let icon = ''
-            let name = ''
-            if (mapData.showMark) {
-                if (mark === "marker") {
-                    icon = marker
-                } else if (mark === "pin") {
-                    icon = pin
-                } else if (mark === "flag") {
-                    icon = flag
-                } else {
-                    icon = star
+    });
+    // 监听点击事件
+    let handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+    // 左
+    handler.setInputAction(function (event) {
+        let ray = viewer.camera.getPickRay(event.position);
+        let cartesian = viewer.scene.globe.pick(ray, viewer.scene);
+        let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+        let lng = Cesium.Math.toDegrees(cartographic.longitude); // 经度
+        let lat = Cesium.Math.toDegrees(cartographic.latitude); // 纬度
+        let coordinate = {
+            longitude: Number(lng.toFixed(6)),
+            latitude: Number(lat.toFixed(6)),
+        };
+        console.log("origin", coordinate.longitude, coordinate.latitude);
+        addMark(coordinate.longitude, coordinate.latitude)
+        if (mapData.drawLineActive) {
+            mapData.tempSketch.push(cartesian);
+            drawSketch()
+        }
+        if (mapData.measurementActive) {
+            mapData.tempCalculate.push(cartesian);
+            drawCalculate(viewer)
+        }
+    }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+    // 移
+    handler.setInputAction(function (movement) {
+        var cartesian = viewer.scene.camera.pickEllipsoid(
+            movement.endPosition,
+            viewer.scene.globe.ellipsoid
+        );
+        if (mapData.drawLineActive) {
+            if (mapData.tempSketch.length >= 0) {
+                if (cartesian != undefined) {
+                    mapData.tempSketch.pop();
+                    mapData.tempSketch.push(cartesian);
                 }
-                viewer.entities.add({
-                    name: name,
-                    position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
-                    billboard: {
-                        image: icon,
-                        horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
-                        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-                        scale: 0.5,
-                    }
-                })
             }
         }
-        const handleClose = () => {
-            showMenu.value = false
-            dialogVisible.value = false
-        }
-        // 加载3DTileset
-        const load3DTileset = () => {
-            const tilesets = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
-                url: "https://zouyaoji.top/vue-cesium/SampleData/Cesium3DTiles/Tilesets/dayanta/tileset.json",
-            }));
-            var height = 738.0
-            tilesets.readyPromise
-                .then(function (tileset) {
-                    // 贴地
-                    //计算中心点位置
-                    var cartographic = Cesium.Cartographic.fromCartesian(tileset.boundingSphere.center)
-                    var lng = Cesium.Math.toDegrees(cartographic.longitude) //使用经纬度和弧度的转换，将WGS84弧度坐标系转换到目标值，弧度转度
-                    var lat = Cesium.Math.toDegrees(cartographic.latitude)
-                    // var lat = 34.219588
-                    // var lng = 108.959397
-                    //计算中心点位置的地表坐标
-                    var surface = Cesium.Cartesian3.fromRadians(lng, lat, 0.0)
-                    //偏移后的坐标
-                    var offset = Cesium.Cartesian3.fromRadians(lng + 0.0022, lat + 0.0053, height)
-                    var translation = Cesium.Cartesian3.subtract(offset, surface, new Cesium.Cartesian3())
-                    tileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation)
-                })
-            viewer.zoomTo(tilesets);
-        }
-        const changeMaterial = () => {
-            viewer.entities.removeAll()
-            loadPipenet()
+        if (mapData.measurementActive) {
+            if (mapData.tempCalculate.length >= 0) {
+                if (cartesian != undefined) {
+                    mapData.tempCalculate.pop();
+                    mapData.tempCalculate.push(cartesian);
+                }
+            }
         }
 
-        // 管点管线数据
-        const loadPipenet = () => {
-            let position = {
-                lat: 38.986086,
-                lng: 117.358494
-            }
-            viewer.camera.flyTo({
-                destination: Cesium.Cartesian3.fromDegrees(Number(position.lng), Number(position.lat), 1000), // 可见矩形
-                duration: 3, //飞行时间
-                orientation: {
-                    heading: Cesium.Math.toRadians(0.0),
-                    pitch: Cesium.Math.toRadians(-45.0),
-                    roll: 0.0
-                }
-            });
-            if (mapData.allPoints.length > 0) {
-                ElMessage.warning("请勿重复生成管网")
-                return
-            }
-            console.log(filterPoints.length, filterLines.length, pointList.length, lineList.length)
-            let points = filterPoints.filter((item) => {
-                return item.latitude && item.longitude;
-            });
-            points.map((item) => {
-                mapData.allPoints.push(item.id);
-                let obj = {
-                    id: item.id,
-                    mold: "1",
-                    name: item.code,
-                    pipelineCode: item.code,
-                    type: item.uses,
-                    pointX: item.latitude,
-                    pointY: item.longitude,
-                    attachment: item.attachment,
-                    bury: item.bury,
-                    red: "0",
-                    green: "0",
-                    blue: "255",
-                    opacity: 1,
-                };
-                drawPointByAttachment(viewer, obj);
-            });
-            let lines = filterLines.filter((item) => {
-                mapData.allLines.push(item.id);
-                return (
-                    item.id &&
-                    item.endBury &&
-                    item.endHigh &&
-                    item.startBury &&
-                    item.startHigh &&
-                    item.startPointLatitude &&
-                    item.startPointLongitude &&
-                    item.endPointLatitude &&
-                    item.endPointLongitude
-                );
-            });
-            lines.map((item) => {
-                if (item.id) {
-                    let obj = {
-                        name: item.code,
-                        id: item.id,
-                        pipelineCode: item.code,
-                        type: item.uses,
-                        mold: "2",
-                        flowDirection: item.flowDirection,
-                        startX: item.startPointLatitude,
-                        startY: item.startPointLongitude,
-                        startBury: item.startBury,
-                        endBury: item.endBury,
-                        pipeDiameter: item.pipeDiameter,
-                        endX: item.endPointLatitude,
-                        endY: item.endPointLongitude,
-                        red: "0",
-                        green: "255",
-                        blue: "255",
-                        opacity: 1,
-                    };
-                    drawLine(viewer, obj);
-                }
-            });
+    }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+    // 左双
+    handler.setInputAction(function (movement) {
+        console.log("左键双击事件", movement)
+        if (mapData.drawLineActive) {
+            mapData.drawLineActive = false;
         }
-        // 管点
-        const drawPointByAttachment = (viewer, obj) => {
-            switch (obj.attachment) {
-                case "1":
-                    drawCylinder(viewer, obj);
-                    break;
-                case "2":
-                    drawBox(viewer, obj);
-                    break;
-                default:
-                    break;
-            }
-        }
-        //  绘制圆柱
-        const drawCylinder = (viewer, obj) => {
-            let buryHeight = Math.abs(Number(obj["bury"]));
-            viewer.entities.add({
-                id: obj["id"],
-                name: obj["name"],
-                mold: obj["mold"],
-                pointtype: obj["type"],//uses
-                position: Cesium.Cartesian3.fromDegrees(
-                    Number(obj["pointY"]),
-                    Number(obj["pointX"]),
-                    Number(obj["bury"]) / 2
-                ),
-                point: {
-                    pixelSize: 3,
-                    color:
-                        obj.type === "3"
-                            ? new Cesium.Color.fromCssColorString(mapData.colorOption.cylinder3)
-                            : obj.type === "1"
-                                ? new Cesium.Color.fromCssColorString(mapData.colorOption.cylinder1)
-                                : new Cesium.Color.fromCssColorString(mapData.colorOption.cylinder2),
-                },
-                cylinder: {
-                    length: buryHeight,
-                    topRadius: 1,
-                    bottomRadius: 1.5,
-                    material:
-                        obj.type === "3"
-                            ? new Cesium.Color.fromCssColorString(mapData.colorOption.cylinder3)
-                            : obj.type === "1"
-                                ? new Cesium.Color.fromCssColorString(mapData.colorOption.cylinder1)
-                                : new Cesium.Color.fromCssColorString(mapData.colorOption.cylinder2),
-                    outline: false,//外部轮廓线
-                    outlineColor: new Cesium.Color(
-                        Number(obj.red) / 255,
-                        Number(obj.green) / 255,
-                        Number(obj.blue) / 255,
-                        Number(obj.opacity)
-                    ), // 	139,0,139
-                },
-            });
-        }
-        // 绘制矩形
-        const drawBox = (viewer, obj) => {
-            let buryHeight = Math.abs(Number(obj["bury"]));
-            viewer.entities.add({
-                id: obj["id"],
-                properties: {
-                    type: obj["pipelineType"],
-                },
-                mold: obj["mold"],
-                name: obj["name"],
-                length: buryHeight,
-                pointtype: obj["type"],
-                position: Cesium.Cartesian3.fromDegrees(
-                    Number(obj["pointY"]),
-                    Number(obj["pointX"]),
-                    Number(obj["bury"]) / 2
-                ),
-                point: {
-                    pixelSize: 3,
-                    color:
-                        obj.type === "3"
-                            ? new Cesium.Color.fromCssColorString(mapData.colorOption.box3)
-                            : obj.type === "1"
-                                ? new Cesium.Color.fromCssColorString(mapData.colorOption.box1)
-                                : new Cesium.Color.fromCssColorString(mapData.colorOption.box2),
-                },
-                box: {
-                    dimensions: new Cesium.Cartesian3(2, 3, Number(obj["bury"])),
-                    material:
-                        obj.type === "3"
-                            ? new Cesium.Color.fromCssColorString(mapData.colorOption.box3)
-                            : obj.type === "1"
-                                ? new Cesium.Color.fromCssColorString(mapData.colorOption.box1)
-                                : new Cesium.Color.fromCssColorString(mapData.colorOption.box2),
-                },
-            });
-        }
-        // 绘制线条
-        const drawLine = (viewer, obj) => {
-            let positions = [];
-            for (let i = 0; i < 360; i += 6) {
-                let radians = Cesium.Math.toRadians(i);
-                positions.push(
-                    new Cesium.Cartesian2(
-                        (Number(obj.pipeDiameter) / 2000) * Math.cos(radians),
-                        (Number(obj.pipeDiameter) / 2000) * Math.sin(radians)
-                    )
-                );
-            }
-            drawLineShow(viewer, obj, positions);
-        }
-        //绘制线条
-        const drawLineShow = (viewer, obj, positions) => {
-            viewer.entities.add({
-                id: obj.id,
-                name: obj.name,
-                mold: obj.mold,
-                // properties: {
-                //   type: obj["type"],
-                // },
-                polyline: {
-                    positions: Cesium.Cartesian3.fromDegreesArrayHeights([
-                        Number(obj["startY"]),
-                        Number(obj["startX"]),
-                        Number(obj["startBury"]) - Number(obj["pipeDiameter"]) / 2000,
-                        Number(obj["endY"]),
-                        Number(obj["endX"]),
-                        Number(obj["endBury"]) - Number(obj["pipeDiameter"]) / 2000,
-                    ]),
-                    width: Number(obj["pipeDiameter"]) / 200,
-                    material:
-                        obj.type === "3"
-                            ? new Cesium.Color.fromCssColorString(mapData.colorOption.line3)
-                            : obj.type === "1"
-                                ? new Cesium.Color.fromCssColorString(mapData.colorOption.line1)
-                                : new Cesium.Color.fromCssColorString(mapData.colorOption.line2),
-                },
-                polylineVolume: {
-                    positions: Cesium.Cartesian3.fromDegreesArrayHeights([
-                        // fromDegreesArrayHeights // fromDegreesArray
-                        Number(obj["startY"]),
-                        Number(obj["startX"]),
-                        Number(obj["startBury"]) - Number(obj["pipeDiameter"]) / 1000,
-                        Number(obj["endY"]),
-                        Number(obj["endX"]),
-                        Number(obj["endBury"]) - Number(obj["pipeDiameter"]) / 1000,
-                    ]),
-                    shape: positions,
-                    material:
-                        obj.type === "3"
-                            ? new Cesium.Color.fromCssColorString(mapData.colorOption.line3)
-                            : obj.type === "1"
-                                ? new Cesium.Color.fromCssColorString(mapData.colorOption.line1)
-                                : new Cesium.Color.fromCssColorString(mapData.colorOption.line2),
-                },
-            });
-        }
-        const lineClear = () => {
-            mapData.allLines.forEach((item) => {
-                var entity = viewer.entities.getById(item);
-                if (entity) {
-                    viewer.entities.removeById(item);
-                }
-            })
-        }
-        const pointClear = () => {
-            mapData.allPoints.forEach((item) => {
-                var entity = viewer.entities.getById(item);
-                if (entity) {
-                    viewer.entities.removeById(item);
-                }
-            })
-        }
-        const lineShowOrHide = (show) => {
-            mapData.allLines.forEach((item) => {
-                var entity = viewer.entities.getById(item);
-                if (entity) {
-                    if (show) {
-                        entity.show = true;
-                    } else {
-                        entity.show = false;
-                    }
-                }
-            })
-        }
-        const pointShowOrHide = (show) => {
-            mapData.allPoints.forEach((item) => {
-                var entity = viewer.entities.getById(item);
-                if (entity) {
-                    if (show) {
-                        entity.show = true;
-                    } else {
-                        entity.show = false;
-                    }
-                }
-            })
-        }
-        // 截图
-        const takeScreenshot = () => {
-            const removeCallback = viewer.scene.postRender.addEventListener(() => {
-                removeCallback();
-                try {
-                    const cesiumCanvas = viewer.scene.canvas;
-                    const canvas = cesiumCanvas;
-                    const screenshot = canvas.toDataURL("image/png")
-                    const link = document.createElement("a");
-                    document.body.appendChild(link);
-                    link.download = formatDate.value + "screenshot.png";
-                    link.href = screenshot;
-                    link.click();
-                    document.body.removeChild(link);
-                }
-                catch (e) {
-                    console.log(e)
-                }
-            });
-            mapData.screenShotActive = true
-            mapData.drawLineActive = false
+        if (mapData.measurementActive) {
             mapData.measurementActive = false
-            setTimeout(() => {
-                mapData.screenShotActive = false
-            }, 500)
         }
-        const handleDrawLine = () => {
-            switch (mapData.drawLineActive) {
-                case true:
-                    mapData.drawLineActive = false
-                    break;
-                case false:
-                    mapData.screenShotActive = false
-                    mapData.drawLineActive = true
-                    mapData.measurementActive = false
-                    break;
-            }
+    }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+    // 右
+    handler.setInputAction(function (click) {
+        let pickedObject = viewer.scene.pick(click.position);
+        if (Cesium.defined(pickedObject)) {
+            console.log('点击了实体:', pickedObject);
+            rightMenu(mouseData.x, mouseData.y, pickedObject)
+        }
+    }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+}
+const drawSketch = () => {
+    //   let uuid = generateUniqueId()
+    var _update = function () {
+        return mapData.tempSketch
+    };
+    viewer.entities.add({
+        // id: 'line_' + uuid,
+        name: '直线',
+        polyline: {
+            positions: new Cesium.CallbackProperty(
+                _update,
+                false
+            ),
+            material: Cesium.Color.fromCssColorString('#22ff00'),
+            width: 2,
+        },
+        show: true,
+    })
+}
+const drawCalculate = (viewer) => {
+    drawLineString(viewer, function (positions) {
+        var wgs84_positions = [];
+        for (var i = 0; i < positions.length; i += 4) {
+            var wgs84_point = Cartesian3_to_WGS84({
+                x: positions[i].x,
+                y: positions[i].y,
+                z: positions[i].z,
+            });
+            wgs84_positions.push(wgs84_point);
+        }
+    });
+}
+const drawLineString = (viewer, callback) => {
+    var PolyLinePrimitive = (function () {
+        function _(positions) {
+            this.options = {
+                polyline: {
+                    show: true,
+                    positions: [],
+                    material: Cesium.Color.RED,
+                    width: 3,
+                },
+            };
+            this.positions = positions;
+            this._init();
+        }
 
+        _.prototype._init = function () {
+            var _self = this;
+            var _update = function () {
+                return _self.positions;
+            };
+            //实时更新polyline.positions
+            this.options.polyline.positions = new Cesium.CallbackProperty(
+                _update,
+                false
+            );
+            viewer.entities.add(this.options);
+        };
+        return _;
+    })();
+
+    var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+    var positions = mapData.tempCalculate;
+    var poly = undefined;
+    var distance = 0;
+    var lastDistance = 0;
+    //鼠标左键单击画点
+    handler.setInputAction(function (movement) {
+        var cartesian = viewer.scene.camera.pickEllipsoid(
+            movement.position,
+            viewer.scene.globe.ellipsoid
+        );
+        if (positions.length == 0) {
+            positions.push(cartesian.clone());
+        } else {
+            distance = getSpaceDistance(positions);
         }
-        const handleMeasurement = () => {
-            switch (mapData.measurementActive) {
-                case true:
-                    mapData.measurementActive = false
-                    break;
-                case false:
-                    mapData.screenShotActive = false
-                    mapData.drawLineActive = false
-                    mapData.measurementActive = true
-                    break;
+        positions.push(cartesian);
+        // 在三维场景中添加Label
+        let textDisance = (distance - lastDistance).toFixed(2) + "米";
+        nextTick(() => {
+            lastDistance = distance;
+        })
+        console.log(textDisance)
+        let flag = true;
+        if (distance === 0) {
+            flag = false;
+            return
+        }
+        if (distance == lastDistance) {
+            return false
+        }
+        viewer.entities.add({
+            name: "空间直线距离",
+            position: positions[positions.length - 1],
+            point: {
+                pixelSize: 5,
+                color: Cesium.Color.RED,
+                outlineColor: Cesium.Color.WHITE,
+                outlineWidth: 2,
+                heightReference: Cesium.HeightReference.NONE,
+            },
+            label: {
+                text: textDisance,
+                font: "18px sans-serif",
+                fillColor: Cesium.Color.GOLD,
+                style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                outlineWidth: 2,
+                verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                pixelOffset: new Cesium.Cartesian2(20, -20),
+                heightReference: Cesium.HeightReference.NONE,
+                show: flag,
+            },
+            properties: {
+                aaa: "11",
+            },
+            height: 20,
+        });
+        lastDistance = distance;
+    }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+    //鼠标移动
+    handler.setInputAction(function (movement) {
+        var cartesian = viewer.scene.camera.pickEllipsoid(
+            movement.endPosition,
+            viewer.scene.globe.ellipsoid
+        );
+        if (positions.length >= 2) {
+            if (!Cesium.defined(poly)) {
+                poly = new PolyLinePrimitive(positions);
+            } else {
+                if (cartesian != undefined) {
+                    positions.pop();
+                    cartesian.y += 1 + Math.random();
+                    positions.push(cartesian);
+                }
             }
         }
-        onMounted(() => {
-            // 禁用浏览器默认右键菜单，避免与自定义操作冲突
-            document.oncontextmenu = new Function("event.returnValue=false");
-            initCesium()
-            // 监听点击目标元素外部事件
-            onClickOutside(target, (event) => {
-                console.log(event)
-                showMenu.value = false
-            })
-            markerArr.list = JSON.parse(sessionStorage.getItem("markers")) || []
-            console.log(markerArr.list)
-            if (markerArr.list.length > 0) {
-                markerArr.list.forEach((item) => {
-                    defaultMark(item.longitude, item.latitude, item.name)
-                })
+    }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+    //单击鼠标右键结束画线
+    handler.setInputAction(function (movement) {
+        handler.destroy();
+        handler = undefined;
+        positions.pop(); //最后一个点无效
+        callback(positions, movement);
+    }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+}
+// 空间两点距离计算函数
+const getSpaceDistance = (positions) => {
+    let distance = 0;
+    for (let i = 0; i < positions.length - 1; i++) {
+        let point1cartographic = Cesium.Cartographic.fromCartesian(positions[i]);
+        let point2cartographic = Cesium.Cartographic.fromCartesian(
+            positions[i + 1]
+        );
+        /** 根据经纬度计算出距离**/
+        let geodesic = new Cesium.EllipsoidGeodesic();
+        geodesic.setEndPoints(point1cartographic, point2cartographic);
+        let s = geodesic.surfaceDistance;
+        // 返回两点之间的距离
+        s = Math.sqrt(
+            Math.pow(s, 2) +
+            Math.pow(point2cartographic.height - point1cartographic.height, 2)
+        );
+        distance = distance + s;
+    }
+    return distance.toFixed(2);
+}
+const Cartesian3_to_WGS84 = (point) => {
+    var cartesian33 = new Cesium.Cartesian3(point.x, point.y, point.z);
+    var cartographic = Cesium.Cartographic.fromCartesian(cartesian33);
+    var lat = Cesium.Math.toDegrees(cartographic.latitude);
+    var lng = Cesium.Math.toDegrees(cartographic.longitude);
+    var alt = cartographic.height;
+    return {
+        lat: lat,
+        lng: lng,
+        alt: alt,
+    };
+}
+const reset = () => {
+    viewer.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(116.391257, 39.907204, 1000),
+        orientation: {
+            heading: Cesium.Math.toRadians(0),
+            pitch: Cesium.Math.toRadians(-90),
+            roll: 0.0,
+        },
+        duration: 8
+    });
+}
+const saveAll = () => {
+    sessionStorage.setItem("markers", JSON.stringify(markerArr.list))
+}
+const removeAll = () => {
+    viewer.entities.removeAll()
+    sessionStorage.removeItem('markers')
+}
+const remove = () => {
+    viewer.entities.removeById(position.currentEntities.id)
+    markerArr.list = markerArr.list.filter((item) => {
+        return item.longitude !== position.currentEntities.lng && item.latitude !== position.currentEntities.lat
+    })
+    showMenu.value = false
+    saveAll()
+}
+const showInfo = () => {
+    dialogVisible.value = true
+}
+const rightMenu = (x, y, obj) => {
+    position.x = x;
+    position.y = y;
+    position.currentEntities.id = obj.id._id;
+    position.currentEntities.name = obj.id.name;
+    let cartographic = Cesium.Cartographic.fromCartesian(obj.primitive._actualPosition);
+    let lng = Cesium.Math.toDegrees(cartographic.longitude); // 经度
+    let lat = Cesium.Math.toDegrees(cartographic.latitude); // 纬度
+    position.currentEntities.lng = lng.toFixed(4);
+    position.currentEntities.lat = lat.toFixed(4);
+    showMenu.value = true
+}
+const addMark = (longitude, latitude) => {
+    let icon = ''
+    let name = ''
+    if (mapData.showMark) {
+        if (mapData.markIcon === 1) {
+            icon = marker
+            name = "marker"
+        } else if (mapData.markIcon === 2) {
+            icon = pin
+            name = "pin"
+        } else if (mapData.markIcon === 3) {
+            icon = flag
+            name = "flag"
+        } else {
+            icon = star
+            name = "star"
+        }
+        viewer.entities.add({
+            name: name,
+            position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
+            billboard: {
+                image: icon,
+                horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+                verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                scale: 0.5,
             }
         })
-        return {
-            mapData,
-            mouseData,
-            markerArr,
-            saveAll,
-            removeAll,
-            remove,
-            rightMenu,
-            showMenu,
-            position,
-            showInfo,
-            target,
-            marker,
-            flag,
-            pin,
-            star,
-            handleClose,
-            dialogVisible,
-            load3DTileset,
-            loadPipenet,
-            lineShowOrHide,
-            pointShowOrHide,
-            lineClear,
-            pointClear,
-            takeScreenshot,
-            reset,
-            changeMaterial,
-            handleDrawLine,
-            handleMeasurement
+        let obj = {
+            name: name,
+            longitude: longitude,
+            latitude: latitude
         }
+        markerArr.list.push(obj)
     }
 }
+const defaultMark = (longitude, latitude, mark) => {
+    let icon = ''
+    let name = ''
+    if (mapData.showMark) {
+        if (mark === "marker") {
+            icon = marker
+        } else if (mark === "pin") {
+            icon = pin
+        } else if (mark === "flag") {
+            icon = flag
+        } else {
+            icon = star
+        }
+        viewer.entities.add({
+            name: name,
+            position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
+            billboard: {
+                image: icon,
+                horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+                verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                scale: 0.5,
+            }
+        })
+    }
+}
+const handleClose = () => {
+    showMenu.value = false
+    dialogVisible.value = false
+}
+// 加载3DTileset
+const load3DTileset = () => {
+    const tilesets = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
+        url: "https://zouyaoji.top/vue-cesium/SampleData/Cesium3DTiles/Tilesets/dayanta/tileset.json",
+    }));
+    var height = 738.0
+    tilesets.readyPromise
+        .then(function (tileset) {
+            // 贴地
+            //计算中心点位置
+            var cartographic = Cesium.Cartographic.fromCartesian(tileset.boundingSphere.center)
+            var lng = Cesium.Math.toDegrees(cartographic.longitude) //使用经纬度和弧度的转换，将WGS84弧度坐标系转换到目标值，弧度转度
+            var lat = Cesium.Math.toDegrees(cartographic.latitude)
+            // var lat = 34.219588
+            // var lng = 108.959397
+            //计算中心点位置的地表坐标
+            var surface = Cesium.Cartesian3.fromRadians(lng, lat, 0.0)
+            //偏移后的坐标
+            var offset = Cesium.Cartesian3.fromRadians(lng + 0.0022, lat + 0.0053, height)
+            var translation = Cesium.Cartesian3.subtract(offset, surface, new Cesium.Cartesian3())
+            tileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation)
+        })
+    viewer.zoomTo(tilesets);
+}
+const changeMaterial = () => {
+    viewer.entities.removeAll()
+    loadPipenet()
+}
+
+// 管点管线数据
+const loadPipenet = () => {
+    let position = {
+        lat: 38.986086,
+        lng: 117.358494
+    }
+    viewer.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(Number(position.lng), Number(position.lat), 1000), // 可见矩形
+        duration: 3, //飞行时间
+        orientation: {
+            heading: Cesium.Math.toRadians(0.0),
+            pitch: Cesium.Math.toRadians(-45.0),
+            roll: 0.0
+        }
+    });
+    if (mapData.allPoints.length > 0) {
+        ElMessage.warning("请勿重复生成管网")
+        return
+    }
+    console.log(filterPoints.length, filterLines.length, pointList.length, lineList.length)
+    let points = filterPoints.filter((item) => {
+        return item.latitude && item.longitude;
+    });
+    points.map((item) => {
+        mapData.allPoints.push(item.id);
+        let obj = {
+            id: item.id,
+            mold: "1",
+            name: item.code,
+            pipelineCode: item.code,
+            type: item.uses,
+            pointX: item.latitude,
+            pointY: item.longitude,
+            attachment: item.attachment,
+            bury: item.bury,
+            red: "0",
+            green: "0",
+            blue: "255",
+            opacity: 1,
+        };
+        drawPointByAttachment(viewer, obj);
+    });
+    let lines = filterLines.filter((item) => {
+        mapData.allLines.push(item.id);
+        return (
+            item.id &&
+            item.endBury &&
+            item.endHigh &&
+            item.startBury &&
+            item.startHigh &&
+            item.startPointLatitude &&
+            item.startPointLongitude &&
+            item.endPointLatitude &&
+            item.endPointLongitude
+        );
+    });
+    lines.map((item) => {
+        if (item.id) {
+            let obj = {
+                name: item.code,
+                id: item.id,
+                pipelineCode: item.code,
+                type: item.uses,
+                mold: "2",
+                flowDirection: item.flowDirection,
+                startX: item.startPointLatitude,
+                startY: item.startPointLongitude,
+                startBury: item.startBury,
+                endBury: item.endBury,
+                pipeDiameter: item.pipeDiameter,
+                endX: item.endPointLatitude,
+                endY: item.endPointLongitude,
+                red: "0",
+                green: "255",
+                blue: "255",
+                opacity: 1,
+            };
+            drawLine(viewer, obj);
+        }
+    });
+}
+// 管点
+const drawPointByAttachment = (viewer, obj) => {
+    switch (obj.attachment) {
+        case "1":
+            drawCylinder(viewer, obj);
+            break;
+        case "2":
+            drawBox(viewer, obj);
+            break;
+        default:
+            break;
+    }
+}
+//  绘制圆柱
+const drawCylinder = (viewer, obj) => {
+    let buryHeight = Math.abs(Number(obj["bury"]));
+    viewer.entities.add({
+        id: obj["id"],
+        name: obj["name"],
+        mold: obj["mold"],
+        pointtype: obj["type"],//uses
+        position: Cesium.Cartesian3.fromDegrees(
+            Number(obj["pointY"]),
+            Number(obj["pointX"]),
+            Number(obj["bury"]) / 2
+        ),
+        point: {
+            pixelSize: 3,
+            color:
+                obj.type === "3"
+                    ? new Cesium.Color.fromCssColorString(mapData.colorOption.cylinder3)
+                    : obj.type === "1"
+                        ? new Cesium.Color.fromCssColorString(mapData.colorOption.cylinder1)
+                        : new Cesium.Color.fromCssColorString(mapData.colorOption.cylinder2),
+        },
+        cylinder: {
+            length: buryHeight,
+            topRadius: 1,
+            bottomRadius: 1.5,
+            material:
+                obj.type === "3"
+                    ? new Cesium.Color.fromCssColorString(mapData.colorOption.cylinder3)
+                    : obj.type === "1"
+                        ? new Cesium.Color.fromCssColorString(mapData.colorOption.cylinder1)
+                        : new Cesium.Color.fromCssColorString(mapData.colorOption.cylinder2),
+            outline: false,//外部轮廓线
+            outlineColor: new Cesium.Color(
+                Number(obj.red) / 255,
+                Number(obj.green) / 255,
+                Number(obj.blue) / 255,
+                Number(obj.opacity)
+            ), // 	139,0,139
+        },
+    });
+}
+// 绘制矩形
+const drawBox = (viewer, obj) => {
+    let buryHeight = Math.abs(Number(obj["bury"]));
+    viewer.entities.add({
+        id: obj["id"],
+        properties: {
+            type: obj["pipelineType"],
+        },
+        mold: obj["mold"],
+        name: obj["name"],
+        length: buryHeight,
+        pointtype: obj["type"],
+        position: Cesium.Cartesian3.fromDegrees(
+            Number(obj["pointY"]),
+            Number(obj["pointX"]),
+            Number(obj["bury"]) / 2
+        ),
+        point: {
+            pixelSize: 3,
+            color:
+                obj.type === "3"
+                    ? new Cesium.Color.fromCssColorString(mapData.colorOption.box3)
+                    : obj.type === "1"
+                        ? new Cesium.Color.fromCssColorString(mapData.colorOption.box1)
+                        : new Cesium.Color.fromCssColorString(mapData.colorOption.box2),
+        },
+        box: {
+            dimensions: new Cesium.Cartesian3(2, 3, Number(obj["bury"])),
+            material:
+                obj.type === "3"
+                    ? new Cesium.Color.fromCssColorString(mapData.colorOption.box3)
+                    : obj.type === "1"
+                        ? new Cesium.Color.fromCssColorString(mapData.colorOption.box1)
+                        : new Cesium.Color.fromCssColorString(mapData.colorOption.box2),
+        },
+    });
+}
+// 绘制线条
+const drawLine = (viewer, obj) => {
+    let positions = [];
+    for (let i = 0; i < 360; i += 6) {
+        let radians = Cesium.Math.toRadians(i);
+        positions.push(
+            new Cesium.Cartesian2(
+                (Number(obj.pipeDiameter) / 2000) * Math.cos(radians),
+                (Number(obj.pipeDiameter) / 2000) * Math.sin(radians)
+            )
+        );
+    }
+    drawLineShow(viewer, obj, positions);
+}
+//绘制线条
+const drawLineShow = (viewer, obj, positions) => {
+    viewer.entities.add({
+        id: obj.id,
+        name: obj.name,
+        mold: obj.mold,
+        // properties: {
+        //   type: obj["type"],
+        // },
+        polyline: {
+            positions: Cesium.Cartesian3.fromDegreesArrayHeights([
+                Number(obj["startY"]),
+                Number(obj["startX"]),
+                Number(obj["startBury"]) - Number(obj["pipeDiameter"]) / 2000,
+                Number(obj["endY"]),
+                Number(obj["endX"]),
+                Number(obj["endBury"]) - Number(obj["pipeDiameter"]) / 2000,
+            ]),
+            width: Number(obj["pipeDiameter"]) / 200,
+            material:
+                obj.type === "3"
+                    ? new Cesium.Color.fromCssColorString(mapData.colorOption.line3)
+                    : obj.type === "1"
+                        ? new Cesium.Color.fromCssColorString(mapData.colorOption.line1)
+                        : new Cesium.Color.fromCssColorString(mapData.colorOption.line2),
+        },
+        polylineVolume: {
+            positions: Cesium.Cartesian3.fromDegreesArrayHeights([
+                // fromDegreesArrayHeights // fromDegreesArray
+                Number(obj["startY"]),
+                Number(obj["startX"]),
+                Number(obj["startBury"]) - Number(obj["pipeDiameter"]) / 1000,
+                Number(obj["endY"]),
+                Number(obj["endX"]),
+                Number(obj["endBury"]) - Number(obj["pipeDiameter"]) / 1000,
+            ]),
+            shape: positions,
+            material:
+                obj.type === "3"
+                    ? new Cesium.Color.fromCssColorString(mapData.colorOption.line3)
+                    : obj.type === "1"
+                        ? new Cesium.Color.fromCssColorString(mapData.colorOption.line1)
+                        : new Cesium.Color.fromCssColorString(mapData.colorOption.line2),
+        },
+    });
+}
+const lineClear = () => {
+    mapData.allLines.forEach((item) => {
+        var entity = viewer.entities.getById(item);
+        if (entity) {
+            viewer.entities.removeById(item);
+        }
+    })
+}
+const pointClear = () => {
+    mapData.allPoints.forEach((item) => {
+        var entity = viewer.entities.getById(item);
+        if (entity) {
+            viewer.entities.removeById(item);
+        }
+    })
+}
+const lineShowOrHide = (show) => {
+    mapData.allLines.forEach((item) => {
+        var entity = viewer.entities.getById(item);
+        if (entity) {
+            if (show) {
+                entity.show = true;
+            } else {
+                entity.show = false;
+            }
+        }
+    })
+}
+const pointShowOrHide = (show) => {
+    mapData.allPoints.forEach((item) => {
+        var entity = viewer.entities.getById(item);
+        if (entity) {
+            if (show) {
+                entity.show = true;
+            } else {
+                entity.show = false;
+            }
+        }
+    })
+}
+// 截图
+const takeScreenshot = () => {
+    const removeCallback = viewer.scene.postRender.addEventListener(() => {
+        removeCallback();
+        try {
+            const cesiumCanvas = viewer.scene.canvas;
+            const canvas = cesiumCanvas;
+            const screenshot = canvas.toDataURL("image/png")
+            const link = document.createElement("a");
+            document.body.appendChild(link);
+            link.download = formatDate.value + "screenshot.png";
+            link.href = screenshot;
+            link.click();
+            document.body.removeChild(link);
+        }
+        catch (e) {
+            console.log(e)
+        }
+    });
+    mapData.screenShotActive = true
+    mapData.drawLineActive = false
+    mapData.measurementActive = false
+    setTimeout(() => {
+        mapData.screenShotActive = false
+    }, 500)
+}
+const handleDrawLine = () => {
+    switch (mapData.drawLineActive) {
+        case true:
+            mapData.drawLineActive = false
+            break;
+        case false:
+            mapData.screenShotActive = false
+            mapData.drawLineActive = true
+            mapData.measurementActive = false
+            break;
+    }
+
+}
+const handleMeasurement = () => {
+    switch (mapData.measurementActive) {
+        case true:
+            mapData.measurementActive = false
+            break;
+        case false:
+            mapData.screenShotActive = false
+            mapData.drawLineActive = false
+            mapData.measurementActive = true
+            break;
+    }
+}
+onMounted(() => {
+    // 禁用浏览器默认右键菜单，避免与自定义操作冲突
+    document.oncontextmenu = new Function("event.returnValue=false");
+    initCesium()
+    // 监听点击目标元素外部事件
+    onClickOutside(target, (event) => {
+        console.log(event)
+        showMenu.value = false
+    })
+    markerArr.list = JSON.parse(sessionStorage.getItem("markers")) || []
+    console.log(markerArr.list)
+    if (markerArr.list.length > 0) {
+        markerArr.list.forEach((item) => {
+            defaultMark(item.longitude, item.latitude, item.name)
+        })
+    }
+})
 </script>
 
 <style lang="scss" scoped>

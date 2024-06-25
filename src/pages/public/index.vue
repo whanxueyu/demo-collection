@@ -39,48 +39,33 @@
     </div>
 </template>
 
-<script>
-import { onMounted, reactive, ref } from 'vue'
+<script setup>
+import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useMenu } from '@/store/menu'
-export default {
-    name: 'public',
-    setup() {
-        const state = reactive({
-            routerList: []
-        })
-        const activeIndex = ref('1')
-        const menu = useMenu()
-        const handleSelect = (key, keyPath) => {
-            console.log(key, keyPath)
-        }
-        const router = useRouter()
-        const navto = (item) => {
-            router.push(item.path)
-            menu.activeIndex = item.path
-        }
-        const github = () => {
-            window.open('https://github.com/whanxueyu/demo-collection.git')
-        }
-        onMounted(() => {
-            let currentPath = router.currentRoute.value.path
-            if (currentPath === "/") {
-                router.push('/home')
-                menu.activeIndex = '/home'
-            } else {
-                menu.activeIndex = currentPath
-            }
-        })
-        return {
-            state,
-            navto,
-            handleSelect,
-            activeIndex,
-            menu,
-            github
-        }
-    }
+
+const menu = useMenu()
+const handleSelect = (key, keyPath) => {
+    console.log(key, keyPath)
 }
+const router = useRouter()
+const navto = (item) => {
+    router.push(item.path)
+    menu.activeIndex = item.path
+}
+const github = () => {
+    window.open('https://github.com/whanxueyu/demo-collection.git')
+}
+onMounted(() => {
+    let currentPath = router.currentRoute.value.path
+    if (currentPath === "/") {
+        router.push('/home')
+        menu.activeIndex = '/home'
+    } else {
+        menu.activeIndex = currentPath
+    }
+})
+
 </script>
 <style scoped lang="scss">
 .menuList {
@@ -114,4 +99,5 @@ export default {
         filter: brightness(150%) hue-rotate(18deg);
         transform: scale(1.2);
     }
-}</style>
+}
+</style>

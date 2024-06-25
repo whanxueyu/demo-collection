@@ -6,21 +6,8 @@
     </div>
   </template>
   
-  <script>
-  import { defineComponent, onMounted, reactive } from 'vue'
-  export default defineComponent({
-    name: 'errorButton',
-    setup() {
-      const options = reactive({
-      })
-      onMounted(() => {
-  
-      })
-      return {
-        options,
-      }
-    }
-  })
+  <script setup>
+
   </script>
   
   <!-- Add "scoped" attribute to limit CSS to this component only -->

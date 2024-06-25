@@ -1,27 +1,17 @@
 <template>
-    <div class="text-magic" :data-word="textStr">
-        {{textStr}}
+    <div class="text-magic" :data-word="props.textStr">
+        {{props.textStr}}
         <div class="white"></div>
     </div>
 </template>
-<script>
-import { defineComponent, reactive, toRefs } from 'vue';
-export default defineComponent({
-	name: 'cybertext',
-	props: {
-        textStr:{
-            type:String,
-            default:'TEXT'
-        }
-    },
-	setup() {
-		const data = reactive({
-		});
-		return {
-			...toRefs(data),
-		};
-	},
-});
+<script setup>
+import { defineProps} from 'vue'
+const props = defineProps({
+	textStr: {
+		type: String,
+		default: 'TEXT'
+	}
+})
 </script>
 <style lang="scss" scoped>
 .text-magic {

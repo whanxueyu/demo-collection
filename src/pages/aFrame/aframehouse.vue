@@ -7,21 +7,8 @@
     </div>
 </template>
 
-<script>
-import { onMounted, reactive } from 'vue'
-export default {
-    name: 'aframe',
-    setup() {
-        const state = reactive({
-            viewer: true,
-        })
-        onMounted(() => {
-        })
-        return {
-            state
-        }
-    }
-}
+<script setup>
+
 </script>
 <style scoped>
 .viewwe {

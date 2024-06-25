@@ -1,24 +1,14 @@
 <template>
-    <div class="rightShadow">{{shadowtext}}</div>
+    <div class="rightShadow">{{props.shadowtext}}</div>
 </template>
-<script>
-import { defineComponent, reactive, toRefs } from 'vue';
-export default defineComponent({
-	name: 'rightShadow',
-	props: {
-        shadowtext:{
-            type:String,
-            default:'Right Txt Shadow'
-        }
-    },
-	setup() {
-		const data = reactive({
-		});
-		return {
-			...toRefs(data),
-		};
-	},
-});
+<script setup>
+import { defineProps} from 'vue'
+const props = defineProps({
+	shadowtext: {
+		type: String,
+		default: 'TEXT'
+	}
+})
 </script>
 <style lang="scss" scoped>
 @function makelongrightshadow($color) {

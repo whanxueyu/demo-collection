@@ -25,7 +25,7 @@
         </div>
     </section>
 </template>
-<script>
+<script setup>
 </script>
 <style scoped>
 .top-header:before {

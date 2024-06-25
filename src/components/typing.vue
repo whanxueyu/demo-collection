@@ -1,29 +1,16 @@
 <template>
   <div class="black">
-    <div class="h1">{{ word }}</div>
+    <div class="h1">{{ props.word }}</div>
   </div>
 </template>
 
-<script>
-import { defineComponent, onMounted, reactive } from 'vue'
-export default defineComponent({
-  name: 'typing',
-  props: {
-    word: {
-      type: String,
-      default: ''
-    }
-  },
-  setup() {
-    const options = reactive({
-    })
-    onMounted(() => {
-
-    })
-    return {
-      options,
-    }
-  }
+<script setup>
+import { defineProps} from 'vue'
+const props = defineProps({
+	word: {
+		type: String,
+		default: 'TEXT'
+	}
 })
 </script>
 

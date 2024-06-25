@@ -7,7 +7,7 @@
             <div class="banner">
                 <shadow-banner></shadow-banner>
             </div>
-                <div class="title">
+            <div class="title">
                 <cyber-text textStr="Cyberpunk Image"></cyber-text>
             </div>
             <div class="img">
@@ -63,12 +63,15 @@
                         <ul class="flex-center">
                             <li class="home active" data-where="home"><span class="material-icons-outlined">home </span>
                             </li>
-                            <li class="products" data-where="products"><span class="material-icons-outlined">shopping_bag
+                            <li class="products" data-where="products"><span
+                                    class="material-icons-outlined">shopping_bag
                                 </span></li>
                             <li class="services" data-where="services"><span class="material-icons-outlined">plumbing
                                 </span></li>
-                            <li class="about" data-where="about"><span class="material-icons-outlined">business </span></li>
-                            <li class="help" data-where="help"><span class="material-icons-outlined">help_outline </span>
+                            <li class="about" data-where="about"><span class="material-icons-outlined">business </span>
+                            </li>
+                            <li class="help" data-where="help"><span class="material-icons-outlined">help_outline
+                                </span>
                             </li>
                             <li class="follow">&nbsp;</li>
                         </ul>
@@ -79,12 +82,15 @@
                         <ul class="flex-center">
                             <li class="home active" data-where="home"><span class="material-icons-outlined">home </span>
                             </li>
-                            <li class="products" data-where="products"><span class="material-icons-outlined">shopping_bag
+                            <li class="products" data-where="products"><span
+                                    class="material-icons-outlined">shopping_bag
                                 </span></li>
                             <li class="services" data-where="services"><span class="material-icons-outlined">plumbing
                                 </span></li>
-                            <li class="about" data-where="about"><span class="material-icons-outlined">business </span></li>
-                            <li class="help" data-where="help"><span class="material-icons-outlined">help_outline </span>
+                            <li class="about" data-where="about"><span class="material-icons-outlined">business </span>
+                            </li>
+                            <li class="help" data-where="help"><span class="material-icons-outlined">help_outline
+                                </span>
                             </li>
                         </ul>
                     </div>
@@ -94,12 +100,15 @@
                         <ul class="flex-center">
                             <li class="home active" data-where="home"><span class="material-icons-outlined">home </span>
                             </li>
-                            <li class="products" data-where="products"><span class="material-icons-outlined">shopping_bag
+                            <li class="products" data-where="products"><span
+                                    class="material-icons-outlined">shopping_bag
                                 </span></li>
                             <li class="services" data-where="services"><span class="material-icons-outlined">plumbing
                                 </span></li>
-                            <li class="about" data-where="about"><span class="material-icons-outlined">business </span></li>
-                            <li class="help" data-where="help"><span class="material-icons-outlined">help_outline </span>
+                            <li class="about" data-where="about"><span class="material-icons-outlined">business </span>
+                            </li>
+                            <li class="help" data-where="help"><span class="material-icons-outlined">help_outline
+                                </span>
                             </li>
                             <li class="follow">&nbsp;</li>
                         </ul>
@@ -110,12 +119,15 @@
                         <ul class="flex-center">
                             <li class="home active" data-where="home"><span class="material-icons-outlined">home </span>
                             </li>
-                            <li class="products" data-where="products"><span class="material-icons-outlined">shopping_bag
+                            <li class="products" data-where="products"><span
+                                    class="material-icons-outlined">shopping_bag
                                 </span></li>
                             <li class="services" data-where="services"><span class="material-icons-outlined">plumbing
                                 </span></li>
-                            <li class="about" data-where="about"><span class="material-icons-outlined">business </span></li>
-                            <li class="help" data-where="help"><span class="material-icons-outlined">help_outline </span>
+                            <li class="about" data-where="about"><span class="material-icons-outlined">business </span>
+                            </li>
+                            <li class="help" data-where="help"><span class="material-icons-outlined">help_outline
+                                </span>
                             </li>
                         </ul>
                     </div>
@@ -125,12 +137,15 @@
                         <ul class="flex-center">
                             <li class="home active" data-where="home"><span class="material-icons-outlined">home </span>
                             </li>
-                            <li class="products" data-where="products"><span class="material-icons-outlined">shopping_bag
+                            <li class="products" data-where="products"><span
+                                    class="material-icons-outlined">shopping_bag
                                 </span></li>
                             <li class="services" data-where="services"><span class="material-icons-outlined">plumbing
                                 </span></li>
-                            <li class="about" data-where="about"><span class="material-icons-outlined">business </span></li>
-                            <li class="help" data-where="help"><span class="material-icons-outlined">help_outline </span>
+                            <li class="about" data-where="about"><span class="material-icons-outlined">business </span>
+                            </li>
+                            <li class="help" data-where="help"><span class="material-icons-outlined">help_outline
+                                </span>
                             </li>
                         </ul>
                     </div>
@@ -139,9 +154,9 @@
         </div>
     </div>
 </template>
-  
-<script>
-import { onMounted, reactive, ref } from 'vue'
+
+<script setup>
+import { onMounted, reactive } from 'vue'
 import cyberText from '@/components/cyber/text.vue'
 import cyberImg from '@/components/cyber/img.vue'
 import svgBtn1 from '@/components/cyber/svgbutton1.vue'
@@ -162,85 +177,55 @@ import moveText from '@/components/3D/moveText.vue'
 import moveCard from '@/components/3D/moveCard.vue'
 import leftShadow from '@/components/3D/leftShadow.vue'
 import rightShadow from '@/components/3D/rightShadow.vue'
-export default {
-    components: {
-        cyberImg,
-        svgBtn1,
-        svgBtn2,
-        cyberText,
-        typing,
-        bigEye,
-        errorbutton,
-        pinkText,
-        neonButton1,
-        neonButton2,
-        neonButton3,
-        shadowBtn1,
-        shadowBtn2,
-        shadowBtn3,
-        shadowBtn4,
-        shadowBanner,
-        moveText,
-        moveCard,
-        rightShadow,
-        leftShadow
-    },
-    name: 'home',
-    setup() {
-        const state = reactive({
-            imgurl: require('@/static/img/Cyber2.jpg'),
-            title: 'Cyberpunk 赛博朋克风格',
-            title1: 'Cyberpunk Button',
-            title2: '3D眼睛鼠标跟随',
-            btn1: "横向按钮",
-            btn2: "竖向按钮",
-            btn3: 'AVAILABLE NOW',
-            neonBtn: 'NEON BUTTON'
-        })
-        const url = ref('')
-        onMounted(() => {
-            const uls = document.querySelectorAll("ul");
-            uls.forEach((ul) => {
-                const resetClass = ul.parentNode.getAttribute("class");
-                const lis = ul.querySelectorAll("li");
-                lis.forEach((li) => {
-                    li.addEventListener("click", (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        const target = e.currentTarget;
-                        if (
-                            target.classList.contains("active") ||
-                            target.classList.contains("follow")
-                        ) {
-                            return;
-                        }
-                        ul.parentNode.setAttribute(
-                            "class",
-                            `${resetClass} ${target.getAttribute("data-where")}-style`
-                        );
 
-                        lis.forEach((item) => clearClass(item, "active"));
+const state = reactive({
+    imgurl: require('@/static/img/Cyber2.jpg'),
+    title: 'Cyberpunk 赛博朋克风格',
+    title1: 'Cyberpunk Button',
+    title2: '3D眼睛鼠标跟随',
+    btn1: "横向按钮",
+    btn2: "竖向按钮",
+    btn3: 'AVAILABLE NOW',
+    neonBtn: 'NEON BUTTON'
+})
+onMounted(() => {
+    const uls = document.querySelectorAll("ul");
+    uls.forEach((ul) => {
+        const resetClass = ul.parentNode.getAttribute("class");
+        const lis = ul.querySelectorAll("li");
+        lis.forEach((li) => {
+            li.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const target = e.currentTarget;
+                if (
+                    target.classList.contains("active") ||
+                    target.classList.contains("follow")
+                ) {
+                    return;
+                }
+                ul.parentNode.setAttribute(
+                    "class",
+                    `${resetClass} ${target.getAttribute("data-where")}-style`
+                );
 
-                        setClass(target, "active");
-                    });
-                });
+                lis.forEach((item) => clearClass(item, "active"));
+
+                setClass(target, "active");
             });
-            function clearClass(node, className) {
-                node.classList.remove(className);
-            }
-            function setClass(node, className) {
-                node.classList.add(className);
-            }
-        })
-        return {
-            state,
-            url,
-        }
+        });
+    });
+    function clearClass(node, className) {
+        node.classList.remove(className);
     }
-}
+    function setClass(node, className) {
+        node.classList.add(className);
+    }
+
+})
 </script>
-  
-  <!-- Add "scoped" attribute to limit CSS to this component only -->
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 @import url('./style.scss');
 
@@ -401,4 +386,3 @@ export default {
     }
 }
 </style>
-  

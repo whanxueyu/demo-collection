@@ -1,28 +1,18 @@
 <template>
     <div class="imgbox">
-        <div class="cyberimg" :style="'background: url(' + imgurl + ') no-repeat;background-size: cover;'">
+        <div class="cyberimg" :style="'background: url(' + props.imgurl + ') no-repeat;background-size: cover;'">
             <slot></slot>
         </div>
     </div>
 </template>
-<script>
-import { defineComponent, reactive, toRefs } from 'vue';
-export default defineComponent({
-    name: 'cyberImg',
-    props: {
-        imgurl: {
-            type: String,
-            default: 'https://mzz-files.oss-cn-shenzhen.aliyuncs.com///uploads/U1002433/0cb5e044a1f0f7fc15f61264ee97ac1f.png'
-        }
-    },
-    setup() {
-        const data = reactive({
-        });
-        return {
-            ...toRefs(data),
-        };
-    },
-});
+<script setup>
+import { defineProps} from 'vue'
+const props = defineProps({
+	imgurl: {
+		type: String,
+		default: 'https://mzz-files.oss-cn-shenzhen.aliyuncs.com///uploads/U1002433/0cb5e044a1f0f7fc15f61264ee97ac1f.png'
+	}
+})
 </script>
 <style lang="scss" scoped>
 // $img: require("@/static/img/Cyber2.jpg");
