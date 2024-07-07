@@ -317,42 +317,23 @@ const initCesium = () => {
         }),
     });
 
-    // 服务负载子域
-    // var subdomains = ["0", "1", "2", "3", "4", "5", "6", "7"];
-    // viewer.imageryLayers.addImageryProvider(
-    //     new Cesium.WebMapTileServiceImageryProvider({
-    //         // 加载多个图层
-    //         url: "https://t{s}.tianditu.gov.cn/cia_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=cia&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default.jpg&tk=841234cd0d023af5c1bcb7c3d2c453c6",
-    //         subdomains: subdomains,
-    //         layer: "tdtCiaLayer",
-    //         style: "default",
-    //         format: "image/jpeg",
-    //         tileMatrixSetID: "GoogleMapsCompatible",
-    //         show: true,
-    //         maximumLevel: 24
-    //     })
-    // );
-    // https://t5.tianditu.gov.cn/cva_c/wmts?service=WMTS&version=1.0.0&request=GetTile&tilematrix=8&layer=cva&style=default&tilerow=47&tilecol=223&tilematrixset=c&format=tiles&
-    viewer.imageryLayers.addImageryProvider(
-        // new Cesium.WebMapTileServiceImageryProvider({
-        //     // 加载多个图层
-        //     url: "https://t{s}.tianditu.gov.cn/cva_c/wmts?service=WMTS&request=GetTile&version=1.0.0&layer=cva&tilematrixset=c&tilematrix={TileMatrix}&tilerow={TileRow}&tilecol={TileCol}&style=default&format=tiles&tk=436ce7e50d27eede2f2929307e6b33c0",
-        //     subdomains: subdomains,
-        //     layer: "tdtCiaLayer",
-        //     style: "default",
-        //     format: "image/jpeg",
-        //     tileMatrixSetID: "GoogleMapsCompatible",
-        //     show: true,
-        // })
-        // style 6-影像 7-矢量 8-标注
-        new Cesium.UrlTemplateImageryProvider({
-            url: 'https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}&lang=zh_cn&size=1',
-            subdomains: ['1', '2', '3', '4'], // 如果有多个子域名用于负载均衡，可以在这里指定  
-            // tilingScheme: new Cesium.WebMercatorTilingScheme(),
-            tilingScheme: new AmapMercatorTilingScheme(),
-            maximumLevel: 18, // 根据高德地图的实际最大层级设置  
-        })
-    );
+    let gdMap = new Cesium.UrlTemplateImageryProvider({
+        url: 'https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}&lang=zh_cn&size=1',
+        subdomains: ['1', '2', '3', '4'], // 如果有多个子域名用于负载均衡，可以在这里指定  
+        // tilingScheme: new Cesium.WebMercatorTilingScheme(),
+        tileWidth: 256,
+        tilingScheme: new AmapMercatorTilingScheme(),
+        maximumLevel: 18, // 根据高德地图的实际最大层级设置  
+    })
+    if (gdMap) {
+        console.log(gdMap)
+        viewer.imageryLayers.addImageryProvider(gdMap)
+    }
+    // let arcgis = new Cesium.ArcGisMapServerImageryProvider({
+    //     url: "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
+    // });
+    // viewer.imageryLayers.addImageryProvider(arcgis)
+
 
     viewer.scene.screenSpaceCameraController.zoomEventTypes = [Cesium.CameraEventType.WHEEL, Cesium.CameraEventType.PINCH];
     viewer.scene.screenSpaceCameraController.tiltEventTypes = [Cesium.CameraEventType.PINCH, Cesium.CameraEventType.RIGHT_DRAG];
