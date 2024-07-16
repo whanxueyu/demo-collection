@@ -324,9 +324,12 @@ const initCesium = () => {
         imageryProvider: new Cesium.SingleTileImageryProvider({
             url:
                 "data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==",
+            tileWidth: 256,
+            tileHeight: 256,
         }),
     });
-    changeBaseMap()
+    if (viewer)
+        changeBaseMap()
     viewer.scene.screenSpaceCameraController.zoomEventTypes = [Cesium.CameraEventType.WHEEL, Cesium.CameraEventType.PINCH];
     viewer.scene.screenSpaceCameraController.tiltEventTypes = [Cesium.CameraEventType.PINCH, Cesium.CameraEventType.RIGHT_DRAG];
     viewer.cesiumWidget.creditContainer.style.display = "none";
@@ -418,6 +421,7 @@ const changeMapType = (type) => {
     changeBaseMap()
 }
 const changeBaseMap = () => {
+    if(viewer.imageryLayers.length>0)
     viewer.imageryLayers.removeAll();
     if (mapData.mapType == 'tdt') {
         let tdtMap = new Cesium.WebMapTileServiceImageryProvider({
@@ -429,6 +433,8 @@ const changeBaseMap = () => {
             layer: 'tdtImgLayer',
             style: 'default',
             format: 'image/jpeg',
+            tileWidth: 256,
+            tileHeight: 256,
             tileMatrixSetID: 'GoogleMapsCompatible', //使用谷歌的瓦片切片方式
             show: true
         })
@@ -437,8 +443,8 @@ const changeBaseMap = () => {
         let gdMap = new Cesium.UrlTemplateImageryProvider({
             url: 'https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}&lang=zh_cn&size=1',
             subdomains: ['1', '2', '3', '4'], // 如果有多个子域名用于负载均衡，可以在这里指定  
-            // tilingScheme: new Cesium.WebMercatorTilingScheme(),
             tileWidth: 256,
+            tileHeight: 256,
             tilingScheme: new AmapMercatorTilingScheme(),
             maximumLevel: 18, // 根据高德地图的实际最大层级设置  
         })
@@ -1167,7 +1173,8 @@ onMounted(() => {
         background-color: #092131cc;
         border: 2px solid #092131cc;
         cursor: pointer;
-        &:hover{
+
+        &:hover {
             border: 2px solid #9c7a1d8e;
         }
 
