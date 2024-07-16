@@ -373,10 +373,9 @@ const initCesium = () => {
             mapData.tempSketch.push(cartesian);
             drawSketch()
         }
-        if (mapData.measurementActive) {
-            mapData.tempCalculate.push(cartesian);
-            drawCalculate(viewer)
-        }
+        // if (mapData.measurementActive) {
+        //     mapData.tempCalculate.push(cartesian);
+        // }
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
     // 移
     handler.setInputAction(function (movement) {
@@ -403,15 +402,15 @@ const initCesium = () => {
 
     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
     // 左双
-    handler.setInputAction(function (movement) {
-        console.log("左键双击事件", movement)
-        if (mapData.drawLineActive) {
-            mapData.drawLineActive = false;
-        }
-        if (mapData.measurementActive) {
-            mapData.measurementActive = false
-        }
-    }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+    // handler.setInputAction(function (movement) {
+    //     console.log("左键双击事件", movement)
+    //     if (mapData.drawLineActive) {
+    //         mapData.drawLineActive = false;
+    //     }
+    //     if (mapData.measurementActive) {
+    //         mapData.measurementActive = false
+    //     }
+    // }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
     // 右
     handler.setInputAction(function (click) {
         let pickedObject = viewer.scene.pick(click.position);
@@ -514,6 +513,7 @@ const drawCalculate = (viewer) => {
         }
     });
 }
+// eslint-disable-next-line
 const drawLineString = (viewer, callback) => {
     var PolyLinePrimitive = (function () {
         function _(positions) {
@@ -623,10 +623,67 @@ const drawLineString = (viewer, callback) => {
     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
     //单击鼠标右键结束画线
     handler.setInputAction(function (movement) {
+        var cartesian = viewer.scene.camera.pickEllipsoid(
+            movement.position,
+            viewer.scene.globe.ellipsoid
+        );
+        if (positions.length >= 2) {
+            if (!Cesium.defined(poly)) {
+                poly = new PolyLinePrimitive(positions);
+            } else {
+                if (cartesian != undefined) {
+                    positions.pop();
+                    cartesian.y += 1 + Math.random();
+                    positions.push(cartesian);
+                }
+            }
+        }
+        distance = getSpaceDistance(positions);
+        // 在三维场景中添加Label
+        let textDisance = (distance - lastDistance).toFixed(2) + "米";
+        nextTick(() => {
+            lastDistance = distance;
+        })
+        console.log(textDisance)
+        let flag = true;
+        if (distance === 0) {
+            flag = false;
+            return
+        }
+        if (distance == lastDistance) {
+            return false
+        }
+        viewer.entities.add({
+            name: "空间直线距离",
+            position: positions[positions.length - 1],
+            point: {
+                pixelSize: 5,
+                color: Cesium.Color.RED,
+                outlineColor: Cesium.Color.WHITE,
+                outlineWidth: 2,
+                heightReference: Cesium.HeightReference.NONE,
+            },
+            label: {
+                text: textDisance,
+                font: "18px sans-serif",
+                fillColor: Cesium.Color.GOLD,
+                style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                outlineWidth: 2,
+                verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                pixelOffset: new Cesium.Cartesian2(20, -20),
+                heightReference: Cesium.HeightReference.NONE,
+                show: flag,
+            },
+            properties: {
+                aaa: "11",
+            },
+            height: 20,
+        });
         handler.destroy();
         handler = undefined;
-        positions.pop(); //最后一个点无效
-        callback(positions, movement);
+        // positions.pop(); //最后一个点无效
+        // callback(positions, movement);
+        mapData.measurementActive = false;
     }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
 }
 // 空间两点距离计算函数
@@ -1116,7 +1173,8 @@ const handleMeasurement = () => {
         case false:
             mapData.screenShotActive = false
             mapData.drawLineActive = false
-            mapData.measurementActive = true
+            mapData.measurementActive = true;
+            drawCalculate(viewer)
             break;
     }
 }
