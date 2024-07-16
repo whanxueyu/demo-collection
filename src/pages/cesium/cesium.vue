@@ -212,6 +212,11 @@
             </div>
         </div>
     </div>
+    <div class="baseMap">
+        <div :class="mapData.mapType === item.type ? 'baseMap-item active' : 'baseMap-item'"
+            @click="changeMapType(item.type)" v-for="item in baseMapList" :key="item.id">{{ item.name }}</div>
+    </div>
+    <!-- 右键菜单 -->
     <div class="popmenu" ref="target" v-if="showMenu" :style="{ 'left': position.x + 'px', 'top': position.y + 'px' }">
         <div>
             <el-button @click="remove" link>删除</el-button>
@@ -220,6 +225,7 @@
             <el-button @click="showInfo" link>信息</el-button>
         </div>
     </div>
+    <!-- 信息弹窗 -->
     <el-dialog v-model="dialogVisible" title="标记信息" width="300px" :before-close="handleClose">
         <el-descriptions column=1 border>
             <el-descriptions-item label="经度">{{ position.currentEntities.lng }}</el-descriptions-item>
@@ -248,7 +254,7 @@ import AmapMercatorTilingScheme from '@/modules/AmapMercatorTilingScheme/AmapMer
 var viewer;
 
 const mapData = reactive({
-    mapType: '1',
+    mapType: 'tdt',
     markType: '1',
     mapLayer: {},
     markLayer: {},
@@ -276,6 +282,10 @@ const mapData = reactive({
     tempSketch: [],
     tempCalculate: [],
 })
+const baseMapList = [
+    { id: 1, name: '天地图影像', type: 'tdt' },
+    { id: 2, name: '高德影像', type: 'gd' },
+]
 const mouseData = reactive(useMouse())
 const formatDate = useDateFormat(useNow(), 'YYYY-MM-DD HH:mm:ss')
 const position = reactive({
@@ -316,25 +326,7 @@ const initCesium = () => {
                 "data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==",
         }),
     });
-
-    let gdMap = new Cesium.UrlTemplateImageryProvider({
-        url: 'https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}&lang=zh_cn&size=1',
-        subdomains: ['1', '2', '3', '4'], // 如果有多个子域名用于负载均衡，可以在这里指定  
-        // tilingScheme: new Cesium.WebMercatorTilingScheme(),
-        tileWidth: 256,
-        tilingScheme: new AmapMercatorTilingScheme(),
-        maximumLevel: 18, // 根据高德地图的实际最大层级设置  
-    })
-    if (gdMap) {
-        console.log(gdMap)
-        viewer.imageryLayers.addImageryProvider(gdMap)
-    }
-    // let arcgis = new Cesium.ArcGisMapServerImageryProvider({
-    //     url: "http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
-    // });
-    // viewer.imageryLayers.addImageryProvider(arcgis)
-
-
+    changeBaseMap()
     viewer.scene.screenSpaceCameraController.zoomEventTypes = [Cesium.CameraEventType.WHEEL, Cesium.CameraEventType.PINCH];
     viewer.scene.screenSpaceCameraController.tiltEventTypes = [Cesium.CameraEventType.PINCH, Cesium.CameraEventType.RIGHT_DRAG];
     viewer.cesiumWidget.creditContainer.style.display = "none";
@@ -420,6 +412,38 @@ const initCesium = () => {
             rightMenu(mouseData.x, mouseData.y, pickedObject)
         }
     }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+}
+const changeMapType = (type) => {
+    mapData.mapType = type;
+    changeBaseMap()
+}
+const changeBaseMap = () => {
+    viewer.imageryLayers.removeAll();
+    if (mapData.mapType == 'tdt') {
+        let tdtMap = new Cesium.WebMapTileServiceImageryProvider({
+            //影像底图
+            url:
+                'https://t{s}.tianditu.gov.cn/img_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=img&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=' +
+                '436ce7e50d27eede2f2929307e6b33c0',
+            subdomains: ['1', '2', '3', '4'],//URL模板中用于{s}占位符的子域。如果该参数是单个字符串，则字符串中的每个字符都是一个子域。如果它是一个数组，数组中的每个元素都是一个子域
+            layer: 'tdtImgLayer',
+            style: 'default',
+            format: 'image/jpeg',
+            tileMatrixSetID: 'GoogleMapsCompatible', //使用谷歌的瓦片切片方式
+            show: true
+        })
+        viewer.imageryLayers.addImageryProvider(tdtMap)
+    } else {
+        let gdMap = new Cesium.UrlTemplateImageryProvider({
+            url: 'https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}&lang=zh_cn&size=1',
+            subdomains: ['1', '2', '3', '4'], // 如果有多个子域名用于负载均衡，可以在这里指定  
+            // tilingScheme: new Cesium.WebMercatorTilingScheme(),
+            tileWidth: 256,
+            tilingScheme: new AmapMercatorTilingScheme(),
+            maximumLevel: 18, // 根据高德地图的实际最大层级设置  
+        })
+        viewer.imageryLayers.addImageryProvider(gdMap)
+    }
 }
 const drawSketch = () => {
     //   let uuid = generateUniqueId()
@@ -1123,6 +1147,33 @@ onMounted(() => {
         &.active {
             color: #409eff;
             background-color: #1d1e1f;
+        }
+    }
+}
+
+.baseMap {
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+    z-index: 999;
+    display: flex;
+
+    .baseMap-item {
+        width: 80px;
+        height: 60px;
+        text-align: center;
+        line-height: 60px;
+        color: #fff;
+        background-color: #092131cc;
+        border: 2px solid #092131cc;
+        cursor: pointer;
+        &:hover{
+            border: 2px solid #9c7a1d8e;
+        }
+
+        &.active {
+            background-color: #268dd1cc;
+            border: 2px solid #9c7a1df3;
         }
     }
 }
