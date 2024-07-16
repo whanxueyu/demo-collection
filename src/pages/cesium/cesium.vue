@@ -212,9 +212,10 @@
             </div>
         </div>
     </div>
-    <div class="baseMap">
-        <div :class="mapData.mapType === item.type ? 'baseMap-item active' : 'baseMap-item'"
-            @click="changeMapType(item.type)" v-for="item in baseMapList" :key="item.id">{{ item.name }}</div>
+    <div class="baseMap" @mouseenter="showMap = true" @mouseleave="showMap = false">
+        <div class="baseMap-item active" v-if="!showMap">{{ mapData.mapName }}</div>
+        <div v-else :class="mapData.mapType === item.type ? 'baseMap-item active' : 'baseMap-item'"
+            @click="changeMapType(item)" v-for="item in baseMapList" :key="item.id">{{ item.name }}</div>
     </div>
     <!-- 右键菜单 -->
     <div class="popmenu" ref="target" v-if="showMenu" :style="{ 'left': position.x + 'px', 'top': position.y + 'px' }">
@@ -255,6 +256,7 @@ var viewer;
 
 const mapData = reactive({
     mapType: 'tdt',
+    mapName: '天地图影像',
     markType: '1',
     mapLayer: {},
     markLayer: {},
@@ -285,6 +287,8 @@ const mapData = reactive({
 const baseMapList = [
     { id: 1, name: '天地图影像', type: 'tdt' },
     { id: 2, name: '高德影像', type: 'gd' },
+    { id: 2, name: '天地图矢量', type: 'tdt_v' },
+    { id: 2, name: '高德矢量', type: 'gd_v' },
 ]
 const mouseData = reactive(useMouse())
 const formatDate = useDateFormat(useNow(), 'YYYY-MM-DD HH:mm:ss')
@@ -300,6 +304,7 @@ const position = reactive({
 })
 const target = ref(null)
 const showMenu = ref(false)
+const showMap = ref(false)
 const dialogVisible = ref(false)
 const markerArr = reactive({
     list: []
@@ -416,20 +421,21 @@ const initCesium = () => {
         }
     }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
 }
-const changeMapType = (type) => {
-    mapData.mapType = type;
+const changeMapType = (map) => {
+    mapData.mapType = map.type;
+    mapData.mapName = map.name;
     changeBaseMap()
 }
 const changeBaseMap = () => {
-    if(viewer.imageryLayers.length>0)
-    viewer.imageryLayers.removeAll();
+    if (viewer.imageryLayers.length > 0)
+        viewer.imageryLayers.removeAll();
     if (mapData.mapType == 'tdt') {
         let tdtMap = new Cesium.WebMapTileServiceImageryProvider({
             //影像底图
             url:
-                'https://t{s}.tianditu.gov.cn/img_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=img&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=' +
+                'https://t{s}.tianditu.gov.cn/img_w/wmts?service=WMTS&request=GetTile&version=1.0.0&layer=img&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=' +
                 '436ce7e50d27eede2f2929307e6b33c0',
-            subdomains: ['1', '2', '3', '4'],//URL模板中用于{s}占位符的子域。如果该参数是单个字符串，则字符串中的每个字符都是一个子域。如果它是一个数组，数组中的每个元素都是一个子域
+            subdomains: ['1', '2', '3', '4', '5', '6', '7'],//URL模板中用于{s}占位符的子域。如果该参数是单个字符串，则字符串中的每个字符都是一个子域。如果它是一个数组，数组中的每个元素都是一个子域
             layer: 'tdtImgLayer',
             style: 'default',
             format: 'image/jpeg',
@@ -439,16 +445,41 @@ const changeBaseMap = () => {
             show: true
         })
         viewer.imageryLayers.addImageryProvider(tdtMap)
-    } else {
+    } else if (mapData.mapType == 'gd') {
         let gdMap = new Cesium.UrlTemplateImageryProvider({
             url: 'https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}&lang=zh_cn&size=1',
-            subdomains: ['1', '2', '3', '4'], // 如果有多个子域名用于负载均衡，可以在这里指定  
+            subdomains: ['1', '2', '3', '4', '5', '6', '7'],// 如果有多个子域名用于负载均衡，可以在这里指定  
             tileWidth: 256,
             tileHeight: 256,
             tilingScheme: new AmapMercatorTilingScheme(),
             maximumLevel: 18, // 根据高德地图的实际最大层级设置  
         })
         viewer.imageryLayers.addImageryProvider(gdMap)
+    } else if (mapData.mapType == 'gd_v') {
+        let gdvMap = new Cesium.UrlTemplateImageryProvider({
+            url: 'https://webst0{s}.is.autonavi.com/appmaptile?style=7&scl=1&ltype=0&x={x}&y={y}&z={z}&lang=zh_cn&size=1',
+            subdomains: ['1', '2', '3', '4', '5', '6', '7'], // 如果有多个子域名用于负载均衡，可以在这里指定  
+            tileWidth: 256,
+            tileHeight: 256,
+            tilingScheme: new AmapMercatorTilingScheme(),
+            maximumLevel: 24, // 根据高德地图的实际最大层级设置  
+        })
+        viewer.imageryLayers.addImageryProvider(gdvMap)
+    } else if (mapData.mapType == 'tdt_v') {
+
+        let tdtMap = new Cesium.WebMapTileServiceImageryProvider({
+            //影像底图
+            url:
+                'https://t{s}.tianditu.gov.cn/vec_w/wmts?service=WMTS&request=GetTile&version=1.0.0&layer=vec&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=' +
+                '436ce7e50d27eede2f2929307e6b33c0',
+            subdomains: ['1', '2', '3', '4', '5', '6', '7'],//URL模板中用于{s}占位符的子域。如果该参数是单个字符串，则字符串中的每个字符都是一个子域。如果它是一个数组，数组中的每个元素都是一个子域
+            layer: 'tdtImgLayer',
+            style: 'default',
+            tileWidth: 256,
+            tileHeight: 256,
+            tileMatrixSetID: 'GoogleMapsCompatible', //使用谷歌的瓦片切片方式
+        })
+        viewer.imageryLayers.addImageryProvider(tdtMap)
     }
 }
 const drawSketch = () => {
