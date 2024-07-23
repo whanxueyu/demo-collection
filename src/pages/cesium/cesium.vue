@@ -213,9 +213,15 @@
         </div>
     </div>
     <div class="baseMap" @mouseenter="showMap = true" @mouseleave="showMap = false">
-        <div class="baseMap-item active" v-if="!showMap">{{ mapData.mapName }}</div>
+        <div class="baseMap-item active" v-if="!showMap">
+            <img class="icon" :src="mapData.mapIcon" alt="">
+            <div class="mapname">{{ mapData.mapName }}</div>
+        </div>
         <div v-else :class="mapData.mapType === item.type ? 'baseMap-item active' : 'baseMap-item'"
-            @click="changeMapType(item)" v-for="item in baseMapList" :key="item.id">{{ item.name }}</div>
+            @click="changeMapType(item)" v-for="item in baseMapList" :key="item.id">
+            <img class="icon" :src="item.icon" alt="">
+            <div class="mapname">{{ item.name }}</div>
+        </div>
     </div>
     <!-- 右键菜单 -->
     <div class="popmenu" ref="target" v-if="showMenu" :style="{ 'left': position.x + 'px', 'top': position.y + 'px' }">
@@ -251,12 +257,17 @@ import { useMouse, onClickOutside, useNow, useDateFormat } from '@vueuse/core'
 import { pointList, lineList, filterPoints, filterLines } from '@/static/fakedata/fakedata'
 import { LocationInformation, Delete, Refresh, OfficeBuilding, Rank, Picture, EditPen, Share } from '@element-plus/icons-vue'
 import { ElMessage } from "element-plus";
-import AmapMercatorTilingScheme from '@/modules/AmapMercatorTilingScheme/AmapMercatorTilingScheme'
+import AmapMercatorTilingScheme from '@/modules/AmapMercatorTilingScheme/AmapMercatorTilingScheme';
+import tdt_img from '@/static/img/tdt_img.png';
+import tdt_vec from '@/static/img/tdt_vec.png';
+import gaode_vec from '@/static/img/gaode_vec.png';
+import gaode_img from '@/static/img/gaode_img.png';
 var viewer;
 
 const mapData = reactive({
     mapType: 'tdt',
     mapName: '天地图影像',
+    mapIcon: tdt_img,
     markType: '1',
     mapLayer: {},
     markLayer: {},
@@ -285,10 +296,10 @@ const mapData = reactive({
     tempCalculate: [],
 })
 const baseMapList = [
-    { id: 1, name: '天地图影像', type: 'tdt' },
-    { id: 2, name: '高德影像', type: 'gd' },
-    { id: 2, name: '天地图矢量', type: 'tdt_v' },
-    { id: 2, name: '高德矢量', type: 'gd_v' },
+    { id: 1, name: '天地图影像', type: 'tdt', icon: tdt_img },
+    { id: 2, name: '高德影像', type: 'gd', icon: gaode_img },
+    { id: 2, name: '天地图矢量', type: 'tdt_v', icon: tdt_vec },
+    { id: 2, name: '高德矢量', type: 'gd_v', icon: gaode_vec },
 ]
 const mouseData = reactive(useMouse())
 const formatDate = useDateFormat(useNow(), 'YYYY-MM-DD HH:mm:ss')
@@ -423,6 +434,7 @@ const initCesium = () => {
 const changeMapType = (map) => {
     mapData.mapType = map.type;
     mapData.mapName = map.name;
+    mapData.mapIcon = map.icon;
     changeBaseMap()
 }
 const changeBaseMap = () => {
@@ -435,7 +447,7 @@ const changeBaseMap = () => {
                 'https://t{s}.tianditu.gov.cn/img_w/wmts?service=WMTS&request=GetTile&version=1.0.0&layer=img&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=' +
                 '436ce7e50d27eede2f2929307e6b33c0',
             subdomains: ['1', '2', '3', '4', '5', '6', '7'],//URL模板中用于{s}占位符的子域。如果该参数是单个字符串，则字符串中的每个字符都是一个子域。如果它是一个数组，数组中的每个元素都是一个子域
-            layer: 'tdtImgLayer',
+            layer: 'tdt_imgLayer',
             style: 'default',
             format: 'image/jpeg',
             tileWidth: 256,
@@ -472,7 +484,7 @@ const changeBaseMap = () => {
                 'https://t{s}.tianditu.gov.cn/vec_w/wmts?service=WMTS&request=GetTile&version=1.0.0&layer=vec&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=' +
                 '436ce7e50d27eede2f2929307e6b33c0',
             subdomains: ['1', '2', '3', '4', '5', '6', '7'],//URL模板中用于{s}占位符的子域。如果该参数是单个字符串，则字符串中的每个字符都是一个子域。如果它是一个数组，数组中的每个元素都是一个子域
-            layer: 'tdtImgLayer',
+            layer: 'tdt_imgLayer',
             style: 'default',
             tileWidth: 256,
             tileHeight: 256,
@@ -1270,6 +1282,17 @@ onMounted(() => {
         &.active {
             background-color: #268dd1cc;
             border: 2px solid #9c7a1df3;
+        }
+
+        .icon {
+            width: 80px;
+            height: 60px;
+        }
+
+        .mapname {
+            margin-top: -52px;
+            text-shadow: #232119 2px 2px 6px;
+            line-height: 20px;
         }
     }
 }
