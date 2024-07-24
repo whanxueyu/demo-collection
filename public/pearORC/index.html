@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh_CN" class="dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="./favicon.ico" />
+  <link rel="stylesheet" href="./font/iconfont.css">
+  <script src="./registerSW.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>在线图片转文字，免费OCR，在线图片文字提取，本地运算，无上传，PearOCR</title>
+  <meta name="description" content="完全免费无限制的文字识别网站，从图片中识别出可复制的文字并导出！" />
+  <meta name="Keywords" content="文字识别, OCR, 图片转文字, 识别, 复制图片文字" />
+  <meta property="og:locale" content="zh_CN" />
+  <meta property="og:image" content="./assets/logo.png" />
+  <script>
+    function isIgnoreStatistics() {
+      let domain = window.location.host;
+      let ignoreList = ["test.", "localhost", "127.0.0.1", "192.168."]
+      for (const it of ignoreList) {
+        if (domain.indexOf(it) != -1) {
+          console.log("Ignore statistics of domain:", domain);
+          return true;
+        }
+      }
+      return false;
+    }
+    var _hmt = _hmt || [];
+    (function () {
+      if (isIgnoreStatistics()) {
+        return;
+      }
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?6441ed20bfb8329d2f9e51240bc0c7f3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+  <script type="module" crossorigin src="./assets/zh.js"></script>
+  <link rel="modulepreload" href="./assets/main.js">
+  <link rel="modulepreload" href="./assets/vendor.js">
+  <link rel="stylesheet" href="./assets/main.css">
+  <link rel="manifest" href="./manifest.webmanifest">
+</head>
+
+<body>
+  <div id="app"></div>
+
+</body>
+<style>
+  body,
+  html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+    background-color: #000;
+  }
+</style>
+
+</html>

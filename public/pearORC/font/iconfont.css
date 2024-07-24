@@ -1,0 +1,87 @@
+@font-face {
+  font-family: "iconfont"; /* Project id 2692460 */
+  src: url('iconfont.woff2') format('woff2'),
+       url('iconfont.woff') format('woff'),
+       url('iconfont.ttf') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-a-language1x:before {
+  content: "\e6f9";
+}
+
+.icon-mail:before {
+  content: "\e640";
+}
+
+.icon-telegram:before {
+  content: "\e715";
+}
+
+.icon-edit:before {
+  content: "\e630";
+}
+
+.icon-imgtxt:before {
+  content: "\e608";
+}
+
+.icon-pdf:before {
+  content: "\e759";
+}
+
+.icon-lineBox:before {
+  content: "\e85b";
+}
+
+.icon-fullscreen:before {
+  content: "\e602";
+}
+
+.icon-postext:before {
+  content: "\e75e";
+}
+
+.icon-located:before {
+  content: "\e63e";
+}
+
+.icon-clipboard:before {
+  content: "\ea32";
+}
+
+.icon-safe:before {
+  content: "\e657";
+}
+
+.icon-free:before {
+  content: "\e600";
+}
+
+.icon-smile:before {
+  content: "\e643";
+}
+
+.icon-AI:before {
+  content: "\e695";
+}
+
+.icon-revert:before {
+  content: "\e6c0";
+}
+
+.icon-jurassic_shupai-text:before {
+  content: "\e70e";
+}
+
+.icon-table:before {
+  content: "\eb7e";
+}
+

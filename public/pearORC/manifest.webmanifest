@@ -1,0 +1,9 @@
+{
+    "name": "PearOcr",
+    "short_name": "PearOcr",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff99",
+    "lang": "en",
+    "scope": "/"
+}
