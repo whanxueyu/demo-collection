@@ -1,13 +1,12 @@
-import {
-    createRouter,
-    createWebHashHistory
-} from 'vue-router'
+
+import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import pinia from '@/store'
 import { useMenu } from '@/store/menu'
-const routes = [
+const routes: Array<RouteRecordRaw> = [
     {
         path: '/',
         component: () => import('@/pages/public/index.vue'),
+        redirect:'/',
         meta: {
             hidden:true,
             name:'public'
