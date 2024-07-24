@@ -1,12 +1,11 @@
-
-import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
+/* eslint-disable */
+import { createRouter, createWebHashHistory } from "vue-router";
 import pinia from '@/store'
 import { useMenu } from '@/store/menu'
-const routes: Array<RouteRecordRaw> = [
+const routes = [
     {
         path: '/',
         component: () => import('@/pages/public/index.vue'),
-        redirect:'/',
         meta: {
             hidden:true,
             name:'public'
@@ -36,6 +35,15 @@ const routes: Array<RouteRecordRaw> = [
                 component: () => import('@/pages/bigscreen/bigscreen.vue'),
                 meta: {
                     name: '可视化大屏',
+                    hidden:false
+                },
+            },
+            {
+                path: '/PearORC',
+                name: 'PearORC',
+                component: () => import('@/pages/orc/orc.vue'),
+                meta: {
+                    name: 'PearORC',
                     hidden:false
                 },
             },

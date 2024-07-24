@@ -18,6 +18,8 @@
         "resolveJsonModule": true,
         "esModuleInterop": true,
         "isolatedModules": false,
+        "allowImportingTsExtensions": true,
+        "noEmit": true,
         "outDir": "dist",
         "types": [
             "vite/client",
@@ -40,7 +42,7 @@
         "src/**/*.ts",
         "src/**/*.tsx",
         "src/**/*.vue"
-    ],
+, "src/router/index.js"    ],
     "exclude": [
         "node_modules",
         "src/**/*.js",

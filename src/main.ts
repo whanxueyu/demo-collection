@@ -10,7 +10,7 @@ import 'element-plus/theme-chalk/dark/css-vars.css';
 import AFRAME from 'aframe';
 import '@/static/css/theme.scss';
 import '@/static/css/common.scss';
-import pinia from './store/index.js';
+import pinia from './store/index.ts';
 
 let app = createApp(App);
 
