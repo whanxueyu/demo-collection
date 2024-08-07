@@ -75,7 +75,7 @@
     .button,
     .button::after {
         position: relative;
-        /* width: 380px; */
+        max-width: 380px;
         padding: 0 20px;
         height: 74px;
         line-height: 74px;

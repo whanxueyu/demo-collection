@@ -1,0 +1,83 @@
+/* eslint-disable */
+import { Cartesian3, Cartesian2, Viewer, SceneTransforms } from "cesium";
+import { createApp, h } from "vue";
+import AnalysisDiv from '@/components/billboard/anallysisDiv.vue'
+class AnalysisBillboard {
+    protected viewer: Viewer;
+    protected position: Cartesian3;
+    protected content: string;
+    private id: string;
+    private element: HTMLElement | undefined;
+    private maxRenderDis: number = 500000;
+    private show: boolean;
+
+
+    constructor(viewer: Viewer, position: Cartesian3, content: string) {
+        this.viewer = viewer;
+        this.position = position;
+        this.content = content;
+        this.maxRenderDis =
+            Math.round(viewer.camera.positionCartographic.height) * 5;
+        this.id = new Date().getTime().toString();
+        this.show = true;
+        this.initBillboard();
+    }
+
+    private initBillboard() {
+        this.element = document.createElement("div");
+        this.element.style.position = "absolute";
+        this.element.style.pointerEvents= "none";
+        // 创建 Vue 应用实例并挂载到这个 DOM 元素上
+        const app = createApp({
+            render: () => h(AnalysisDiv, { id: this.id, htmlContent: this.content })
+        });
+        app.mount(this.element);
+        this.viewer.cesiumWidget.container.appendChild(this.element);
+        //实时更新位置
+        this.viewer.scene.postRender.addEventListener(
+            this.updateBillboardLocation,
+            this
+        );
+    }
+    private updateBillboardLocation() {
+        if (this.element) {
+            const canvasHeight = this.viewer.scene.canvas.height;
+            const windowPosition = new Cartesian2();
+            SceneTransforms.wgs84ToWindowCoordinates(
+                this.viewer.scene,
+                this.position,
+                windowPosition
+            );
+            this.element.style.bottom = canvasHeight - windowPosition.y + "px";
+            const elWidth = this.element.offsetWidth;
+            this.element.style.left = windowPosition.x - elWidth / 2 + "px";
+
+            const camerPosition = this.viewer.camera.position;
+            let height =
+                this.viewer.scene.globe.ellipsoid.cartesianToCartographic(
+                    camerPosition
+                ).height;
+            height += this.viewer.scene.globe.ellipsoid.maximumRadius;
+            if (this.show) {
+                if (
+                    !(Cartesian3.distance(camerPosition, this.position) > height) &&
+                    this.viewer.camera.positionCartographic.height < this.maxRenderDis
+                ) {
+                    this.element.style.display = "block";
+                } else {
+                    this.element.style.display = "none";
+                }
+            } else {
+                this.element.style.display = "none";
+            }
+        }
+    }
+    public destroy() {
+        if (this.element) {
+            this.viewer.scene.postRender.removeEventListener(this.updateBillboardLocation.bind(this));
+            this.viewer.cesiumWidget.container.removeChild(this.element);
+            this.element = null;
+        }
+    }
+}
+export default AnalysisBillboard;

@@ -19,7 +19,7 @@
     width: 160px;
     height: 50px;
     line-height: 60px;
-    color: #ff1eff;
+    color: #ff1e7c;
     font-size: 24px;
     border-radius: 10px;
     text-align: center;
@@ -31,13 +31,13 @@
 
     &:hover {
         color: #fff;
-        box-shadow: 0 0 5px #ff1eff,
-            0 0 25px #ff1eff;;
+        box-shadow: 0 0 5px #ff1e7c,
+            0 0 25px #ff1e7c;;
 
         &::after,
         &::before {
             transition: .3s;
-            background: #ff1eff;;
+            background: #ff1e7c;;
         }
     }
 
@@ -54,7 +54,7 @@
         background-repeat: no-repeat;
         background-size: 50% 50%;
         background-position: 0 0;
-        background-image: conic-gradient(#ff1eff, #ff1eff);
+        background-image: conic-gradient(#ff1e7c, #ff1e7c);
         animation: rotate 2s linear infinite;
     }
 

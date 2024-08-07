@@ -12,6 +12,5 @@ const props = defineProps({
 })
 const data = ref({
 });
-const 
 </script>
 <style lang="scss" scoped></style>

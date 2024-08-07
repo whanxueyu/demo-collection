@@ -13,11 +13,12 @@
                 </template>
                 <div class="tab-body">
                     <div class="row">
-                        <el-checkbox v-model="mapData.showMark" label="开启标记" />
+                        <el-checkbox v-model="showMark" label="标记" />
+                        <el-checkbox v-model="showMark1" label="div标记" />
                         <el-button type="primary" @click="saveAll">保存标记</el-button>
                     </div>
                     <div class="row">
-                        <el-radio-group v-model="mapData.markIcon" v-if="mapData.showMark">
+                        <el-radio-group v-model="mapData.markIcon" v-if="showMark">
                             <el-radio :label="1">
                                 <div class="align-center flex">
                                     <span>Mark</span>
@@ -63,11 +64,11 @@
                         </div>
                         <div>
                             <div>
-                                <span>管线：</span><el-switch v-model="mapData.showLine" inline-prompt active-text="显示"
+                                <span>管线：</span><el-switch v-model="showLine" inline-prompt active-text="显示"
                                     inactive-text="隐藏" @change="lineShowOrHide"></el-switch>
                             </div>
                             <div>
-                                <span>管点：</span><el-switch v-model="mapData.showPoint" inline-prompt active-text="显示"
+                                <span>管点：</span><el-switch v-model="showPoint" inline-prompt active-text="显示"
                                     inactive-text="隐藏" @change="pointShowOrHide"></el-switch>
                             </div>
                         </div>
@@ -90,45 +91,45 @@
                             <el-col :span="6" style="line-height: 32px;">椎体：</el-col>
                             <el-col :span="6">
                                 <span>1：</span>
-                                <el-color-picker v-model="mapData.colorOption.cylinder1" />
+                                <el-color-picker v-model="colorOption.cylinder1" />
                             </el-col>
                             <el-col :span="6">
                                 <span>2：</span>
-                                <el-color-picker v-model="mapData.colorOption.cylinder2" />
+                                <el-color-picker v-model="colorOption.cylinder2" />
                             </el-col>
                             <el-col :span="6">
                                 <span>3：</span>
-                                <el-color-picker v-model="mapData.colorOption.cylinder3" />
+                                <el-color-picker v-model="colorOption.cylinder3" />
                             </el-col>
                         </el-row>
                         <el-row>
                             <el-col :span="6" style="line-height: 32px;">立方体：</el-col>
                             <el-col :span="6">
                                 <span>1：</span>
-                                <el-color-picker v-model="mapData.colorOption.box1" />
+                                <el-color-picker v-model="colorOption.box1" />
                             </el-col>
                             <el-col :span="6">
                                 <span>2：</span>
-                                <el-color-picker v-model="mapData.colorOption.box2" />
+                                <el-color-picker v-model="colorOption.box2" />
                             </el-col>
                             <el-col :span="6">
                                 <span>3：</span>
-                                <el-color-picker v-model="mapData.colorOption.box3" />
+                                <el-color-picker v-model="colorOption.box3" />
                             </el-col>
                         </el-row>
                         <el-row>
                             <el-col :span="6" style="line-height: 32px;">管道：</el-col>
                             <el-col :span="6">
                                 <span>1：</span>
-                                <el-color-picker v-model="mapData.colorOption.line1" />
+                                <el-color-picker v-model="colorOption.line1" />
                             </el-col>
                             <el-col :span="6">
                                 <span>2：</span>
-                                <el-color-picker v-model="mapData.colorOption.line2" />
+                                <el-color-picker v-model="colorOption.line2" />
                             </el-col>
                             <el-col :span="6">
                                 <span>3：</span>
-                                <el-color-picker v-model="mapData.colorOption.line3" />
+                                <el-color-picker v-model="colorOption.line3" />
                             </el-col>
                         </el-row>
                     </div>
@@ -189,21 +190,21 @@
     </div>
     <div class="addition">
         <div class="align-center flex">
-            <div :class="mapData.screenShotActive ? 'menuBtn active' : 'menuBtn'" @click="takeScreenshot">
+            <div :class="activeTool = 'screenShot' ? 'menuBtn active' : 'menuBtn'" @click="takeScreenshot">
                 <el-tooltip class="box-item" effect="dark" content="保存图片" placement="top">
                     <el-icon>
                         <Picture />
                     </el-icon>
                 </el-tooltip>
             </div>
-            <div :class="mapData.drawLineActive ? 'menuBtn active' : 'menuBtn'" @click="handleDrawLine">
+            <div :class="activeTool = 'drawLine' ? 'menuBtn active' : 'menuBtn'" @click="handleDrawLine">
                 <el-tooltip class="box-item" effect="dark" content="画线" placement="top">
                     <el-icon>
                         <EditPen />
                     </el-icon>
                 </el-tooltip>
             </div>
-            <div :class="mapData.measurementActive ? 'menuBtn active' : 'menuBtn'" @click="handleMeasurement">
+            <div :class="activeTool = 'measure' ? 'menuBtn active' : 'menuBtn'" @click="handleMeasurement">
                 <el-tooltip class="box-item" effect="dark" content="测量(还有问题)" placement="top">
                     <el-icon>
                         <Share />
@@ -212,111 +213,47 @@
             </div>
         </div>
     </div>
-    <div class="baseMap" @mouseenter="showMap = true" @mouseleave="showMap = false">
-        <div class="baseMap-item active" v-if="!showMap">
-            <img class="icon" :src="mapData.mapIcon" alt="">
-            <div class="mapname">{{ mapData.mapName }}</div>
-        </div>
-        <div v-else :class="mapData.mapType === item.type ? 'baseMap-item active' : 'baseMap-item'"
-            @click="changeMapType(item)" v-for="item in baseMapList" :key="item.id">
-            <img class="icon" :src="item.icon" alt="">
-            <div class="mapname">{{ item.name }}</div>
-        </div>
-    </div>
-    <!-- 右键菜单 -->
-    <div class="popmenu" ref="target" v-if="showMenu" :style="{ 'left': position.x + 'px', 'top': position.y + 'px' }">
-        <div>
-            <el-button @click="remove" link>删除</el-button>
-        </div>
-        <div>
-            <el-button @click="showInfo" link>信息</el-button>
-        </div>
-    </div>
-    <!-- 信息弹窗 -->
-    <el-dialog v-model="dialogVisible" title="标记信息" width="300px" :before-close="handleClose">
-        <el-descriptions column=1 border>
-            <el-descriptions-item label="经度">{{ position.currentEntities.lng }}</el-descriptions-item>
-            <el-descriptions-item label="纬度">{{ position.currentEntities.lat }}</el-descriptions-item>
-            <el-descriptions-item label="标记类型">{{ position.currentEntities.name }}</el-descriptions-item>
-            <el-descriptions-item label="标记ID">{{ position.currentEntities.id }}</el-descriptions-item>
-        </el-descriptions>
-        <template #footer>
-            <span class="dialog-footer">
-                <el-button @click="handleClose" type="primary">ok</el-button>
-            </span>
-        </template>
-    </el-dialog>
-    <div id="cesiumContainer" ref="cesiumContainer"></div>
+    <Map @loaded="handleMapLoaded"></Map>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { nextTick, onMounted, reactive, ref } from "vue";
 import * as Cesium from "cesium";
+import Map from './conponents/map.vue'
 import 'cesium/Source/Widgets/widgets.css';
-import { useMouse, onClickOutside, useNow, useDateFormat } from '@vueuse/core'
+import { useNow, useDateFormat } from '@vueuse/core'
 import { pointList, lineList, filterPoints, filterLines } from '@/static/fakedata/fakedata'
 import { LocationInformation, Delete, Refresh, OfficeBuilding, Rank, Picture, EditPen, Share } from '@element-plus/icons-vue'
 import { ElMessage } from "element-plus";
-import AmapMercatorTilingScheme from '@/modules/AmapMercatorTilingScheme/AmapMercatorTilingScheme';
-import tdt_img from '@/static/img/tdt_img.png';
-import tdt_vec from '@/static/img/tdt_vec.png';
-import gaode_vec from '@/static/img/gaode_vec.png';
-import gaode_img from '@/static/img/gaode_img.png';
+import AnalysisBillboard from '@/modules/customBillboard/AnalysisBillboard.ts';
 var viewer;
 
 const mapData = reactive({
-    mapType: 'tdt',
-    mapName: '天地图影像',
-    mapIcon: tdt_img,
     markType: '1',
-    mapLayer: {},
-    markLayer: {},
-    showMark: false,
     markIcon: 1,
-    loaded: false,
     allLines: [],
     allPoints: [],
-    showLine: true,
-    showPoint: true,
-    colorOption: {
-        box1: '#930000',
-        box2: '#004C93',
-        box3: '#015F3C',
-        cylinder1: '#FF8706',
-        cylinder2: '#2E90FF',
-        cylinder3: '#9EFC32',
-        line1: '#FF2E50',
-        line2: '#06DEFF',
-        line3: '#2EFF8B',
-    },
-    screenShotActive: false,
-    drawLineActive: false,
-    measurementActive: false,
     tempSketch: [],
     tempCalculate: [],
 })
-const baseMapList = [
-    { id: 1, name: '天地图影像', type: 'tdt', icon: tdt_img },
-    { id: 2, name: '高德影像', type: 'gd', icon: gaode_img },
-    { id: 2, name: '天地图矢量', type: 'tdt_v', icon: tdt_vec },
-    { id: 2, name: '高德矢量', type: 'gd_v', icon: gaode_vec },
-]
-const mouseData = reactive(useMouse())
-const formatDate = useDateFormat(useNow(), 'YYYY-MM-DD HH:mm:ss')
-const position = reactive({
-    x: 0,
-    y: 0,
-    currentEntities: {
-        id: '',
-        name: '',
-        lng: '',
-        lat: '',
-    }
+const showMark = ref(false)
+const showMark1 = ref(false)
+const showLine = ref(false)
+const showPoint = ref(false)
+const activeTool = ref('')
+
+const colorOption = reactive({
+    box1: '#930000',
+    box2: '#004C93',
+    box3: '#015F3C',
+    cylinder1: '#FF8706',
+    cylinder2: '#2E90FF',
+    cylinder3: '#9EFC32',
+    line1: '#FF2E50',
+    line2: '#06DEFF',
+    line3: '#2EFF8B',
 })
-const target = ref(null)
-const showMenu = ref(false)
-const showMap = ref(false)
-const dialogVisible = ref(false)
+const formatDate = useDateFormat(useNow(), 'YYYY-MM-DD HH:mm:ss')
 const markerArr = reactive({
     list: []
 })
@@ -324,50 +261,10 @@ const marker = require('@/assets/icon/marker.png')
 const flag = require('@/assets/icon/flag.png')
 const pin = require('@/assets/icon/pin.png')
 const star = require('@/assets/icon/star.png')
-const initCesium = () => {
-    // Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxZDU4MDE4ZS03ODdmLTQ1NWMtYTI3Ny1kMmQxNmVkYmQxZDQiLCJpZCI6NjMxNjUsImlhdCI6MTYzMjg3OTg1NX0.AAtivmdf46L1-4MWLWjnQRgP_laeTXBMagA75_a9N9o";
-    viewer = new Cesium.Viewer("cesiumContainer", {
-        infoBox: false,
-        selectionIndicator: false,
-        sceneModePicker: false,
-        animation: false,    //左下角的动画仪表盘
-        baseLayerPicker: false,  //右上角的图层选择按钮
-        geocoder: false,  //搜索框
-        homeButton: false,  //home按钮
-        timeline: false,    //底部的时间轴
-        navigationHelpButton: false,  //右上角的帮助按钮，
-        fullscreenButton: false,
-        imageryProvider: new Cesium.SingleTileImageryProvider({
-            url:
-                "data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==",
-            tileWidth: 256,
-            tileHeight: 256,
-        }),
-    });
-    if (viewer)
-        changeBaseMap()
-    viewer.scene.screenSpaceCameraController.zoomEventTypes = [Cesium.CameraEventType.WHEEL, Cesium.CameraEventType.PINCH];
-    viewer.scene.screenSpaceCameraController.tiltEventTypes = [Cesium.CameraEventType.PINCH, Cesium.CameraEventType.RIGHT_DRAG];
-    viewer.cesiumWidget.creditContainer.style.display = "none";
-    // viewer.scene.screenSpaceCameraController.enableTranslate = false;
-    viewer.scene.screenSpaceCameraController.enableRotate = true; //拖拽旋转
-    viewer.scene.screenSpaceCameraController.enableTilt = true; //右键拖拽倾斜
-    var helper = new Cesium.EventHelper();
-    helper.add(viewer.scene.globe.tileLoadProgressEvent, function (e) {
-        if (e == 0) {
-            console.log("矢量切片加载完成时的回调");
-            if (!mapData.loaded) {
-                nextTick(() => {
-                    // 首次加载完成
-                    reset()
-                })
-                mapData.loaded = true
-            }
-        }
-    });
-    // 监听点击事件
+const handleMapLoaded = (cviewer) => {
+    viewer = cviewer;
     let handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
-    // 左
+    // 右
     handler.setInputAction(function (event) {
         let ray = viewer.camera.getPickRay(event.position);
         let cartesian = viewer.scene.globe.pick(ray, viewer.scene);
@@ -377,121 +274,19 @@ const initCesium = () => {
         let coordinate = {
             longitude: Number(lng.toFixed(6)),
             latitude: Number(lat.toFixed(6)),
+            height: Number(cartographic.height.toFixed(6)),
         };
-        console.log("origin", coordinate.longitude, coordinate.latitude);
-        addMark(coordinate.longitude, coordinate.latitude)
-        if (mapData.drawLineActive) {
+        if (showMark.value) {
+            addMark(coordinate.longitude, coordinate.latitude)
+        }
+        if (showMark1.value) {
+            addDiv(coordinate)
+        }
+        if (activeTool.value === 'drawLine') {
             mapData.tempSketch.push(cartesian);
             drawSketch()
         }
-        // if (mapData.measurementActive) {
-        //     mapData.tempCalculate.push(cartesian);
-        // }
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
-    // 移
-    handler.setInputAction(function (movement) {
-        var cartesian = viewer.scene.camera.pickEllipsoid(
-            movement.endPosition,
-            viewer.scene.globe.ellipsoid
-        );
-        if (mapData.drawLineActive) {
-            if (mapData.tempSketch.length >= 0) {
-                if (cartesian != undefined) {
-                    mapData.tempSketch.pop();
-                    mapData.tempSketch.push(cartesian);
-                }
-            }
-        }
-        if (mapData.measurementActive) {
-            if (mapData.tempCalculate.length >= 0) {
-                if (cartesian != undefined) {
-                    mapData.tempCalculate.pop();
-                    mapData.tempCalculate.push(cartesian);
-                }
-            }
-        }
-
-    }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
-    // 左双
-    // handler.setInputAction(function (movement) {
-    //     console.log("左键双击事件", movement)
-    //     if (mapData.drawLineActive) {
-    //         mapData.drawLineActive = false;
-    //     }
-    //     if (mapData.measurementActive) {
-    //         mapData.measurementActive = false
-    //     }
-    // }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
-    // 右
-    handler.setInputAction(function (click) {
-        let pickedObject = viewer.scene.pick(click.position);
-        if (Cesium.defined(pickedObject)) {
-            console.log('点击了实体:', pickedObject);
-            rightMenu(mouseData.x, mouseData.y, pickedObject)
-        }
-    }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
-}
-const changeMapType = (map) => {
-    mapData.mapType = map.type;
-    mapData.mapName = map.name;
-    mapData.mapIcon = map.icon;
-    changeBaseMap()
-}
-const changeBaseMap = () => {
-    if (viewer.imageryLayers.length > 0)
-        viewer.imageryLayers.removeAll();
-    if (mapData.mapType == 'tdt') {
-        let tdtMap = new Cesium.WebMapTileServiceImageryProvider({
-            //影像底图
-            url:
-                'https://t{s}.tianditu.gov.cn/img_w/wmts?service=WMTS&request=GetTile&version=1.0.0&layer=img&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=' +
-                '436ce7e50d27eede2f2929307e6b33c0',
-            subdomains: ['1', '2', '3', '4', '5', '6', '7'],//URL模板中用于{s}占位符的子域。如果该参数是单个字符串，则字符串中的每个字符都是一个子域。如果它是一个数组，数组中的每个元素都是一个子域
-            layer: 'tdt_imgLayer',
-            style: 'default',
-            format: 'image/jpeg',
-            tileWidth: 256,
-            tileHeight: 256,
-            tileMatrixSetID: 'GoogleMapsCompatible', //使用谷歌的瓦片切片方式
-            show: true
-        })
-        viewer.imageryLayers.addImageryProvider(tdtMap)
-    } else if (mapData.mapType == 'gd') {
-        let gdMap = new Cesium.UrlTemplateImageryProvider({
-            url: 'https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}&lang=zh_cn&size=1',
-            subdomains: ['1', '2', '3', '4', '5', '6', '7'],// 如果有多个子域名用于负载均衡，可以在这里指定  
-            tileWidth: 256,
-            tileHeight: 256,
-            tilingScheme: new AmapMercatorTilingScheme(),
-            maximumLevel: 18, // 根据高德地图的实际最大层级设置  
-        })
-        viewer.imageryLayers.addImageryProvider(gdMap)
-    } else if (mapData.mapType == 'gd_v') {
-        let gdvMap = new Cesium.UrlTemplateImageryProvider({
-            url: 'https://webst0{s}.is.autonavi.com/appmaptile?style=7&scl=1&ltype=0&x={x}&y={y}&z={z}&lang=zh_cn&size=1',
-            subdomains: ['1', '2', '3', '4', '5', '6', '7'], // 如果有多个子域名用于负载均衡，可以在这里指定  
-            tileWidth: 256,
-            tileHeight: 256,
-            tilingScheme: new AmapMercatorTilingScheme(),
-            maximumLevel: 24, // 根据高德地图的实际最大层级设置  
-        })
-        viewer.imageryLayers.addImageryProvider(gdvMap)
-    } else if (mapData.mapType == 'tdt_v') {
-
-        let tdtMap = new Cesium.WebMapTileServiceImageryProvider({
-            //影像底图
-            url:
-                'https://t{s}.tianditu.gov.cn/vec_w/wmts?service=WMTS&request=GetTile&version=1.0.0&layer=vec&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=' +
-                '436ce7e50d27eede2f2929307e6b33c0',
-            subdomains: ['1', '2', '3', '4', '5', '6', '7'],//URL模板中用于{s}占位符的子域。如果该参数是单个字符串，则字符串中的每个字符都是一个子域。如果它是一个数组，数组中的每个元素都是一个子域
-            layer: 'tdt_imgLayer',
-            style: 'default',
-            tileWidth: 256,
-            tileHeight: 256,
-            tileMatrixSetID: 'GoogleMapsCompatible', //使用谷歌的瓦片切片方式
-        })
-        viewer.imageryLayers.addImageryProvider(tdtMap)
-    }
 }
 const drawSketch = () => {
     //   let uuid = generateUniqueId()
@@ -695,7 +490,7 @@ const drawLineString = (viewer, callback) => {
         handler = undefined;
         // positions.pop(); //最后一个点无效
         // callback(positions, movement);
-        mapData.measurementActive = false;
+        activeTool.value = ''
     }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
 }
 // 空间两点距离计算函数
@@ -717,7 +512,7 @@ const getSpaceDistance = (positions) => {
         );
         distance = distance + s;
     }
-    return distance.toFixed(2);
+    return Number(distance.toFixed(2));
 }
 const Cartesian3_to_WGS84 = (point) => {
     var cartesian33 = new Cesium.Cartesian3(point.x, point.y, point.z);
@@ -749,33 +544,11 @@ const removeAll = () => {
     viewer.entities.removeAll()
     sessionStorage.removeItem('markers')
 }
-const remove = () => {
-    viewer.entities.removeById(position.currentEntities.id)
-    markerArr.list = markerArr.list.filter((item) => {
-        return item.longitude !== position.currentEntities.lng && item.latitude !== position.currentEntities.lat
-    })
-    showMenu.value = false
-    saveAll()
-}
-const showInfo = () => {
-    dialogVisible.value = true
-}
-const rightMenu = (x, y, obj) => {
-    position.x = x;
-    position.y = y;
-    position.currentEntities.id = obj.id._id;
-    position.currentEntities.name = obj.id.name;
-    let cartographic = Cesium.Cartographic.fromCartesian(obj.primitive._actualPosition);
-    let lng = Cesium.Math.toDegrees(cartographic.longitude); // 经度
-    let lat = Cesium.Math.toDegrees(cartographic.latitude); // 纬度
-    position.currentEntities.lng = lng.toFixed(4);
-    position.currentEntities.lat = lat.toFixed(4);
-    showMenu.value = true
-}
+
 const addMark = (longitude, latitude) => {
     let icon = ''
     let name = ''
-    if (mapData.showMark) {
+    if (showMark.value) {
         if (mapData.markIcon === 1) {
             icon = marker
             name = "marker"
@@ -807,10 +580,15 @@ const addMark = (longitude, latitude) => {
         markerArr.list.push(obj)
     }
 }
+const addDiv = (coordinate) => {
+    let pos = Cesium.Cartesian3.fromDegrees(coordinate.longitude, coordinate.latitude, coordinate.height);
+    let billboard = new AnalysisBillboard(viewer, pos, `经度：${coordinate.longitude}\n纬度：${coordinate.latitude}\n高度：${coordinate.height}`);
+    console.log(billboard)
+}
 const defaultMark = (longitude, latitude, mark) => {
     let icon = ''
     let name = ''
-    if (mapData.showMark) {
+    if (showMark.value) {
         if (mark === "marker") {
             icon = marker
         } else if (mark === "pin") {
@@ -832,33 +610,39 @@ const defaultMark = (longitude, latitude, mark) => {
         })
     }
 }
-const handleClose = () => {
-    showMenu.value = false
-    dialogVisible.value = false
-}
+
 // 加载3DTileset
-const load3DTileset = () => {
-    const tilesets = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
-        url: "https://zouyaoji.top/vue-cesium/SampleData/Cesium3DTiles/Tilesets/dayanta/tileset.json",
-    }));
-    var height = 738.0
-    tilesets.readyPromise
-        .then(function (tileset) {
-            // 贴地
-            //计算中心点位置
-            var cartographic = Cesium.Cartographic.fromCartesian(tileset.boundingSphere.center)
-            var lng = Cesium.Math.toDegrees(cartographic.longitude) //使用经纬度和弧度的转换，将WGS84弧度坐标系转换到目标值，弧度转度
-            var lat = Cesium.Math.toDegrees(cartographic.latitude)
-            // var lat = 34.219588
-            // var lng = 108.959397
-            //计算中心点位置的地表坐标
-            var surface = Cesium.Cartesian3.fromRadians(lng, lat, 0.0)
-            //偏移后的坐标
-            var offset = Cesium.Cartesian3.fromRadians(lng + 0.0022, lat + 0.0053, height)
-            var translation = Cesium.Cartesian3.subtract(offset, surface, new Cesium.Cartesian3())
-            tileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation)
-        })
-    viewer.zoomTo(tilesets);
+const load3DTileset = async () => {
+    // const tilesets = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
+    //     url: "https://zouyaoji.top/vue-cesium/SampleData/Cesium3DTiles/Tilesets/dayanta/tileset.json",
+    // }));
+
+    try {
+        const tileset = await Cesium.Cesium3DTileset.fromUrl(
+            "https://zouyaoji.top/vue-cesium/SampleData/Cesium3DTiles/Tilesets/dayanta/tileset.json"
+        );
+        viewer.scene.primitives.add(tileset);
+        var height = 738.0
+        tileset.readyPromise
+            .then(function (tile) {
+                // 贴地
+                //计算中心点位置
+                var cartographic = Cesium.Cartographic.fromCartesian(tile.boundingSphere.center)
+                var lng = Cesium.Math.toDegrees(cartographic.longitude) //使用经纬度和弧度的转换，将WGS84弧度坐标系转换到目标值，弧度转度
+                var lat = Cesium.Math.toDegrees(cartographic.latitude)
+                // var lat = 34.219588
+                // var lng = 108.959397
+                //计算中心点位置的地表坐标
+                var surface = Cesium.Cartesian3.fromRadians(lng, lat, 0.0)
+                //偏移后的坐标
+                var offset = Cesium.Cartesian3.fromRadians(lng + 0.0022, lat + 0.0053, height)
+                var translation = Cesium.Cartesian3.subtract(offset, surface, new Cesium.Cartesian3())
+                tile.modelMatrix = Cesium.Matrix4.fromTranslation(translation)
+            })
+        viewer.zoomTo(tileset);
+    } catch (error) {
+        console.error(`Error creating tileset: ${error}`);
+    }
 }
 const changeMaterial = () => {
     viewer.entities.removeAll()
@@ -976,10 +760,10 @@ const drawCylinder = (viewer, obj) => {
             pixelSize: 3,
             color:
                 obj.type === "3"
-                    ? new Cesium.Color.fromCssColorString(mapData.colorOption.cylinder3)
+                    ? Cesium.Color.fromCssColorString(colorOption.cylinder3)
                     : obj.type === "1"
-                        ? new Cesium.Color.fromCssColorString(mapData.colorOption.cylinder1)
-                        : new Cesium.Color.fromCssColorString(mapData.colorOption.cylinder2),
+                        ? Cesium.Color.fromCssColorString(colorOption.cylinder1)
+                        : Cesium.Color.fromCssColorString(colorOption.cylinder2),
         },
         cylinder: {
             length: buryHeight,
@@ -987,10 +771,10 @@ const drawCylinder = (viewer, obj) => {
             bottomRadius: 1.5,
             material:
                 obj.type === "3"
-                    ? new Cesium.Color.fromCssColorString(mapData.colorOption.cylinder3)
+                    ? Cesium.Color.fromCssColorString(colorOption.cylinder3)
                     : obj.type === "1"
-                        ? new Cesium.Color.fromCssColorString(mapData.colorOption.cylinder1)
-                        : new Cesium.Color.fromCssColorString(mapData.colorOption.cylinder2),
+                        ? Cesium.Color.fromCssColorString(colorOption.cylinder1)
+                        : Cesium.Color.fromCssColorString(colorOption.cylinder2),
             outline: false,//外部轮廓线
             outlineColor: new Cesium.Color(
                 Number(obj.red) / 255,
@@ -1022,19 +806,19 @@ const drawBox = (viewer, obj) => {
             pixelSize: 3,
             color:
                 obj.type === "3"
-                    ? new Cesium.Color.fromCssColorString(mapData.colorOption.box3)
+                    ? Cesium.Color.fromCssColorString(colorOption.box3)
                     : obj.type === "1"
-                        ? new Cesium.Color.fromCssColorString(mapData.colorOption.box1)
-                        : new Cesium.Color.fromCssColorString(mapData.colorOption.box2),
+                        ? Cesium.Color.fromCssColorString(colorOption.box1)
+                        : Cesium.Color.fromCssColorString(colorOption.box2),
         },
         box: {
             dimensions: new Cesium.Cartesian3(2, 3, Number(obj["bury"])),
             material:
                 obj.type === "3"
-                    ? new Cesium.Color.fromCssColorString(mapData.colorOption.box3)
+                    ? Cesium.Color.fromCssColorString(colorOption.box3)
                     : obj.type === "1"
-                        ? new Cesium.Color.fromCssColorString(mapData.colorOption.box1)
-                        : new Cesium.Color.fromCssColorString(mapData.colorOption.box2),
+                        ? Cesium.Color.fromCssColorString(colorOption.box1)
+                        : Cesium.Color.fromCssColorString(colorOption.box2),
         },
     });
 }
@@ -1073,10 +857,10 @@ const drawLineShow = (viewer, obj, positions) => {
             width: Number(obj["pipeDiameter"]) / 200,
             material:
                 obj.type === "3"
-                    ? new Cesium.Color.fromCssColorString(mapData.colorOption.line3)
+                    ? Cesium.Color.fromCssColorString(colorOption.line3)
                     : obj.type === "1"
-                        ? new Cesium.Color.fromCssColorString(mapData.colorOption.line1)
-                        : new Cesium.Color.fromCssColorString(mapData.colorOption.line2),
+                        ? Cesium.Color.fromCssColorString(colorOption.line1)
+                        : Cesium.Color.fromCssColorString(colorOption.line2),
         },
         polylineVolume: {
             positions: Cesium.Cartesian3.fromDegreesArrayHeights([
@@ -1091,10 +875,10 @@ const drawLineShow = (viewer, obj, positions) => {
             shape: positions,
             material:
                 obj.type === "3"
-                    ? new Cesium.Color.fromCssColorString(mapData.colorOption.line3)
+                    ? Cesium.Color.fromCssColorString(colorOption.line3)
                     : obj.type === "1"
-                        ? new Cesium.Color.fromCssColorString(mapData.colorOption.line1)
-                        : new Cesium.Color.fromCssColorString(mapData.colorOption.line2),
+                        ? Cesium.Color.fromCssColorString(colorOption.line1)
+                        : Cesium.Color.fromCssColorString(colorOption.line2),
         },
     });
 }
@@ -1157,48 +941,27 @@ const takeScreenshot = () => {
             console.log(e)
         }
     });
-    mapData.screenShotActive = true
-    mapData.drawLineActive = false
-    mapData.measurementActive = false
+    activeTool.value = 'screenShot'
     setTimeout(() => {
-        mapData.screenShotActive = false
+        activeTool.value = ''
     }, 500)
 }
 const handleDrawLine = () => {
-    switch (mapData.drawLineActive) {
-        case true:
-            mapData.drawLineActive = false
-            break;
-        case false:
-            mapData.screenShotActive = false
-            mapData.drawLineActive = true
-            mapData.measurementActive = false
-            break;
+    if (activeTool.value === 'drawLine') {
+        activeTool.value = ''
+    } else {
+        activeTool.value = 'drawLine'
     }
-
 }
 const handleMeasurement = () => {
-    switch (mapData.measurementActive) {
-        case true:
-            mapData.measurementActive = false
-            break;
-        case false:
-            mapData.screenShotActive = false
-            mapData.drawLineActive = false
-            mapData.measurementActive = true;
-            drawCalculate(viewer)
-            break;
+    if (activeTool.value === 'measur') {
+        activeTool.value = ''
+    } else {
+        activeTool.value = 'measur'
+        drawCalculate(viewer)
     }
 }
 onMounted(() => {
-    // 禁用浏览器默认右键菜单，避免与自定义操作冲突
-    document.oncontextmenu = new Function("event.returnValue=false");
-    initCesium()
-    // 监听点击目标元素外部事件
-    onClickOutside(target, (event) => {
-        console.log(event)
-        showMenu.value = false
-    })
     markerArr.list = JSON.parse(sessionStorage.getItem("markers")) || []
     console.log(markerArr.list)
     if (markerArr.list.length > 0) {
