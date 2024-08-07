@@ -40,7 +40,7 @@
 import { nextTick, onMounted, reactive, ref, defineEmits } from "vue";
 import * as Cesium from "cesium";
 import 'cesium/Source/Widgets/widgets.css';
-import { useMouse, onClickOutside} from '@vueuse/core'
+import { useMouse, onClickOutside } from '@vueuse/core'
 
 import AmapMercatorTilingScheme from '@/modules/AmapMercatorTilingScheme/AmapMercatorTilingScheme';
 import tdt_img from '@/static/img/tdt_img.png';
@@ -98,6 +98,10 @@ const initCesium = () => {
             tileWidth: 256,
             tileHeight: 256,
         }),
+        terrain: Cesium.Terrain.fromWorldTerrain({
+            requestWaterMask: true,
+            requestVertexNormals: true,
+        }),
     });
     if (viewer)
         changeBaseMap()
@@ -117,7 +121,7 @@ const initCesium = () => {
                     reset()
                 })
                 mapData.loaded = true;
-                emits('loaded',viewer)
+                emits('loaded', viewer)
             }
         }
     });
@@ -154,7 +158,8 @@ const changeBaseMap = () => {
             tileWidth: 256,
             tileHeight: 256,
             tileMatrixSetID: 'GoogleMapsCompatible', //使用谷歌的瓦片切片方式
-            show: true
+            show: true,
+            maximumLevel: 24,
         })
         viewer.imageryLayers.addImageryProvider(tdtMap)
     } else if (mapData.mapType == 'gd') {
@@ -164,7 +169,7 @@ const changeBaseMap = () => {
             tileWidth: 256,
             tileHeight: 256,
             tilingScheme: new AmapMercatorTilingScheme(),
-            maximumLevel: 18, // 根据高德地图的实际最大层级设置  
+            maximumLevel: 24, // 根据高德地图的实际最大层级设置  
         })
         viewer.imageryLayers.addImageryProvider(gdMap)
     } else if (mapData.mapType == 'gd_v') {
@@ -190,6 +195,7 @@ const changeBaseMap = () => {
             tileWidth: 256,
             tileHeight: 256,
             tileMatrixSetID: 'GoogleMapsCompatible', //使用谷歌的瓦片切片方式
+            maximumLevel: 24,
         })
         viewer.imageryLayers.addImageryProvider(tdtMap)
     }
