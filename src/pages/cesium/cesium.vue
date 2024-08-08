@@ -225,7 +225,9 @@ import { useNow, useDateFormat } from '@vueuse/core'
 import { pointList, lineList, filterPoints, filterLines } from '@/static/fakedata/fakedata'
 import { LocationInformation, Delete, Refresh, OfficeBuilding, Rank, Picture, EditPen, Share } from '@element-plus/icons-vue'
 import { ElMessage } from "element-plus";
-import AnalysisBillboard from '@/modules/customBillboard/AnalysisBillboard.ts';
+import DivBillboard from '@/modules/customBillboard/DivBillboard';
+import anallysisDiv from "@/components/billboard/anallysisDiv.vue";
+import borderDiv from "@/components/billboard/borderDiv.vue";
 var viewer;
 
 const mapData = reactive({
@@ -323,7 +325,7 @@ const drawCalculate = (viewer) => {
 // eslint-disable-next-line
 const drawLineString = (viewer, callback) => {
     var PolyLinePrimitive = (function () {
-        function _(positions) {
+        function _(this: any, positions) {
             this.options = {
                 polyline: {
                     show: true,
@@ -582,7 +584,8 @@ const addMark = (longitude, latitude) => {
 }
 const addDiv = (coordinate) => {
     let pos = Cesium.Cartesian3.fromDegrees(coordinate.longitude, coordinate.latitude, coordinate.height);
-    let billboard = new AnalysisBillboard(viewer, pos, `经度：${coordinate.longitude}\n纬度：${coordinate.latitude}\n高度：${coordinate.height}`);
+    let content = `经度：${coordinate.longitude}\n纬度：${coordinate.latitude}\n高度：${coordinate.height}`
+    let billboard = new DivBillboard(viewer, pos, content, borderDiv);
     console.log(billboard)
 }
 const defaultMark = (longitude, latitude, mark) => {
@@ -623,22 +626,36 @@ const load3DTileset = async () => {
         );
         viewer.scene.primitives.add(tileset);
         var height = 738.0
-        tileset.readyPromise
-            .then(function (tile) {
-                // 贴地
-                //计算中心点位置
-                var cartographic = Cesium.Cartographic.fromCartesian(tile.boundingSphere.center)
-                var lng = Cesium.Math.toDegrees(cartographic.longitude) //使用经纬度和弧度的转换，将WGS84弧度坐标系转换到目标值，弧度转度
-                var lat = Cesium.Math.toDegrees(cartographic.latitude)
-                // var lat = 34.219588
-                // var lng = 108.959397
-                //计算中心点位置的地表坐标
-                var surface = Cesium.Cartesian3.fromRadians(lng, lat, 0.0)
-                //偏移后的坐标
-                var offset = Cesium.Cartesian3.fromRadians(lng + 0.0022, lat + 0.0053, height)
-                var translation = Cesium.Cartesian3.subtract(offset, surface, new Cesium.Cartesian3())
-                tile.modelMatrix = Cesium.Matrix4.fromTranslation(translation)
-            })
+        // tileset.readyPromise.then(function (tile) {
+        //     console.log('readyPromise');
+        //     // 贴地
+        //     //计算中心点位置
+        //     var cartographic = Cesium.Cartographic.fromCartesian(tile.boundingSphere.center)
+        //     var lng = Cesium.Math.toDegrees(cartographic.longitude) //使用经纬度和弧度的转换，将WGS84弧度坐标系转换到目标值，弧度转度
+        //     var lat = Cesium.Math.toDegrees(cartographic.latitude)
+        //     // var lat = 34.219588
+        //     // var lng = 108.959397
+        //     //计算中心点位置的地表坐标
+        //     var surface = Cesium.Cartesian3.fromRadians(lng, lat, 0.0)
+        //     //偏移后的坐标
+        //     var offset = Cesium.Cartesian3.fromRadians(lng + 0.0022, lat + 0.0053, height)
+        //     var translation = Cesium.Cartesian3.subtract(offset, surface, new Cesium.Cartesian3())
+        //     tile.modelMatrix = Cesium.Matrix4.fromTranslation(translation)
+        // })
+        tileset.initialTilesLoaded.addEventListener(function () {
+            console.log('Initial tiles are loaded');
+            var cartographic = Cesium.Cartographic.fromCartesian(tileset.boundingSphere.center)
+            var lng = Cesium.Math.toDegrees(cartographic.longitude) //使用经纬度和弧度的转换，将WGS84弧度坐标系转换到目标值，弧度转度
+            var lat = Cesium.Math.toDegrees(cartographic.latitude)
+            // var lat = 34.219588
+            // var lng = 108.959397
+            //计算中心点位置的地表坐标
+            var surface = Cesium.Cartesian3.fromRadians(lng, lat, 0.0)
+            //偏移后的坐标
+            var offset = Cesium.Cartesian3.fromRadians(lng, lat, 0)
+            var translation = Cesium.Cartesian3.subtract(offset, surface, new Cesium.Cartesian3())
+            tileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation)
+        });
         viewer.zoomTo(tileset);
     } catch (error) {
         console.error(`Error creating tileset: ${error}`);

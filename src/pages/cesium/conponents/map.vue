@@ -43,14 +43,15 @@ import 'cesium/Source/Widgets/widgets.css';
 import { useMouse, onClickOutside } from '@vueuse/core'
 
 import AmapMercatorTilingScheme from '@/modules/AmapMercatorTilingScheme/AmapMercatorTilingScheme';
-import baseMapIcon from '@/static/baseMap';
+import baseMapIcon from '@/static/baseMap/index.js';
 var viewer;
 const emits = defineEmits(['loaded'])
 const mapData = reactive({
     mapType: 'tdt',
     mapName: '天地图影像',
-    mapIcon: tdt_img,
+    mapIcon: baseMapIcon.tdt_img,
 })
+console.log(baseMapIcon)
 const baseMapList = [
     { id: 1, name: '天地图影像', type: 'tdt', icon: baseMapIcon.tdt_img },
     { id: 2, name: '高德影像', type: 'gd', icon: baseMapIcon.gaode_img },
@@ -58,7 +59,6 @@ const baseMapList = [
     { id: 4, name: '高德矢量', type: 'gd_v', icon: baseMapIcon.gaode_vec },
     { id: 5, name: 'Bing路网', type: 'BingRoad', icon: baseMapIcon.gaode_vec },
     { id: 4, name: 'Bing影像', type: 'BingAerial', icon: baseMapIcon.gaode_vec },
-    { id: 4, name: 'Bing影像注记', type: 'BingAerialLabel', icon: baseMapIcon.gaode_vec },
 ]
 const mouseData = reactive(useMouse())
 
@@ -80,7 +80,7 @@ const markerArr = reactive({
     list: []
 })
 const initCesium = () => {
-    Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyMjBkODk3NS0xZmE4LTQ5MzgtYTAxZC1mZTZhZTVmMTY3ZjQiLCJpZCI6MTcwNzE3LCJpYXQiOjE2OTY4MTY5OTN9.YivsBCkT8fHJNB5lFMFo2bh7860luv368ALHw-_gCD0";
+    //Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyMjBkODk3NS0xZmE4LTQ5MzgtYTAxZC1mZTZhZTVmMTY3ZjQiLCJpZCI6MTcwNzE3LCJpYXQiOjE2OTY4MTY5OTN9.YivsBCkT8fHJNB5lFMFo2bh7860luv368ALHw-_gCD0";
     viewer = new Cesium.Viewer("cesiumContainer", {
         infoBox: false,
         selectionIndicator: false,
@@ -159,7 +159,7 @@ const changeBaseMap = async () => {
             tileHeight: 256,
             tileMatrixSetID: 'GoogleMapsCompatible', //使用谷歌的瓦片切片方式
             show: true,
-            maximumLevel: 24,
+            maximumLevel: 18,
         })
         viewer.imageryLayers.addImageryProvider(tdtMap)
     } else if (mapData.mapType == 'gd') {
@@ -205,10 +205,6 @@ const changeBaseMap = async () => {
     } else if (mapData.mapType == 'BingAerial') {
         viewer.imageryLayers.addImageryProvider(
             await Cesium.IonImageryProvider.fromAssetId(2),
-        );
-    } else if (mapData.mapType == 'BingAerialLabel') {
-        viewer.imageryLayers.addImageryProvider(
-            await Cesium.IonImageryProvider.fromAssetId(3),
         );
     }
 }

@@ -1,8 +1,7 @@
 /* eslint-disable */
 import { Cartesian3, Cartesian2, Viewer, SceneTransforms } from "cesium";
 import { createApp, h } from "vue";
-import AnalysisDiv from '@/components/billboard/anallysisDiv.vue'
-class AnalysisBillboard {
+class DivBillboard {
     protected viewer: Viewer;
     protected position: Cartesian3;
     protected content: string;
@@ -10,12 +9,14 @@ class AnalysisBillboard {
     private element: HTMLElement | undefined;
     private maxRenderDis: number = 500000;
     private show: boolean;
+    private vueComponent: any;
 
 
-    constructor(viewer: Viewer, position: Cartesian3, content: string) {
+    constructor(viewer: Viewer, position: Cartesian3, content: string, vueComponent: any) {
         this.viewer = viewer;
         this.position = position;
         this.content = content;
+        this.vueComponent = vueComponent;
         this.maxRenderDis =
             Math.round(viewer.camera.positionCartographic.height) * 5;
         this.id = new Date().getTime().toString();
@@ -29,7 +30,7 @@ class AnalysisBillboard {
         this.element.style.pointerEvents= "none";
         // 创建 Vue 应用实例并挂载到这个 DOM 元素上
         const app = createApp({
-            render: () => h(AnalysisDiv, { id: this.id, htmlContent: this.content })
+            render: () => h(this.vueComponent, { id: this.id, htmlContent: this.content })
         });
         app.mount(this.element);
         this.viewer.cesiumWidget.container.appendChild(this.element);
@@ -72,6 +73,16 @@ class AnalysisBillboard {
             }
         }
     }
+    public setContent(content: string) {
+        this.content = content;
+        this.content = content;
+        if (this.element) {
+            const app = createApp({
+                render: () => h(this.vueComponent, { id: this.id, htmlContent: this.content })
+            });
+            app.mount(this.element); // 重新渲染组件
+        }
+    }
     public destroy() {
         if (this.element) {
             this.viewer.scene.postRender.removeEventListener(this.updateBillboardLocation.bind(this));
@@ -80,4 +91,4 @@ class AnalysisBillboard {
         }
     }
 }
-export default AnalysisBillboard;
+export default DivBillboard;
