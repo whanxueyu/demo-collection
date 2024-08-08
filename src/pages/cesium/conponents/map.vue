@@ -43,10 +43,7 @@ import 'cesium/Source/Widgets/widgets.css';
 import { useMouse, onClickOutside } from '@vueuse/core'
 
 import AmapMercatorTilingScheme from '@/modules/AmapMercatorTilingScheme/AmapMercatorTilingScheme';
-import tdt_img from '@/static/img/tdt_img.png';
-import tdt_vec from '@/static/img/tdt_vec.png';
-import gaode_vec from '@/static/img/gaode_vec.png';
-import gaode_img from '@/static/img/gaode_img.png';
+import baseMapIcon from '@/static/baseMap';
 var viewer;
 const emits = defineEmits(['loaded'])
 const mapData = reactive({
@@ -55,10 +52,13 @@ const mapData = reactive({
     mapIcon: tdt_img,
 })
 const baseMapList = [
-    { id: 1, name: '天地图影像', type: 'tdt', icon: tdt_img },
-    { id: 2, name: '高德影像', type: 'gd', icon: gaode_img },
-    { id: 2, name: '天地图矢量', type: 'tdt_v', icon: tdt_vec },
-    { id: 2, name: '高德矢量', type: 'gd_v', icon: gaode_vec },
+    { id: 1, name: '天地图影像', type: 'tdt', icon: baseMapIcon.tdt_img },
+    { id: 2, name: '高德影像', type: 'gd', icon: baseMapIcon.gaode_img },
+    { id: 3, name: '天地图矢量', type: 'tdt_v', icon: baseMapIcon.tdt_vec },
+    { id: 4, name: '高德矢量', type: 'gd_v', icon: baseMapIcon.gaode_vec },
+    { id: 5, name: 'Bing路网', type: 'BingRoad', icon: baseMapIcon.gaode_vec },
+    { id: 4, name: 'Bing影像', type: 'BingAerial', icon: baseMapIcon.gaode_vec },
+    { id: 4, name: 'Bing影像注记', type: 'BingAerialLabel', icon: baseMapIcon.gaode_vec },
 ]
 const mouseData = reactive(useMouse())
 
@@ -80,7 +80,7 @@ const markerArr = reactive({
     list: []
 })
 const initCesium = () => {
-    // Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxZDU4MDE4ZS03ODdmLTQ1NWMtYTI3Ny1kMmQxNmVkYmQxZDQiLCJpZCI6NjMxNjUsImlhdCI6MTYzMjg3OTg1NX0.AAtivmdf46L1-4MWLWjnQRgP_laeTXBMagA75_a9N9o";
+    Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyMjBkODk3NS0xZmE4LTQ5MzgtYTAxZC1mZTZhZTVmMTY3ZjQiLCJpZCI6MTcwNzE3LCJpYXQiOjE2OTY4MTY5OTN9.YivsBCkT8fHJNB5lFMFo2bh7860luv368ALHw-_gCD0";
     viewer = new Cesium.Viewer("cesiumContainer", {
         infoBox: false,
         selectionIndicator: false,
@@ -142,7 +142,7 @@ const changeMapType = (map) => {
     mapData.mapIcon = map.icon;
     changeBaseMap()
 }
-const changeBaseMap = () => {
+const changeBaseMap = async () => {
     if (viewer.imageryLayers.length > 0)
         viewer.imageryLayers.removeAll();
     if (mapData.mapType == 'tdt') {
@@ -198,6 +198,18 @@ const changeBaseMap = () => {
             maximumLevel: 24,
         })
         viewer.imageryLayers.addImageryProvider(tdtMap)
+    } else if (mapData.mapType == 'BingRoad') {
+        viewer.imageryLayers.addImageryProvider(
+            await Cesium.IonImageryProvider.fromAssetId(4),
+        );
+    } else if (mapData.mapType == 'BingAerial') {
+        viewer.imageryLayers.addImageryProvider(
+            await Cesium.IonImageryProvider.fromAssetId(2),
+        );
+    } else if (mapData.mapType == 'BingAerialLabel') {
+        viewer.imageryLayers.addImageryProvider(
+            await Cesium.IonImageryProvider.fromAssetId(3),
+        );
     }
 }
 const reset = () => {
