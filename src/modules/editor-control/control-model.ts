@@ -1,5 +1,5 @@
 import * as Cesium from "cesium";
-import { EventArgs } from "@cesium-libs/subscriber";
+import { EventArgs } from "../subscriber";
 export class ControlModel {
     position;
     viewer;

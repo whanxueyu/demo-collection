@@ -1,7 +1,32 @@
 
 import * as Cesium from "cesium";
-import { EventArgs, Subscriber } from "@cesium-libs/subscriber";
-import { ThreeDTilesetSource } from "@cesium-libs/cesium-tileset/cesium-tileset-sources";
+import { EventArgs, Subscriber } from "../subscriber";
+interface ThreeDTilesetSource {
+    id: string
+    name: string
+    url: string
+    visible: boolean
+    enable?: boolean
+    longitude?: number
+    latitude?: number
+    altitude?: number
+    // axis:xz|xy|zx|zy
+    x: number
+    y: number
+    z: number
+    skipLevelOfDetail?: boolean
+    dynamicScreenSpaceError?: boolean
+    brightness?: number
+    alpha?: number
+    scale?: number
+    afterReady?: (viewer: Cesium.Viewer, success: boolean) => void
+    outlinecolor?: string
+    showOutline?: boolean
+    parentId?: string
+    rotationX: number,
+    rotationY: number,
+    rotationZ: number
+  }
 interface hprOffset {
     heading: number,
     pitch: number,

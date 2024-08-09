@@ -12,9 +12,9 @@ import {
     ColorBlendMode,
 } from "cesium";
 import * as Cesium from "cesium";
-import { EventArgs, Subscriber } from "@cesium-libs/subscriber";
-import { GraphTransform } from "@cesium-libs/math/position-transform";
-import { GeoPositon } from "@/modules/cesium-libs/types";
+import { EventArgs, Subscriber } from "../subscriber";
+import { GraphTransform } from "../math/position-transform";
+import { GeoPositon } from "../types";
 import { nanoid } from "nanoid";
 //用于拾取判断
 export const ControlLayer: string = "control-layer";
