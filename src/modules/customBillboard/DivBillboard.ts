@@ -10,13 +10,14 @@ class DivBillboard {
     private maxRenderDis: number = 500000;
     private show: boolean;
     private vueComponent: any;
+    private enableMouse: boolean
 
-
-    constructor(viewer: Viewer, position: Cartesian3, content: string, vueComponent: any) {
+    constructor(viewer: Viewer, position: Cartesian3, content: string, vueComponent: any, enableMouse?: boolean) {
         this.viewer = viewer;
         this.position = position;
         this.content = content;
         this.vueComponent = vueComponent;
+        this.enableMouse = enableMouse || false
         this.maxRenderDis =
             Math.round(viewer.camera.positionCartographic.height) * 5;
         this.id = new Date().getTime().toString();
@@ -27,7 +28,11 @@ class DivBillboard {
     private initBillboard() {
         this.element = document.createElement("div");
         this.element.style.position = "absolute";
-        this.element.style.pointerEvents= "none";
+        if (this.enableMouse) {
+            this.element.style.pointerEvents = "auto";
+        } else {
+            this.element.style.pointerEvents = "none";
+        }
         // 创建 Vue 应用实例并挂载到这个 DOM 元素上
         const app = createApp({
             render: () => h(this.vueComponent, { id: this.id, htmlContent: this.content })
