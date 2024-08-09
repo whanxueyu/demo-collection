@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@jridgewell/sourcemap-codec": "^1.4.15",
+    "@turf/turf": "^7.0.0",
     "@vue/shared": "^3.3.4",
     "aframe": "^1.4.2",
     "cesium": "^1.105.2",
