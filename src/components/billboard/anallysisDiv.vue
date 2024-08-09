@@ -20,6 +20,7 @@ const props = defineProps({
 const handleClose = () => {
     document.getElementById(props.id);
     console.log(document.getElementById(props.id))
+    alert('你干嘛，哎呦')
 };
 </script>
 <style lang="scss" scoped>
@@ -37,6 +38,9 @@ const handleClose = () => {
     transform: translateY(-60px);
     pointer-events: none;
     z-index: auto;
+    &:hover{
+        background-color: #003116; 
+    }
 }
 .btn{
     color: rgb(255, 0, 0);
