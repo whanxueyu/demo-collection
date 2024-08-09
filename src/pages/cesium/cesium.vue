@@ -44,6 +44,23 @@
                                 </div>
                             </el-radio>
                         </el-radio-group>
+                        <el-radio-group v-model="mapData.markIcon" v-if="showMark1">
+                            <el-radio :label="5">
+                                <div class="align-center flex">
+                                    <span>基础</span>
+                                </div>
+                            </el-radio>
+                            <el-radio :label="6">
+                                <div class="align-center flex">
+                                    <span>边框</span>
+                                </div>
+                            </el-radio>
+                            <el-radio :label="7">
+                                <div class="align-center flex">
+                                    <span>边线</span>
+                                </div>
+                            </el-radio>
+                        </el-radio-group>
                     </div>
                 </div>
             </el-tab-pane>
@@ -133,9 +150,6 @@
                             </el-col>
                         </el-row>
                     </div>
-
-                    <el-divider content-position="left">说明</el-divider>
-                    <div class="text">数据截取自某管网项目中极少的一部分，并对数据进行了修改，仅供学习参考，勿做其他用途</div>
                 </div>
             </el-tab-pane>
             <el-tab-pane>
@@ -205,7 +219,7 @@
                 </el-tooltip>
             </div>
             <div :class="activeTool = 'measure' ? 'menuBtn active' : 'menuBtn'" @click="handleMeasurement">
-                <el-tooltip class="box-item" effect="dark" content="测量(还有问题)" placement="top">
+                <el-tooltip class="box-item" effect="dark" content="测量" placement="top">
                     <el-icon>
                         <Share />
                     </el-icon>
@@ -228,6 +242,7 @@ import { ElMessage } from "element-plus";
 import DivBillboard from '@/modules/customBillboard/DivBillboard';
 import anallysisDiv from "@/components/billboard/anallysisDiv.vue";
 import borderDiv from "@/components/billboard/borderDiv.vue";
+import lineDiv from "@/components/billboard/lineDiv.vue";
 var viewer;
 
 const mapData = reactive({
@@ -583,9 +598,17 @@ const addMark = (longitude, latitude) => {
     }
 }
 const addDiv = (coordinate) => {
+    let component;
+    if (mapData.markIcon === 5) {
+        component = anallysisDiv
+    } else if (mapData.markIcon === 6) {
+        component = borderDiv
+    } else if (mapData.markIcon === 7) {
+        component = lineDiv
+    }
     let pos = Cesium.Cartesian3.fromDegrees(coordinate.longitude, coordinate.latitude, coordinate.height);
     let content = `经度：${coordinate.longitude}\n纬度：${coordinate.latitude}\n高度：${coordinate.height}`
-    let billboard = new DivBillboard(viewer, pos, content, borderDiv);
+    let billboard = new DivBillboard(viewer, pos, content, component);
     console.log(billboard)
 }
 const defaultMark = (longitude, latitude, mark) => {
