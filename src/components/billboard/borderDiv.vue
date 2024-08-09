@@ -1,4 +1,5 @@
 <template>
+    <div>
     <div :id="id" class="light">
         <div class="border border1"></div>
         <div class="border border2"></div>
@@ -7,6 +8,7 @@
         <div class="content" v-html="htmlContent"></div>
     </div>
     <div class="after"></div>
+</div>
 </template>
 <script setup>
 import { defineProps } from 'vue';
