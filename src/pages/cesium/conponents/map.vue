@@ -57,8 +57,8 @@ const baseMapList = [
     { id: 2, name: '高德影像', type: 'gd', icon: baseMapIcon.gaode_img },
     { id: 3, name: '天地图矢量', type: 'tdt_v', icon: baseMapIcon.tdt_vec },
     { id: 4, name: '高德矢量', type: 'gd_v', icon: baseMapIcon.gaode_vec },
-    { id: 5, name: 'Bing路网', type: 'BingRoad', icon: baseMapIcon.gaode_vec },
-    { id: 4, name: 'Bing影像', type: 'BingAerial', icon: baseMapIcon.gaode_vec },
+    { id: 5, name: 'Bing路网', type: 'BingRoad', icon: baseMapIcon.bing_vec },
+    { id: 4, name: 'Bing影像', type: 'BingAerial', icon: baseMapIcon.bing_img },
 ]
 const mouseData = reactive(useMouse())
 
@@ -80,7 +80,7 @@ const markerArr = reactive({
     list: []
 })
 const initCesium = () => {
-    //Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyMjBkODk3NS0xZmE4LTQ5MzgtYTAxZC1mZTZhZTVmMTY3ZjQiLCJpZCI6MTcwNzE3LCJpYXQiOjE2OTY4MTY5OTN9.YivsBCkT8fHJNB5lFMFo2bh7860luv368ALHw-_gCD0";
+    Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyMjBkODk3NS0xZmE4LTQ5MzgtYTAxZC1mZTZhZTVmMTY3ZjQiLCJpZCI6MTcwNzE3LCJpYXQiOjE2OTY4MTY5OTN9.YivsBCkT8fHJNB5lFMFo2bh7860luv368ALHw-_gCD0";
     viewer = new Cesium.Viewer("cesiumContainer", {
         infoBox: false,
         selectionIndicator: false,
@@ -164,22 +164,28 @@ const changeBaseMap = async () => {
         viewer.imageryLayers.addImageryProvider(tdtMap)
     } else if (mapData.mapType == 'gd') {
         let gdMap = new Cesium.UrlTemplateImageryProvider({
-            url: 'https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}&lang=zh_cn&size=1',
-            subdomains: ['1', '2', '3', '4', '5', '6', '7'],// 如果有多个子域名用于负载均衡，可以在这里指定  
+            url: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}&lang=zh_cn',
             tileWidth: 256,
             tileHeight: 256,
             tilingScheme: new AmapMercatorTilingScheme(),
-            maximumLevel: 24, // 根据高德地图的实际最大层级设置  
+            maximumLevel: 18, // 根据高德地图的实际最大层级设置  
         })
         viewer.imageryLayers.addImageryProvider(gdMap)
     } else if (mapData.mapType == 'gd_v') {
+        // let gdvMap = new Cesium.UrlTemplateImageryProvider({
+        //     url: 'https://webst0{s}.is.autonavi.com/appmaptile?style=7&scl=1&ltype=0&x={x}&y={y}&z={z}&lang=zh_cn&size=1',
+        //     subdomains: ['1', '2', '3', '4', '5', '6', '7'], // 如果有多个子域名用于负载均衡，可以在这里指定  
+        //     tileWidth: 256,
+        //     tileHeight: 256,
+        //     tilingScheme: new AmapMercatorTilingScheme(),
+        //     maximumLevel: 18, // 根据高德地图的实际最大层级设置  
+        // })
         let gdvMap = new Cesium.UrlTemplateImageryProvider({
-            url: 'https://webst0{s}.is.autonavi.com/appmaptile?style=7&scl=1&ltype=0&x={x}&y={y}&z={z}&lang=zh_cn&size=1',
-            subdomains: ['1', '2', '3', '4', '5', '6', '7'], // 如果有多个子域名用于负载均衡，可以在这里指定  
+            url: 'https://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=2&style=8&x={x}&y={y}&z={z}',
             tileWidth: 256,
             tileHeight: 256,
             tilingScheme: new AmapMercatorTilingScheme(),
-            maximumLevel: 24, // 根据高德地图的实际最大层级设置  
+            maximumLevel: 18, // 根据高德地图的实际最大层级设置  
         })
         viewer.imageryLayers.addImageryProvider(gdvMap)
     } else if (mapData.mapType == 'tdt_v') {
@@ -302,7 +308,7 @@ onMounted(() => {
         }
 
         &.active {
-            color: #409eff;
+            // color: #409eff;
             background-color: #1d1e1f;
         }
     }
@@ -331,7 +337,7 @@ onMounted(() => {
 
         &.active {
             background-color: #268dd1cc;
-            border: 2px solid #9c7a1df3;
+            border: 2px solid #ffbb00;
         }
 
         .icon {
@@ -340,9 +346,12 @@ onMounted(() => {
         }
 
         .mapname {
-            margin-top: -52px;
-            text-shadow: #232119 2px 2px 6px;
+            position: absolute;
             line-height: 20px;
+            background-color: #00b8ffad;
+            width: 80px;
+            height: 20px;
+            top: 2px;
         }
     }
 }

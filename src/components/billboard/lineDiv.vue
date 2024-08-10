@@ -33,7 +33,7 @@ const props = defineProps({
     overflow: hidden;
     white-space: break-spaces;
     text-align: left;
-    transform: translateY(-60px);
+    transform: translateX(50%);
 
     .content {
         padding-left: 20px;
