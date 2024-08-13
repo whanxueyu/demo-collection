@@ -20,8 +20,8 @@
                     @change=handleNumberChange></el-input-number>
             </div>
             <div>层数：
-                <el-input-number :min="1" :max="1000" v-model="circleMunber" :step="1"
-                    @change=handleCircleChange></el-input-number>
+                <el-input-number :min="1" :max="1000" v-model="layerNumber" :step="1"
+                    @change=handleLayerChange></el-input-number>
             </div>
         </div>
     </div>
@@ -35,7 +35,7 @@ import * as Cesium from "cesium";
 import Map from '@/components/cesium/map.vue'
 import 'cesium/Source/Widgets/widgets.css';
 import { Refresh } from '@element-plus/icons-vue'
-import { calculateRadius, getCirclePosition } from './tool'
+import { calculateRadius, getCirclePosition, distributeElements, distributeRect, getRectPosition } from './tool'
 var viewer: Cesium.Viewer;
 const activeName = ref('rect');
 const target = ref({
@@ -44,18 +44,20 @@ const target = ref({
     height: 0,
 });
 const totalNumber = ref(4);
-const circleMunber = ref(1);
+const layerNumber = ref(1);
 const entitiyList = ref<Cesium.Entity[]>([]);
 const targetEntity = ref<Cesium.Entity>();
 const handleNumberChange = () => {
-    console.log(totalNumber.value)
     entitiyList.value.forEach((entity: Cesium.Entity) => {
         viewer.entities.remove(entity)
     })
     nextTick(() => {
         switch (activeName.value) {
             case "rect":
-                // addRect(coordinates);
+                let result = distributeRect(totalNumber.value, layerNumber.value)
+                const matrix = getRectPosition(target.value, layerNumber.value, result[0], 1.5)
+                console.log("matrix", matrix)
+                addRect(matrix);
                 break
             case "circle":
                 let radius = calculateRadius(totalNumber.value, 1.5)
@@ -69,8 +71,29 @@ const handleNumberChange = () => {
         }
     })
 }
-const handleCircleChange = () => {
-    console.log(circleMunber.value)
+const handleLayerChange = () => {
+    entitiyList.value.forEach((entity: Cesium.Entity) => {
+        viewer.entities.remove(entity)
+    })
+    nextTick(() => {
+        switch (activeName.value) {
+            case "rect":
+                let result = distributeRect(totalNumber.value, layerNumber.value)
+                const matrix = getRectPosition(target.value, layerNumber.value, result[0], 1.5)
+                console.log("matrix", matrix)
+                addRect(matrix);
+                break
+            case "circle":
+                let radius = calculateRadius(totalNumber.value, 1.5)
+                let circle = getCirclePosition(target.value, radius, totalNumber.value)
+                const coordinates = circle.geometry.coordinates[0];
+                addCircle(coordinates)
+                break
+            case "wedge":
+                // addWedge(coordinates)
+                break
+        }
+    })
 }
 
 const addCircle = (coordinates) => {
@@ -96,8 +119,9 @@ const addCircle = (coordinates) => {
     });
 }
 const addRect = (coordinates) => {
-    coordinates.forEach((coordinate, index) => {
-        const position = Cesium.Cartesian3.fromDegrees(coordinate[0], coordinate[1]);
+    for (let i = 0; i < totalNumber.value; i++) {
+        const position = Cesium.Cartesian3.fromDegrees(coordinates[i][0], coordinates[i][1]);
+        console.log(position)
         let model = viewer.entities.add({
             name: "锚点",
             position: position,
@@ -106,7 +130,7 @@ const addRect = (coordinates) => {
             },
         })
         entitiyList.value.push(model)
-    });
+    }
 }
 const deploy = () => {
     targetEntity.value = viewer.entities.add({
