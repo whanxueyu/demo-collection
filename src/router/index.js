@@ -135,11 +135,31 @@ const routes = [
             {
                 path: '/cesium',
                 name: 'cesium',
-                component: () => import('@/pages/cesium/cesium.vue'),
+                component: () => import('@/pages/cesium/index.vue'),
                 meta: {
                     name: 'cesium 地图',
                     hidden:false
                 },
+                children:[
+                    {
+                        path: '/map',
+                        name: 'map',
+                        component: () => import('@/pages/cesium/cesium.vue'),
+                        meta: {
+                            name: '地图功能',
+                            hidden:false
+                        },
+                    },
+                    {
+                        path: '/deployment',
+                        name: 'deployment',
+                        component: () => import('@/pages/cesium/deployment.vue'),
+                        meta: {
+                            name: '队列计算',
+                            hidden:false
+                        },
+                    },
+                ]
             },
         ]
     },

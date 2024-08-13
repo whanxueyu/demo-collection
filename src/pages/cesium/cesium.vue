@@ -233,7 +233,7 @@
 <script setup lang="ts">
 import { nextTick, onMounted, reactive, ref } from "vue";
 import * as Cesium from "cesium";
-import Map from './conponents/map.vue'
+import Map from '@/components/cesium/map.vue'
 import 'cesium/Source/Widgets/widgets.css';
 import { useNow, useDateFormat } from '@vueuse/core'
 import { pointList, lineList, filterPoints, filterLines } from '@/static/fakedata/fakedata'
@@ -1013,10 +1013,6 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-#cesiumContainer {
-    width: 100vw;
-    height: calc(100vh - 60px);
-}
 
 .menubox {
     position: absolute;
@@ -1061,58 +1057,12 @@ onMounted(() => {
     }
 }
 
-.baseMap {
-    position: fixed;
-    right: 10px;
-    bottom: 10px;
-    z-index: 999;
-    display: flex;
-
-    .baseMap-item {
-        width: 80px;
-        height: 60px;
-        text-align: center;
-        line-height: 60px;
-        color: #fff;
-        background-color: #092131cc;
-        border: 2px solid #092131cc;
-        cursor: pointer;
-
-        &:hover {
-            border: 2px solid #9c7a1d8e;
-        }
-
-        &.active {
-            background-color: #268dd1cc;
-            border: 2px solid #9c7a1df3;
-        }
-
-        .icon {
-            width: 80px;
-            height: 60px;
-        }
-
-        .mapname {
-            margin-top: -52px;
-            text-shadow: #232119 2px 2px 6px;
-            line-height: 20px;
-        }
-    }
-}
-
 .row {
     display: flex;
     justify-content: space-between;
     margin: 10px 0;
 }
 
-.popmenu {
-    position: fixed;
-    z-index: 1004;
-    background-color: rgba(9, 33, 49, 0.8);
-    padding: 5px 10px;
-    border-radius: 2px;
-}
 
 .colorSection {
     margin-top: 10px;
