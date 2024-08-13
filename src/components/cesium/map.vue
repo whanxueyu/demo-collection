@@ -45,6 +45,22 @@ import { useMouse, onClickOutside } from '@vueuse/core'
 import AmapMercatorTilingScheme from '@/modules/AmapMercatorTilingScheme/AmapMercatorTilingScheme';
 import baseMapIcon from '@/static/baseMap/index.js';
 var viewer;
+const props = defineProps({
+    // 默认经纬度
+    lazy: {
+        type: Boolean,
+        default: true
+    },
+    duration: {
+        type: Number,
+        default: 8
+    },
+    // 默认地图类型
+    mapType: {
+        type: String,
+        default: 'tdt'
+    }
+})
 const emits = defineEmits(['loaded'])
 const mapData = reactive({
     mapType: 'tdt',
@@ -58,7 +74,8 @@ const baseMapList = [
     { id: 3, name: '天地图矢量', type: 'tdt_v', icon: baseMapIcon.tdt_vec },
     { id: 4, name: '高德矢量', type: 'gd_v', icon: baseMapIcon.gaode_vec },
     { id: 5, name: 'Bing路网', type: 'BingRoad', icon: baseMapIcon.bing_vec },
-    { id: 4, name: 'Bing影像', type: 'BingAerial', icon: baseMapIcon.bing_img },
+    { id: 6, name: 'Bing影像', type: 'BingAerial', icon: baseMapIcon.bing_img },
+    { id: 7, name: '网格', type: 'grid', icon: baseMapIcon.grid },
 ]
 const mouseData = reactive(useMouse())
 
@@ -104,7 +121,7 @@ const initCesium = () => {
         }),
     });
     if (viewer)
-        changeBaseMap()
+        changeBaseMap(props.mapType)
     viewer.scene.screenSpaceCameraController.zoomEventTypes = [Cesium.CameraEventType.WHEEL, Cesium.CameraEventType.PINCH];
     viewer.scene.screenSpaceCameraController.tiltEventTypes = [Cesium.CameraEventType.PINCH, Cesium.CameraEventType.RIGHT_DRAG];
     viewer.cesiumWidget.creditContainer.style.display = "none";
@@ -112,19 +129,26 @@ const initCesium = () => {
     viewer.scene.screenSpaceCameraController.enableRotate = true; //拖拽旋转
     viewer.scene.screenSpaceCameraController.enableTilt = true; //右键拖拽倾斜
     var helper = new Cesium.EventHelper();
-    helper.add(viewer.scene.globe.tileLoadProgressEvent, function (e) {
-        if (e == 0) {
-            console.log("矢量切片加载完成时的回调");
-            if (!mapData.loaded) {
-                nextTick(() => {
-                    // 首次加载完成
-                    reset()
-                })
-                mapData.loaded = true;
-                emits('loaded', viewer)
+    if (props.lazy) {
+        helper.add(viewer.scene.globe.tileLoadProgressEvent, function (e) {
+            if (e == 0) {
+                console.log("矢量切片加载完成时的回调");
+                if (!mapData.loaded) {
+                    nextTick(() => {
+                        // 首次加载完成
+                        reset()
+                    })
+                    mapData.loaded = true;
+                    emits('loaded', viewer)
+                }
             }
-        }
-    });
+        });
+    } else {
+        reset()
+        mapData.loaded = true;
+        emits('loaded', viewer)
+    }
+
     // 监听点击事件
     let handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
     // 右
@@ -140,12 +164,13 @@ const changeMapType = (map) => {
     mapData.mapType = map.type;
     mapData.mapName = map.name;
     mapData.mapIcon = map.icon;
-    changeBaseMap()
+    changeBaseMap(mapData.mapType)
 }
-const changeBaseMap = async () => {
+const changeBaseMap = async (type) => {
     if (viewer.imageryLayers.length > 0)
         viewer.imageryLayers.removeAll();
-    if (mapData.mapType == 'tdt') {
+        restoreTerrain()
+    if (type == 'tdt') {
         let tdtMap = new Cesium.WebMapTileServiceImageryProvider({
             //影像底图
             url:
@@ -162,7 +187,7 @@ const changeBaseMap = async () => {
             maximumLevel: 18,
         })
         viewer.imageryLayers.addImageryProvider(tdtMap)
-    } else if (mapData.mapType == 'gd') {
+    } else if (type == 'gd') {
         let gdMap = new Cesium.UrlTemplateImageryProvider({
             url: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}&lang=zh_cn',
             tileWidth: 256,
@@ -171,7 +196,7 @@ const changeBaseMap = async () => {
             maximumLevel: 18, // 根据高德地图的实际最大层级设置  
         })
         viewer.imageryLayers.addImageryProvider(gdMap)
-    } else if (mapData.mapType == 'gd_v') {
+    } else if (type == 'gd_v') {
         // let gdvMap = new Cesium.UrlTemplateImageryProvider({
         //     url: 'https://webst0{s}.is.autonavi.com/appmaptile?style=7&scl=1&ltype=0&x={x}&y={y}&z={z}&lang=zh_cn&size=1',
         //     subdomains: ['1', '2', '3', '4', '5', '6', '7'], // 如果有多个子域名用于负载均衡，可以在这里指定  
@@ -188,7 +213,7 @@ const changeBaseMap = async () => {
             maximumLevel: 18, // 根据高德地图的实际最大层级设置  
         })
         viewer.imageryLayers.addImageryProvider(gdvMap)
-    } else if (mapData.mapType == 'tdt_v') {
+    } else if (type == 'tdt_v') {
 
         let tdtMap = new Cesium.WebMapTileServiceImageryProvider({
             //影像底图
@@ -204,14 +229,45 @@ const changeBaseMap = async () => {
             maximumLevel: 24,
         })
         viewer.imageryLayers.addImageryProvider(tdtMap)
-    } else if (mapData.mapType == 'BingRoad') {
+    } else if (type == 'BingRoad') {
         viewer.imageryLayers.addImageryProvider(
             await Cesium.IonImageryProvider.fromAssetId(4),
         );
-    } else if (mapData.mapType == 'BingAerial') {
+    } else if (type == 'BingAerial') {
         viewer.imageryLayers.addImageryProvider(
             await Cesium.IonImageryProvider.fromAssetId(2),
         );
+    } else if (type == 'grid') {
+        let gridOptions = {
+            color: Cesium.Color.fromCssColorString('#ccc'),
+            backgroundColor: Cesium.Color.fromCssColorString('#00000000'),
+            glowColor: Cesium.Color.fromCssColorString('#666'),
+            glowWidth: 1,
+            cells: 2
+        }
+        var GridImagery = new Cesium.GridImageryProvider(gridOptions);
+        viewer.imageryLayers.addImageryProvider(GridImagery);
+        viewer.scene.globe.baseColor = Cesium.Color.BLACK;
+        removeTerrain()
+
+    }
+}
+const currentTerrainProvider = ref(null)
+function removeTerrain() {
+    // 获取当前地形提供者
+    currentTerrainProvider.value = viewer.scene.terrainProvider;
+
+    if (currentTerrainProvider.value) {
+        // 如果当前地形提供者存在，则移除它
+        viewer.scene.terrainProvider = undefined;
+    }
+
+    // 或者替换为一个空的地形提供者
+    viewer.scene.terrainProvider = new Cesium.EllipsoidTerrainProvider();
+}
+function restoreTerrain() {
+    if (currentTerrainProvider.value) {
+        viewer.scene.terrainProvider = currentTerrainProvider.value;
     }
 }
 const reset = () => {
@@ -222,7 +278,7 @@ const reset = () => {
             pitch: Cesium.Math.toRadians(-90),
             roll: 0.0,
         },
-        duration: 8
+        duration: props.duration
     });
 }
 const saveMarkers = () => {
@@ -271,49 +327,6 @@ onMounted(() => {
     height: calc(100vh - 60px);
 }
 
-.menubox {
-    position: absolute;
-    z-index: 999;
-    border-bottom-right-radius: 10px;
-    padding: 20px;
-
-    .tab-body {
-        width: 250px;
-
-        .text {
-            line-height: 24px;
-            text-indent: 24px;
-            text-align: start;
-        }
-    }
-}
-
-.addition {
-    position: absolute;
-    z-index: 999;
-    border-bottom-right-radius: 10px;
-    padding: 20px;
-    left: 300px;
-
-    .menuBtn {
-        color: #A3A6AD;
-        font-size: 18px;
-        margin-right: 10px;
-        padding: 10px;
-        cursor: pointer;
-        background-color: #333436;
-
-        &:hover {
-            background-color: #1d1e1f;
-        }
-
-        &.active {
-            // color: #409eff;
-            background-color: #1d1e1f;
-        }
-    }
-}
-
 .baseMap {
     position: fixed;
     right: 10px;
@@ -356,28 +369,11 @@ onMounted(() => {
     }
 }
 
-.row {
-    display: flex;
-    justify-content: space-between;
-    margin: 10px 0;
-}
-
 .popmenu {
     position: fixed;
     z-index: 1004;
     background-color: rgba(9, 33, 49, 0.8);
     padding: 5px 10px;
     border-radius: 2px;
-}
-
-.colorSection {
-    margin-top: 10px;
-
-    .sectiontitle {
-        display: flex;
-        justify-content: space-between;
-        padding: 10px 0;
-        align-items: center;
-    }
 }
 </style>
