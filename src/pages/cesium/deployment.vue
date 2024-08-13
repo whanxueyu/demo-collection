@@ -35,7 +35,7 @@ import * as Cesium from "cesium";
 import Map from '@/components/cesium/map.vue'
 import 'cesium/Source/Widgets/widgets.css';
 import { Refresh } from '@element-plus/icons-vue'
-import { calculateRadius, getCirclePosition, distributeElements, distributeRect, getRectPosition } from './tool'
+import { getCirclePosition, getRectPosition } from './tool'
 var viewer: Cesium.Viewer;
 const activeName = ref('rect');
 const target = ref({
@@ -54,49 +54,23 @@ const handleNumberChange = () => {
     nextTick(() => {
         switch (activeName.value) {
             case "rect":
-                let result = distributeRect(totalNumber.value, layerNumber.value)
-                const matrix = getRectPosition(target.value, layerNumber.value, result[0], 1.5)
-                console.log("matrix", matrix)
-                addRect(matrix);
-                break
+                addRect();
+                break;
             case "circle":
-                let radius = calculateRadius(totalNumber.value, 1.5)
-                let circle = getCirclePosition(target.value, radius, totalNumber.value)
-                const coordinates = circle.geometry.coordinates[0];
-                addCircle(coordinates)
-                break
+                addCircle()
+                break;
             case "wedge":
                 // addWedge(coordinates)
-                break
+                break;
         }
     })
 }
 const handleLayerChange = () => {
-    entitiyList.value.forEach((entity: Cesium.Entity) => {
-        viewer.entities.remove(entity)
-    })
-    nextTick(() => {
-        switch (activeName.value) {
-            case "rect":
-                let result = distributeRect(totalNumber.value, layerNumber.value)
-                const matrix = getRectPosition(target.value, layerNumber.value, result[0], 1.5)
-                console.log("matrix", matrix)
-                addRect(matrix);
-                break
-            case "circle":
-                let radius = calculateRadius(totalNumber.value, 1.5)
-                let circle = getCirclePosition(target.value, radius, totalNumber.value)
-                const coordinates = circle.geometry.coordinates[0];
-                addCircle(coordinates)
-                break
-            case "wedge":
-                // addWedge(coordinates)
-                break
-        }
-    })
+    handleNumberChange()
 }
 
-const addCircle = (coordinates) => {
+const addCircle = () => {
+    let coordinates = getCirclePosition(target.value, 1.5, totalNumber.value)
     coordinates.forEach((coordinate, index) => {
         const position = Cesium.Cartesian3.fromDegrees(coordinate[0], coordinate[1]);
         var point1 = turf.point([target.value.longitude, target.value.latitude]);
@@ -111,14 +85,13 @@ const addCircle = (coordinates) => {
             ),
             model: {
                 uri: '/models/Cesium_Man.glb',
-
-                // scale: 0.5,
             },
         })
         entitiyList.value.push(model)
     });
 }
-const addRect = (coordinates) => {
+const addRect = () => {
+    const coordinates = getRectPosition(target.value, layerNumber.value, totalNumber.value, 1.5)
     for (let i = 0; i < totalNumber.value; i++) {
         const position = Cesium.Cartesian3.fromDegrees(coordinates[i][0], coordinates[i][1]);
         console.log(position)
@@ -136,18 +109,21 @@ const deploy = () => {
     targetEntity.value = viewer.entities.add({
         name: "锚点",
         position: Cesium.Cartesian3.fromDegrees(target.value.longitude, target.value.latitude, target.value.height),
-        billboard: {
-            image: require('@/assets/icon/marker.png'),
-            horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
-            verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-            scale: 0.5,
-        },
         label: {
             text: '锚点',
             font: '14pt sans-serif',
             horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
             verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-            pixelOffset: new Cesium.Cartesian2(-15, -70),
+            pixelOffset: new Cesium.Cartesian2(-15, -20),
+        },
+        point: {
+            // 点的大小（像素）
+            pixelSize: 10,
+            color: Cesium.Color.RED,
+            // 边框颜色
+            outlineColor: Cesium.Color.fromCssColorString("yellow"),
+            // 边框宽度(像素)
+            outlineWidth: 2,
         }
     })
 }
@@ -172,7 +148,7 @@ const handleMapLoaded = (cviewer: Cesium.Viewer) => {
 }
 const reset = () => {
     viewer.camera.flyTo({
-        destination: Cesium.Cartesian3.fromDegrees(116.391257, 39.907204, 100),
+        destination: Cesium.Cartesian3.fromDegrees(116.391257, 39.907204, 30),
         orientation: {
             heading: Cesium.Math.toRadians(0),
             pitch: Cesium.Math.toRadians(-90),

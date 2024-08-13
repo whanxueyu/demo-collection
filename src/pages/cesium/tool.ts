@@ -9,10 +9,12 @@ export const calculateRadius = (num: number, gap: number) => {
     return radius;
 }
 
-export const getCirclePosition = (target: { longitude: number, latitude: number }, radius: number, steps) => {
+export const getCirclePosition = (target: { longitude: number, latitude: number }, step: number, total) => {
+    let radius = calculateRadius(total, step)
     var center = [target.longitude, target.latitude];
-    var options = { steps: steps };
-    return turf.circle(center, radius / 1000, options);
+    var options = { steps: total };
+    let turfCircle =  turf.circle(center, radius / 1000, options);
+    return turfCircle.geometry.coordinates[0]
 }
 
 export const distributeElements = (Sn: number, N: number,) => {
@@ -108,16 +110,17 @@ export function distributeRect(totalNumber, layerNumber) {
 export function getRectPosition(target: {
     longitude: number;
     latitude: number;
-}, m: number, n: number, distance: number) {
+}, layerNumber: number, total: number, distance: number) {
+    let result = distributeRect(total, layerNumber)
+    let n = result[0]
 
     // 1. 根据中心点计算矩阵原点
     var point = turf.point([target.longitude, target.latitude]);
-    let point1 = turf.destination(point, (distance * (m - 1) / 2000), 90);
+    let point1 = turf.destination(point, (distance * (layerNumber - 1) / 2000), 90);
     let point2 = turf.destination(point1, (distance * (n - 1) / 2000), 0);
-    console.log(point1, point2)
     const matrix = [];
 
-    for (var i = 0; i < m; i++) {
+    for (var i = 0; i < layerNumber; i++) {
         var point3 = turf.destination(point2, (distance * i / 1000), -90);
         // matrix.push(point3.geometry.coordinates);
         for (var j = 0; j < n; j++) {
