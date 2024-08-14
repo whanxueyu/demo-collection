@@ -1,15 +1,4 @@
 <template>
-    <div class="baseMap" @mouseenter="showMap = true" @mouseleave="showMap = false">
-        <div class="baseMap-item active" v-if="!showMap">
-            <img class="icon" :src="mapData.mapIcon" alt="">
-            <div class="mapname">{{ mapData.mapName }}</div>
-        </div>
-        <div v-else :class="mapData.mapType === item.type ? 'baseMap-item active' : 'baseMap-item'"
-            @click="changeMapType(item)" v-for="item in baseMapList" :key="item.id">
-            <img class="icon" :src="item.icon" alt="">
-            <div class="mapname">{{ item.name }}</div>
-        </div>
-    </div>
     <!-- 右键菜单 -->
     <div class="popmenu" ref="target" v-if="showMenu" :style="{ 'left': position.x + 'px', 'top': position.y + 'px' }">
         <div>
@@ -34,6 +23,7 @@
         </template>
     </el-dialog>
     <div id="cesiumContainer" ref="cesiumContainer"></div>
+    <base-layer v-if="mapLoaded" :viewer="viewer" :map-type="props.mapType"></base-layer>
 </template>
 
 <script setup>
@@ -41,9 +31,7 @@ import { nextTick, onMounted, reactive, ref, defineEmits } from "vue";
 import * as Cesium from "cesium";
 import 'cesium/Source/Widgets/widgets.css';
 import { useMouse, onClickOutside } from '@vueuse/core'
-
-import AmapMercatorTilingScheme from '@/modules/AmapMercatorTilingScheme/AmapMercatorTilingScheme';
-import baseMapIcon from '@/static/baseMap/index.js';
+import baseLayer from '@/components/cesium/baseLayer.vue'
 var viewer;
 const props = defineProps({
     // 默认经纬度
@@ -62,21 +50,7 @@ const props = defineProps({
     }
 })
 const emits = defineEmits(['loaded'])
-const mapData = reactive({
-    mapType: 'tdt',
-    mapName: '天地图影像',
-    mapIcon: baseMapIcon.tdt_img,
-})
-console.log(baseMapIcon)
-const baseMapList = [
-    { id: 1, name: '天地图影像', type: 'tdt', icon: baseMapIcon.tdt_img },
-    { id: 2, name: '高德影像', type: 'gd', icon: baseMapIcon.gaode_img },
-    { id: 3, name: '天地图矢量', type: 'tdt_v', icon: baseMapIcon.tdt_vec },
-    { id: 4, name: '高德矢量', type: 'gd_v', icon: baseMapIcon.gaode_vec },
-    { id: 5, name: 'Bing路网', type: 'BingRoad', icon: baseMapIcon.bing_vec },
-    { id: 6, name: 'Bing影像', type: 'BingAerial', icon: baseMapIcon.bing_img },
-    { id: 7, name: '网格', type: 'grid', icon: baseMapIcon.grid },
-]
+
 const mouseData = reactive(useMouse())
 
 const position = reactive({
@@ -91,11 +65,11 @@ const position = reactive({
 })
 const target = ref(null)
 const showMenu = ref(false)
-const showMap = ref(false)
 const dialogVisible = ref(false)
 const markerArr = reactive({
     list: []
 })
+const mapLoaded = ref(false)
 const initCesium = () => {
     Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyMjBkODk3NS0xZmE4LTQ5MzgtYTAxZC1mZTZhZTVmMTY3ZjQiLCJpZCI6MTcwNzE3LCJpYXQiOjE2OTY4MTY5OTN9.YivsBCkT8fHJNB5lFMFo2bh7860luv368ALHw-_gCD0";
     viewer = new Cesium.Viewer("cesiumContainer", {
@@ -120,8 +94,6 @@ const initCesium = () => {
             requestVertexNormals: true,
         }),
     });
-    if (viewer)
-        changeBaseMap(props.mapType)
     viewer.scene.screenSpaceCameraController.zoomEventTypes = [Cesium.CameraEventType.WHEEL, Cesium.CameraEventType.PINCH];
     viewer.scene.screenSpaceCameraController.tiltEventTypes = [Cesium.CameraEventType.PINCH, Cesium.CameraEventType.RIGHT_DRAG];
     viewer.cesiumWidget.creditContainer.style.display = "none";
@@ -133,19 +105,19 @@ const initCesium = () => {
         helper.add(viewer.scene.globe.tileLoadProgressEvent, function (e) {
             if (e == 0) {
                 console.log("矢量切片加载完成时的回调");
-                if (!mapData.loaded) {
+                if (!mapLoaded.value) {
                     nextTick(() => {
                         // 首次加载完成
                         reset()
                     })
-                    mapData.loaded = true;
+                    mapLoaded.value = true;
                     emits('loaded', viewer)
                 }
             }
         });
     } else {
         reset()
-        mapData.loaded = true;
+        mapLoaded.value = true;
         emits('loaded', viewer)
     }
 
@@ -159,116 +131,6 @@ const initCesium = () => {
             rightMenu(mouseData.x, mouseData.y, pickedObject)
         }
     }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
-}
-const changeMapType = (map) => {
-    mapData.mapType = map.type;
-    mapData.mapName = map.name;
-    mapData.mapIcon = map.icon;
-    changeBaseMap(mapData.mapType)
-}
-const changeBaseMap = async (type) => {
-    if (viewer.imageryLayers.length > 0)
-        viewer.imageryLayers.removeAll();
-        restoreTerrain()
-    if (type == 'tdt') {
-        let tdtMap = new Cesium.WebMapTileServiceImageryProvider({
-            //影像底图
-            url:
-                'https://t{s}.tianditu.gov.cn/img_w/wmts?service=WMTS&request=GetTile&version=1.0.0&layer=img&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=' +
-                '436ce7e50d27eede2f2929307e6b33c0',
-            subdomains: ['1', '2', '3', '4', '5', '6', '7'],//URL模板中用于{s}占位符的子域。如果该参数是单个字符串，则字符串中的每个字符都是一个子域。如果它是一个数组，数组中的每个元素都是一个子域
-            layer: 'tdt_imgLayer',
-            style: 'default',
-            format: 'image/jpeg',
-            tileWidth: 256,
-            tileHeight: 256,
-            tileMatrixSetID: 'GoogleMapsCompatible', //使用谷歌的瓦片切片方式
-            show: true,
-            maximumLevel: 18,
-        })
-        viewer.imageryLayers.addImageryProvider(tdtMap)
-    } else if (type == 'gd') {
-        let gdMap = new Cesium.UrlTemplateImageryProvider({
-            url: 'https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}&lang=zh_cn',
-            tileWidth: 256,
-            tileHeight: 256,
-            tilingScheme: new AmapMercatorTilingScheme(),
-            maximumLevel: 18, // 根据高德地图的实际最大层级设置  
-        })
-        viewer.imageryLayers.addImageryProvider(gdMap)
-    } else if (type == 'gd_v') {
-        // let gdvMap = new Cesium.UrlTemplateImageryProvider({
-        //     url: 'https://webst0{s}.is.autonavi.com/appmaptile?style=7&scl=1&ltype=0&x={x}&y={y}&z={z}&lang=zh_cn&size=1',
-        //     subdomains: ['1', '2', '3', '4', '5', '6', '7'], // 如果有多个子域名用于负载均衡，可以在这里指定  
-        //     tileWidth: 256,
-        //     tileHeight: 256,
-        //     tilingScheme: new AmapMercatorTilingScheme(),
-        //     maximumLevel: 18, // 根据高德地图的实际最大层级设置  
-        // })
-        let gdvMap = new Cesium.UrlTemplateImageryProvider({
-            url: 'https://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=2&style=8&x={x}&y={y}&z={z}',
-            tileWidth: 256,
-            tileHeight: 256,
-            tilingScheme: new AmapMercatorTilingScheme(),
-            maximumLevel: 18, // 根据高德地图的实际最大层级设置  
-        })
-        viewer.imageryLayers.addImageryProvider(gdvMap)
-    } else if (type == 'tdt_v') {
-
-        let tdtMap = new Cesium.WebMapTileServiceImageryProvider({
-            //影像底图
-            url:
-                'https://t{s}.tianditu.gov.cn/vec_w/wmts?service=WMTS&request=GetTile&version=1.0.0&layer=vec&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=' +
-                '436ce7e50d27eede2f2929307e6b33c0',
-            subdomains: ['1', '2', '3', '4', '5', '6', '7'],//URL模板中用于{s}占位符的子域。如果该参数是单个字符串，则字符串中的每个字符都是一个子域。如果它是一个数组，数组中的每个元素都是一个子域
-            layer: 'tdt_imgLayer',
-            style: 'default',
-            tileWidth: 256,
-            tileHeight: 256,
-            tileMatrixSetID: 'GoogleMapsCompatible', //使用谷歌的瓦片切片方式
-            maximumLevel: 24,
-        })
-        viewer.imageryLayers.addImageryProvider(tdtMap)
-    } else if (type == 'BingRoad') {
-        viewer.imageryLayers.addImageryProvider(
-            await Cesium.IonImageryProvider.fromAssetId(4),
-        );
-    } else if (type == 'BingAerial') {
-        viewer.imageryLayers.addImageryProvider(
-            await Cesium.IonImageryProvider.fromAssetId(2),
-        );
-    } else if (type == 'grid') {
-        let gridOptions = {
-            color: Cesium.Color.fromCssColorString('#ccc'),
-            backgroundColor: Cesium.Color.fromCssColorString('#00000000'),
-            glowColor: Cesium.Color.fromCssColorString('#666'),
-            glowWidth: 1,
-            cells: 2
-        }
-        var GridImagery = new Cesium.GridImageryProvider(gridOptions);
-        viewer.imageryLayers.addImageryProvider(GridImagery);
-        viewer.scene.globe.baseColor = Cesium.Color.BLACK;
-        removeTerrain()
-
-    }
-}
-const currentTerrainProvider = ref(null)
-function removeTerrain() {
-    // 获取当前地形提供者
-    currentTerrainProvider.value = viewer.scene.terrainProvider;
-
-    if (currentTerrainProvider.value) {
-        // 如果当前地形提供者存在，则移除它
-        viewer.scene.terrainProvider = undefined;
-    }
-
-    // 或者替换为一个空的地形提供者
-    viewer.scene.terrainProvider = new Cesium.EllipsoidTerrainProvider();
-}
-function restoreTerrain() {
-    if (currentTerrainProvider.value) {
-        viewer.scene.terrainProvider = currentTerrainProvider.value;
-    }
 }
 const reset = () => {
     viewer.camera.flyTo({
@@ -311,7 +173,6 @@ const handleClose = () => {
     showMenu.value = false
     dialogVisible.value = false
 }
-
 onMounted(() => {
     // 禁用浏览器默认右键菜单，避免与自定义操作冲突
     document.oncontextmenu = new Function("event.returnValue=false");
@@ -327,47 +188,6 @@ onMounted(() => {
     height: calc(100vh - 60px);
 }
 
-.baseMap {
-    position: fixed;
-    right: 10px;
-    bottom: 10px;
-    z-index: 999;
-    display: flex;
-
-    .baseMap-item {
-        width: 80px;
-        height: 60px;
-        text-align: center;
-        line-height: 60px;
-        color: #fff;
-        background-color: #092131cc;
-        border: 2px solid #092131cc;
-        cursor: pointer;
-
-        &:hover {
-            border: 2px solid #9c7a1d8e;
-        }
-
-        &.active {
-            background-color: #268dd1cc;
-            border: 2px solid #ffbb00;
-        }
-
-        .icon {
-            width: 80px;
-            height: 60px;
-        }
-
-        .mapname {
-            position: absolute;
-            line-height: 20px;
-            background-color: #00b8ffad;
-            width: 80px;
-            height: 20px;
-            top: 2px;
-        }
-    }
-}
 
 .popmenu {
     position: fixed;

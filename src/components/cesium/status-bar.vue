@@ -44,15 +44,16 @@ onMounted(() => {
   viewer = props.viewer
   // 更新状态栏信息
   updateStatus();
-  updateFPS()
+  if(viewer){
   // 监听相机变化
   viewer?.scene.camera.changed.addEventListener(updateStatus);
-  viewer.scene.postRender.addEventListener(updateFPS)
-  viewer.screenSpaceEventHandler.setInputAction(updatePosition, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+  viewer?.scene.postRender.addEventListener(updateFPS)
+  viewer?.screenSpaceEventHandler.setInputAction(updatePosition, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+}
 });
 
 // 更新状态栏信息
-const updateStatus = () => {
+const updateStatus = throttle(() => {
   if (viewer) {
     eyeHeight.value = viewer.camera.positionCartographic.height;
 
@@ -61,14 +62,14 @@ const updateStatus = () => {
 
     zoomLevel.value = viewer.camera.positionCartographic.height;
   }
-}
+},200)
 
-const updateFPS = () => {
+const updateFPS = throttle(() => {
   let info = FPSInfo.update();
   frameRateFPS.value = info.fps
   frameRateMS.value = info.ms
-}
-const updatePosition = (movement: { endPosition: Cesium.Cartesian2 }) => {
+}, 200)
+const updatePosition = throttle((movement: { endPosition: Cesium.Cartesian2 }) => {
   // 获取鼠标在屏幕上的位置
   const screenPosition = movement.endPosition;
   // 将屏幕位置转换为经纬度
@@ -79,8 +80,46 @@ const updatePosition = (movement: { endPosition: Cesium.Cartesian2 }) => {
     latitude.value = Cesium.Math.toDegrees(cartographic.latitude);
     altitude.value = cartographic.height;
   }
-}
+}, 200)
+type ThrottleOrDebounceFunction<T extends (...args: any[]) => any> = T & {
+  cancel?: () => void;
+  flush?: () => void;
+};
+function throttle<T extends (...args: any[]) => any>(
+  func: T,
+  wait: number,
+): ThrottleOrDebounceFunction<T> {
+  let timeout: ReturnType<typeof setTimeout> | null = null;
+  let previous = 0;
 
+  const throttled = function (this: any, ...args: Parameters<T>): void {
+    const context = this;
+    const now = Date.now();
+
+    if (now - previous > wait) {
+      if (timeout) {
+        clearTimeout(timeout);
+        timeout = null;
+      }
+      func.apply(context, args);
+      previous = now;
+    } else if (!timeout) {
+      timeout = setTimeout(() => {
+        func.apply(context, args);
+        previous = now;
+      }, wait - (now - previous));
+    }
+  };
+
+  throttled.cancel = function (): void {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+  };
+
+  return throttled as ThrottleOrDebounceFunction<T>;
+}
 // 清理工作
 onUnmounted(() => {
   if (viewer) {
