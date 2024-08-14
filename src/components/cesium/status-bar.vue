@@ -3,12 +3,13 @@
     <div>经度: {{ longitude.toFixed(6) }}</div>
     <div>纬度: {{ latitude.toFixed(6) }}</div>
     <!-- <div class="hide1000">横：{{ easting }} 纵：{{ northing }}</div> -->
-    <!-- <div>海拔：{{ altitude }} 米</div> -->
+    <div>海拔：{{ altitude.toFixed(2) }} 米</div>
     <!-- <div class="hide700">层级：{{ zoomLevel }}</div> -->
     <div>方向：{{ heading.toFixed(2) }}°</div>
     <div>俯仰角：{{ pitch.toFixed(2) }}°</div>
-    <div class="hide700">视高：{{ eyeHeight.toFixed(2) }} 米</div>
-    <div class="hide700">帧率：{{ frameRateFPS }} FPS {{ frameRateMS }} MS</div>
+    <div>视高：{{ eyeHeight.toFixed(2) }} 米</div>
+    <div>帧率：{{ frameRateFPS }} FPS</div>
+    <div>延迟：{{ frameRateMS }} MS</div>
   </div>
 </template>
 
@@ -37,46 +38,56 @@ const frameRateFPS = ref<number | string>(0);
 const frameRateMS = ref<number | string>(0);
 // 获取 Cesium 视图对象
 let viewer: Cesium.Viewer | undefined = props.viewer;
-const FPSInfo = new GetFPSInfo();
+let FPSInfo = new GetFPSInfo();
 // 初始化状态栏
 onMounted(() => {
-  // 假设已经初始化了 Cesium 视图
   viewer = props.viewer
-
   // 更新状态栏信息
   updateStatus();
-
+  updateFPS()
   // 监听相机变化
   viewer?.scene.camera.changed.addEventListener(updateStatus);
+  viewer.scene.postRender.addEventListener(updateFPS)
+  viewer.screenSpaceEventHandler.setInputAction(updatePosition, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 });
 
 // 更新状态栏信息
-function updateStatus() {
+const updateStatus = () => {
   if (viewer) {
-    const position = viewer.camera.positionWC;
-    const ellipsoid = Cesium.Ellipsoid.WGS84;
-    const cartographic = Cesium.Cartographic.fromCartesian(position, ellipsoid);
-
-    longitude.value = Cesium.Math.toDegrees(cartographic.longitude);
-    latitude.value = Cesium.Math.toDegrees(cartographic.latitude);
-    eyeHeight.value = cartographic.height;
+    eyeHeight.value = viewer.camera.positionCartographic.height;
 
     heading.value = Cesium.Math.toDegrees(viewer.camera.heading);
     pitch.value = Cesium.Math.toDegrees(viewer.camera.pitch);
-    let info = FPSInfo.update();
-    frameRateFPS.value = info.fps
-    frameRateMS.value = info.ms
+
     zoomLevel.value = viewer.camera.positionCartographic.height;
   }
 }
-function updatePosition() {
-  
+
+const updateFPS = () => {
+  let info = FPSInfo.update();
+  frameRateFPS.value = info.fps
+  frameRateMS.value = info.ms
+}
+const updatePosition = (movement: { endPosition: Cesium.Cartesian2 }) => {
+  // 获取鼠标在屏幕上的位置
+  const screenPosition = movement.endPosition;
+  // 将屏幕位置转换为经纬度
+  const cartesian = viewer.scene.globe.pick(viewer.camera.getPickRay(screenPosition), viewer.scene);
+  if (cartesian) {
+    const cartographic = viewer.scene.globe.ellipsoid.cartesianToCartographic(cartesian);
+    longitude.value = Cesium.Math.toDegrees(cartographic.longitude);
+    latitude.value = Cesium.Math.toDegrees(cartographic.latitude);
+    altitude.value = cartographic.height;
+  }
 }
 
 // 清理工作
 onUnmounted(() => {
   if (viewer) {
+    FPSInfo = new GetFPSInfo();
     viewer.scene.camera.changed.removeEventListener(updateStatus);
+    viewer.scene.postRender.removeEventListener(updateFPS)
+    viewer.screenSpaceEventHandler.removeInputAction(Cesium.ScreenSpaceEventType.MOUSE_MOVE)
   }
 });
 </script>
