@@ -4,28 +4,41 @@
             <el-tab-pane label="矩阵" name="rect"></el-tab-pane>
             <el-tab-pane label="圆形" name="circle"></el-tab-pane>
             <el-tab-pane label="楔形" name="wedge"></el-tab-pane>
-            <el-tab-pane label="清除">
-                <div class="tab-body">
-                    <el-button type="danger" @click="removeAll">清除全部</el-button>
-                    <el-divider content-position="left">说明</el-divider>
-                    <div class="text" type="primary">将清除所有的实体</div>
-                </div>
-            </el-tab-pane>
         </el-tabs>
         <div>
-            <el-button @click="deploy" type="primary">部署</el-button>
+            <el-button :icon="Location" @click="deploy" type="primary"></el-button>
             <el-button :icon="Refresh" @click="reset" type="success"></el-button>
-            <div>人数：
-                <el-input-number :min="4" :max="1000" v-model="totalNumber" :step="1"
-                    @change=handleNumberChange></el-input-number>
+            <el-button :icon="Brush" @click="removeAll" type="danger"></el-button>
+            <div class="flex form-cell">
+                <div class="form-cell-label">人数：</div>
+                <div>
+                    <el-input-number :min="4" :max="1000" v-model="totalNumber" :step="1"
+                        @change="handleNumberChange"></el-input-number>
+                </div>
             </div>
-            <div>层数：
-                <el-input-number :min="1" :max="1000" v-model="layerNumber" :step="1"
-                    @change=handleLayerChange></el-input-number>
+            <div class="flex form-cell">
+                <div class="form-cell-label">层数：</div>
+                <div>
+                    <el-input-number :min="1" :max="1000" v-model="layerNumber" :step="1"
+                        @change="handleLayerChange"></el-input-number>
+                </div>
+            </div>
+            <div v-if="activeName !== 'circle'" class="flex form-cell">
+                <div class="form-cell-label">方向角度：</div>
+                <div class="form-cell-content">
+                    <el-slider v-model="bearing" :min="0" :max="360" @change="handlebearingChange" />
+                </div>
+            </div>
+            <div v-if="activeName === 'wedge'" class="flex form-cell">
+                <div class="form-cell-label">开口角度：</div>
+                <div class="form-cell-content">
+                    <el-slider v-model="angle" :min="0" :max="180" @change="handleAngleChange" />
+                </div>
             </div>
         </div>
     </div>
     <Map @loaded="handleMapLoaded" :lazy="false" :duration="0" map-type="grid"></Map>
+    <status-bar v-if="loaded" :viewer="viewer"></status-bar>
 </template>
 
 <script setup lang="ts">
@@ -33,9 +46,11 @@ import * as turf from "@turf/turf";
 import { nextTick, onMounted, ref } from "vue";
 import * as Cesium from "cesium";
 import Map from '@/components/cesium/map.vue'
+import statusBar from '@/components/cesium/status-bar.vue'
 import 'cesium/Source/Widgets/widgets.css';
-import { Refresh } from '@element-plus/icons-vue'
-import { getCirclePosition, getRectPosition, throttle, debounce } from './tool'
+import { Refresh, Brush, Location } from '@element-plus/icons-vue'
+import { getCirclePosition, getRectPosition, getWedgePosition, throttle, debounce } from './tool'
+import { ElMessage } from "element-plus";
 var viewer: Cesium.Viewer;
 const activeName = ref('rect');
 const target = ref({
@@ -43,11 +58,14 @@ const target = ref({
     latitude: 39.907204,
     height: 0,
 });
+const loaded = ref(false);
 const totalNumber = ref(4);
 const layerNumber = ref(1);
+const bearing = ref(0);
+const angle = ref(60);
 const entitiyList = ref<Cesium.Entity[]>([]);
 const targetEntity = ref<Cesium.Entity>();
-const handleNumberChange = debounce(() => {
+const handleNumberChange = throttle(() => {
     entitiyList.value.forEach((entity: Cesium.Entity) => {
         viewer.entities.remove(entity)
     })
@@ -60,15 +78,27 @@ const handleNumberChange = debounce(() => {
                 addCircle()
                 break;
             case "wedge":
-                // addWedge(coordinates)
+                addWedge()
                 break;
         }
     })
-},1000)
+}, 1000)
 const handleLayerChange = throttle(() => {
     handleNumberChange()
-},1000)
-
+}, 1000)
+const handlebearingChange = throttle(() => {
+    console.log("方向角", bearing.value)
+    // 重新计算角度
+    handleNumberChange()
+}, 1000)
+const handleAngleChange = throttle(() => {
+    console.log("开口角度", angle.value)
+    if (angle.value < 30) {
+        ElMessage.warning("请勿选择小于30度的开口角度")
+    } else {
+        handleNumberChange()
+    }
+}, 1000)
 const addCircle = () => {
     let coordinates = getCirclePosition(target.value, 1.5, totalNumber.value)
     coordinates.forEach((coordinate, index) => {
@@ -105,6 +135,25 @@ const addRect = () => {
         entitiyList.value.push(model)
     }
 }
+const addWedge = () => {
+    const coordinates = getWedgePosition(target.value, angle.value, layerNumber.value, totalNumber.value, 1.5)
+    console.log(coordinates)
+    for (let i = 0; i < coordinates.length; i++) {
+        const position = Cesium.Cartesian3.fromDegrees(coordinates[i][0], coordinates[i][1]);
+        let model = viewer.entities.add({
+            name: "锚点",
+            position: position,
+            orientation: Cesium.Transforms.headingPitchRollQuaternion(
+                position,
+                Cesium.HeadingPitchRoll.fromDegrees(-90, 0, 0)
+            ),
+            model: {
+                uri: '/models/Cesium_Man.glb',
+            },
+        })
+        entitiyList.value.push(model)
+    }
+}
 const deploy = () => {
     targetEntity.value = viewer.entities.add({
         name: "锚点",
@@ -129,6 +178,7 @@ const deploy = () => {
 }
 const handleMapLoaded = (cviewer: Cesium.Viewer) => {
     viewer = cviewer;
+    loaded.value = true
     let handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
     handler.setInputAction(function (event) {
         let ray = viewer.camera.getPickRay(event.position);
@@ -183,6 +233,21 @@ onMounted(() => {
             text-indent: 24px;
             text-align: start;
         }
+    }
+}
+
+.form-cell {
+    line-height: 32px;
+    margin: 5px 0;
+
+    .form-cell-label {
+        line-height: 32px;
+        width: 72px;
+        text-align: end;
+    }
+
+    .form-cell-content {
+        width: calc(100% - 72px);
     }
 }
 </style>

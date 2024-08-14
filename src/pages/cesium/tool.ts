@@ -13,7 +13,7 @@ export const getCirclePosition = (target: { longitude: number, latitude: number 
     let radius = calculateRadius(total, step)
     var center = [target.longitude, target.latitude];
     var options = { steps: total };
-    let turfCircle =  turf.circle(center, radius / 1000, options);
+    let turfCircle = turf.circle(center, radius / 1000, options);
     return turfCircle.geometry.coordinates[0]
 }
 
@@ -131,76 +131,102 @@ export function getRectPosition(target: {
     return matrix;
 }
 
+
+export const getWedgePosition = (target: {
+    longitude: number;
+    latitude: number;
+}, angle: number, layerNumber: number, total: number, distance: number) => {
+    var point = turf.point([target.longitude, target.latitude]);
+    let wedge = []
+    for (var i = 0; i < layerNumber; i++) {
+        var leftPoint = turf.destination(point, (0.7 / 1000), -90);
+        var rightPoint = turf.destination(point, (0.7 / 1000), 90);
+        wedge.push(leftPoint.geometry.coordinates);
+        wedge.push(rightPoint.geometry.coordinates);
+        for (var j = 1; j < total-1; j++) {
+            if (j % 2 === 0) {
+                let point1 = turf.destination(rightPoint, (distance * j/2 / 1000), 180 - angle / 2);
+                wedge.push(point1.geometry.coordinates);
+
+            } else {
+                let point1 = turf.destination(leftPoint, (distance * Math.ceil(j/2) / 1000), angle / 2 + 180);
+                wedge.push(point1.geometry.coordinates);
+            }
+        }
+    }
+    return wedge;
+}
+
 type ThrottleOrDebounceFunction<T extends (...args: any[]) => any> = T & {
-  cancel?: () => void;
-  flush?: () => void;
+    cancel?: () => void;
+    flush?: () => void;
 };
 // 节流函数
 export function throttle<T extends (...args: any[]) => any>(
-  func: T,
-  wait: number,
+    func: T,
+    wait: number,
 ): ThrottleOrDebounceFunction<T> {
-  let timeout: ReturnType<typeof setTimeout> | null = null;
-  let previous = 0;
+    let timeout: ReturnType<typeof setTimeout> | null = null;
+    let previous = 0;
 
-  const throttled = function(this: any, ...args: Parameters<T>): void {
-    const context = this;
-    const now = Date.now();
+    const throttled = function (this: any, ...args: Parameters<T>): void {
+        const context = this;
+        const now = Date.now();
 
-    if (now - previous > wait) {
-      if (timeout) {
-        clearTimeout(timeout);
-        timeout = null;
-      }
-      func.apply(context, args);
-      previous = now;
-    } else if (!timeout) {
-      timeout = setTimeout(() => {
-        func.apply(context, args);
-        previous = now;
-      }, wait - (now - previous));
-    }
-  };
+        if (now - previous > wait) {
+            if (timeout) {
+                clearTimeout(timeout);
+                timeout = null;
+            }
+            func.apply(context, args);
+            previous = now;
+        } else if (!timeout) {
+            timeout = setTimeout(() => {
+                func.apply(context, args);
+                previous = now;
+            }, wait - (now - previous));
+        }
+    };
 
-  throttled.cancel = function(): void {
-    if (timeout) {
-      clearTimeout(timeout);
-      timeout = null;
-    }
-  };
+    throttled.cancel = function (): void {
+        if (timeout) {
+            clearTimeout(timeout);
+            timeout = null;
+        }
+    };
 
-  return throttled as ThrottleOrDebounceFunction<T>;
+    return throttled as ThrottleOrDebounceFunction<T>;
 }
 
 // 防抖函数
 export function debounce<T extends (...args: any[]) => any>(
-  func: T,
-  wait: number,
+    func: T,
+    wait: number,
 ): ThrottleOrDebounceFunction<T> {
-  let timeout: ReturnType<typeof setTimeout> | null = null;
+    let timeout: ReturnType<typeof setTimeout> | null = null;
 
-  const debounced = function(this: any, ...args: Parameters<T>): void {
-    const context = this;
+    const debounced = function (this: any, ...args: Parameters<T>): void {
+        const context = this;
 
-    clearTimeout(timeout);
-    timeout = setTimeout(() => {
-      func.apply(context, args);
-    }, wait);
-  };
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            func.apply(context, args);
+        }, wait);
+    };
 
-  debounced.cancel = function(): void {
-    if (timeout) {
-      clearTimeout(timeout);
-      timeout = null;
-    }
-  };
+    debounced.cancel = function (): void {
+        if (timeout) {
+            clearTimeout(timeout);
+            timeout = null;
+        }
+    };
 
-  debounced.flush = function(): void {
-    if (timeout) {
-      clearTimeout(timeout);
-      func.apply(this);
-    }
-  };
+    debounced.flush = function (): void {
+        if (timeout) {
+            clearTimeout(timeout);
+            func.apply(this);
+        }
+    };
 
-  return debounced as ThrottleOrDebounceFunction<T>;
+    return debounced as ThrottleOrDebounceFunction<T>;
 }
