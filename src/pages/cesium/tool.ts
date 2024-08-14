@@ -130,3 +130,77 @@ export function getRectPosition(target: {
     }
     return matrix;
 }
+
+type ThrottleOrDebounceFunction<T extends (...args: any[]) => any> = T & {
+  cancel?: () => void;
+  flush?: () => void;
+};
+// 节流函数
+export function throttle<T extends (...args: any[]) => any>(
+  func: T,
+  wait: number,
+): ThrottleOrDebounceFunction<T> {
+  let timeout: ReturnType<typeof setTimeout> | null = null;
+  let previous = 0;
+
+  const throttled = function(this: any, ...args: Parameters<T>): void {
+    const context = this;
+    const now = Date.now();
+
+    if (now - previous > wait) {
+      if (timeout) {
+        clearTimeout(timeout);
+        timeout = null;
+      }
+      func.apply(context, args);
+      previous = now;
+    } else if (!timeout) {
+      timeout = setTimeout(() => {
+        func.apply(context, args);
+        previous = now;
+      }, wait - (now - previous));
+    }
+  };
+
+  throttled.cancel = function(): void {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+  };
+
+  return throttled as ThrottleOrDebounceFunction<T>;
+}
+
+// 防抖函数
+export function debounce<T extends (...args: any[]) => any>(
+  func: T,
+  wait: number,
+): ThrottleOrDebounceFunction<T> {
+  let timeout: ReturnType<typeof setTimeout> | null = null;
+
+  const debounced = function(this: any, ...args: Parameters<T>): void {
+    const context = this;
+
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      func.apply(context, args);
+    }, wait);
+  };
+
+  debounced.cancel = function(): void {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+  };
+
+  debounced.flush = function(): void {
+    if (timeout) {
+      clearTimeout(timeout);
+      func.apply(this);
+    }
+  };
+
+  return debounced as ThrottleOrDebounceFunction<T>;
+}

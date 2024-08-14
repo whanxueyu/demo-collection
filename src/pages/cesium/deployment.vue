@@ -35,7 +35,7 @@ import * as Cesium from "cesium";
 import Map from '@/components/cesium/map.vue'
 import 'cesium/Source/Widgets/widgets.css';
 import { Refresh } from '@element-plus/icons-vue'
-import { getCirclePosition, getRectPosition } from './tool'
+import { getCirclePosition, getRectPosition, throttle, debounce } from './tool'
 var viewer: Cesium.Viewer;
 const activeName = ref('rect');
 const target = ref({
@@ -47,7 +47,7 @@ const totalNumber = ref(4);
 const layerNumber = ref(1);
 const entitiyList = ref<Cesium.Entity[]>([]);
 const targetEntity = ref<Cesium.Entity>();
-const handleNumberChange = () => {
+const handleNumberChange = debounce(() => {
     entitiyList.value.forEach((entity: Cesium.Entity) => {
         viewer.entities.remove(entity)
     })
@@ -64,10 +64,10 @@ const handleNumberChange = () => {
                 break;
         }
     })
-}
-const handleLayerChange = () => {
+},1000)
+const handleLayerChange = throttle(() => {
     handleNumberChange()
-}
+},1000)
 
 const addCircle = () => {
     let coordinates = getCirclePosition(target.value, 1.5, totalNumber.value)
