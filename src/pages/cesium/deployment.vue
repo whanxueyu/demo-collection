@@ -9,6 +9,7 @@
             <el-button :icon="Location" @click="deploy" type="primary"></el-button>
             <el-button :icon="Refresh" @click="reset" type="success"></el-button>
             <el-button :icon="Brush" @click="removeAll" type="danger"></el-button>
+            <el-checkbox @Change="handleShrinkChange" v-model="shrink" label="是否收缩" :value="true"></el-checkbox>
             <div class="flex form-cell">
                 <div class="form-cell-label">人数：</div>
                 <div>
@@ -60,6 +61,8 @@ const target = ref({
 });
 let startTime = Cesium.JulianDate.addHours(Cesium.JulianDate.now(), 8, new Cesium.JulianDate());
 let endTime = Cesium.JulianDate.addSeconds(startTime, 3600, new Cesium.JulianDate())
+const shrink = ref(false);
+const spacing = ref(1.5)
 const loaded = ref(false);
 const totalNumber = ref(4);
 const layerNumber = ref(1);
@@ -104,7 +107,7 @@ const handleAngleChange = throttle(() => {
     }
 }, 1000)
 const addCircle = () => {
-    let coordinates = getCirclePosition(target.value, 1.5, totalNumber.value, layerNumber.value)
+    let coordinates = getCirclePosition(target.value, spacing.value, totalNumber.value, layerNumber.value)
     for (let i = 0; i < totalNumber.value; i++) {
         const position = Cesium.Cartesian3.fromDegrees(coordinates[i][0], coordinates[i][1]);
         var point1 = turf.point([target.value.longitude, target.value.latitude]);
@@ -114,14 +117,14 @@ const addCircle = () => {
     }
 }
 const addRect = () => {
-    const coordinates = getRectPosition(target.value, layerNumber.value, totalNumber.value, 1.5)
+    const coordinates = getRectPosition(target.value, layerNumber.value, totalNumber.value, spacing.value)
     for (let i = 0; i < totalNumber.value; i++) {
         const position = Cesium.Cartesian3.fromDegrees(coordinates[i][0], coordinates[i][1]);
         handleAddModel("model_" + i, position, 0)
     }
 }
 const addWedge = () => {
-    const coordinates = getWedgePosition(target.value, angle.value, layerNumber.value, totalNumber.value, 1.5)
+    const coordinates = getWedgePosition(target.value, angle.value, layerNumber.value, totalNumber.value, spacing.value)
     for (let i = 0; i < coordinates.length; i++) {
         const position = Cesium.Cartesian3.fromDegrees(coordinates[i][0], coordinates[i][1]);
         handleAddModel("model_" + i, position, -90)
@@ -181,14 +184,12 @@ const handleTabChange = (name: string) => {
     viewer.clock.shouldAnimate = false;
 
     let duration = 5
-    // let startTime = Cesium.JulianDate.addHours(Cesium.JulianDate.now(), 8, new Cesium.JulianDate());
-    // let endTime = Cesium.JulianDate.addSeconds(startTime, duration, new Cesium.JulianDate())
     if (entitiyList.value.length > 0) {
         startAnimate(startTime, endTime)
         let getFun = {
-            circle: getCirclePosition(target.value, 1.5, totalNumber.value, layerNumber.value),
-            rect: getRectPosition(target.value, layerNumber.value, totalNumber.value, 1.5),
-            wedge: getWedgePosition(target.value, angle.value, layerNumber.value, totalNumber.value, 1.5)
+            circle: getCirclePosition(target.value, spacing.value, totalNumber.value, layerNumber.value),
+            rect: getRectPosition(target.value, layerNumber.value, totalNumber.value, spacing.value),
+            wedge: getWedgePosition(target.value, angle.value, layerNumber.value, totalNumber.value, spacing.value)
         }
         let coordinates: any[] = getFun[activeName.value]
         let entityArr = entitiyList.value
@@ -206,7 +207,6 @@ const handleTabChange = (name: string) => {
                 // let orientationProperty = moveOrientation(coordinates[index], endTime.clone())
                 entity.position = positionProperty;
                 entity.orientation = new Cesium.VelocityOrientationProperty(positionProperty)
-                console.log('forEach', index)
             }
         })
     }
@@ -283,6 +283,14 @@ const removeAll = () => {
     entitiyList.value = []
     viewer.entities.removeAll()
     sessionStorage.removeItem('markers')
+}
+const handleShrinkChange = (shrink: boolean) => {
+    if (shrink) {
+        spacing.value = 0.8
+    } else {
+        spacing.value = 1.5
+    }
+    handleNumberChange()
 }
 onMounted(() => {
     entitiyList.value = []

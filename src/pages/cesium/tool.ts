@@ -174,14 +174,14 @@ export const getWedgePosition = (target: {
     var point = turf.point([target.longitude, target.latitude]);
 
 
-    var hypotenuse = calculateHypotenuse(1.5, angle / 2);
-    var otherLength = calculateOtherLeg(1.5, angle / 2);
-    var desPer = otherLength / 1.5
+    var hypotenuse = calculateHypotenuse(distance, angle / 2);
+    var otherLength = calculateOtherLeg(distance, angle / 2);
+    var desPer = otherLength / distance
 
     var layerArr = caculateTest(total, layerNumber, desPer)
     console.log(layerArr)
-    var leftOrigin = turf.destination(point, (0.7 / 1000), -90);
-    var rightOrigin = turf.destination(point, (0.7 / 1000), 90);
+    var leftOrigin = turf.destination(point, (distance / 2000), -90);
+    var rightOrigin = turf.destination(point, (distance / 2000), 90);
     let wedge = []
     for (var i = 0; i < layerNumber; i++) {
         var leftPoint = null;
@@ -212,20 +212,30 @@ export const getWedgePosition = (target: {
 export const caculateTest = (total: number, layerNumber: number, desPer: number) => {
     let max = (total + (layerNumber - 1) * desPer * 2) / layerNumber
     console.log(max)
-    let a = []
+    let arr = []
     for (var i = 0; i < layerNumber; i++) {
         let num = Math.round(max - (i * desPer * 2))
-        a.push(num)
+        if (num % 2 !== 0) {
+            num = num + 1
+        }
+        arr.push(num)
     }
-    let sum = a.reduce((a, b) => a + b, 0)
+    let sum = arr.reduce((a, b) => a + b, 0)
     console.log(sum)
     let disValue = total - sum;
-    if (disValue > 0) {
-        a[0] = a[0] + disValue
+    if (disValue % 2 !== 0) {
+        for (var i = 0; i < disValue; i++) {
+            // 将disValue分配到数组arr中。arr的每一项逐渐+1，知道disvalue全部分配完，剩余为0
+            arr[i % layerNumber] += 1;
+        }
     } else {
-        a[a.length - 1] = a[a.length - 1] + disValue
+        for (var i = 0; i < disValue; i = i + 2) {
+            // 将disValue分配到数组arr中。arr的每一项逐渐+1，知道disvalue全部分配完，剩余为0
+            arr[i % layerNumber] += 2;
+        }
     }
-    return a
+
+    return arr
 }
 function calculateOtherLeg(adSideLength: number, angleInDegrees: number) {
     // 将角度转换为弧度
