@@ -20,75 +20,56 @@ export const getCirclePosition = (target: { longitude: number, latitude: number 
         let indexCoordinates = turfCircle.geometry.coordinates[0];
         coordinates = coordinates.concat(indexCoordinates)
     })
-    // let radius = calculateRadius(total, step)
-    // var center = [target.longitude, target.latitude];
-    // var options = { steps: total };
-    // let turfCircle = turf.circle(center, radius / 1000, options);
-    // let coordinates = turfCircle.geometry.coordinates[0]
     return coordinates
 }
 
-export const devideLayer = (total: number, num: number) => {
+const devideLayer = (total: number, num: number) => {
     let avager = Math.ceil(total / num)
     let middle = 0
-    console.log('平均数', avager)
     if (num % 2 == 0) {
-        console.log('偶数', num)
         middle = num / 2
-        console.log('中间层', middle)
-
-        let arr: number[] = test0(total, num, middle, avager)
+        let arr: number[] = handleEven(total, num, middle, avager)
         return arr
     } else {
-        console.log('奇数', num)
         middle = num / 2 + 0.5
-        console.log('中间层', middle)
-
-        let arr: number[] = test1(total, num, middle, avager)
+        let arr: number[] = handleOdd(total, num, middle, avager)
         return arr
     }
-
 }
-const test1 = (total: number, num: number, middle: number, avager: number) => {
+const handleOdd = (total: number, num: number, middle: number, avager: number) => {
     let arr = []
     for (var i = num; i > 0; i--) {
         let indexNum = avager + (i - middle) * 3
         if (indexNum > 3)
             arr.push(indexNum)
     }
-    console.log("test1", arr)
     return arr
 }
-const test0 = (total: number, num: number, middle: number, avager: number) => {
+const handleEven = (total: number, num: number, middle: number, avager: number) => {
     let arr = []
     for (var i = num; i > 0; i--) {
         let indexNum = avager + (i - middle) * 3
         if (indexNum > 3)
             arr.push(indexNum)
     }
-    console.log("test0", arr)
     return arr
 }
 
 export const distributeElements = (Sn: number, N: number,) => {
     const d = 3; // 公差
-
     // 计算第一项 a1
     let a1 = (2 * Sn / N - (N - 1) * d) / 2;
-
     // 如果 a1 不是整数，则返回一个提示
     if (!Number.isInteger(a1)) {
         console.log(a1);
         // return '第一项不是整数，请检查输入值';
         a1 = Math.floor(a1)
     }
-
     // 计算每一项
     const sequence = [];
     for (let i = 0; i < N; i++) {
         sequence.push(a1 + i * d);
     }
-
     return sequence;
 }
 /**
@@ -189,14 +170,33 @@ export const getWedgePosition = (target: {
     longitude: number;
     latitude: number;
 }, angle: number, layerNumber: number, total: number, distance: number) => {
+    // 1. 根据中心点计算矩阵原点
     var point = turf.point([target.longitude, target.latitude]);
+
+
+    var hypotenuse = calculateHypotenuse(1.5, angle / 2);
+    var otherLength = calculateOtherLeg(1.5, angle / 2);
+    var desPer = otherLength / 1.5
+
+    var layerArr = caculateTest(total, layerNumber, desPer)
+    console.log(layerArr)
+    var leftOrigin = turf.destination(point, (0.7 / 1000), -90);
+    var rightOrigin = turf.destination(point, (0.7 / 1000), 90);
     let wedge = []
     for (var i = 0; i < layerNumber; i++) {
-        var leftPoint = turf.destination(point, (0.7 / 1000), -90);
-        var rightPoint = turf.destination(point, (0.7 / 1000), 90);
+        var leftPoint = null;
+        var rightPoint = null;
+        if (i == 0) {
+            leftPoint = leftOrigin;
+            rightPoint = rightOrigin;
+        } else {
+            leftPoint = turf.destination(leftOrigin, (hypotenuse * i / 1000), 180);
+            rightPoint = turf.destination(rightOrigin, (hypotenuse * i / 1000), 180);
+        }
         wedge.push(leftPoint.geometry.coordinates);
         wedge.push(rightPoint.geometry.coordinates);
-        for (var j = 1; j < total - 1; j++) {
+
+        for (var j = 1; j < layerArr[i] - 1; j++) {
             if (j % 2 === 0) {
                 let point1 = turf.destination(rightPoint, (distance * j / 2 / 1000), 180 - angle / 2);
                 wedge.push(point1.geometry.coordinates);
@@ -208,6 +208,43 @@ export const getWedgePosition = (target: {
         }
     }
     return wedge;
+}
+export const caculateTest = (total: number, layerNumber: number, desPer: number) => {
+    let max = (total + (layerNumber - 1) * desPer * 2) / layerNumber
+    console.log(max)
+    let a = []
+    for (var i = 0; i < layerNumber; i++) {
+        let num = Math.round(max - (i * desPer * 2))
+        a.push(num)
+    }
+    let sum = a.reduce((a, b) => a + b, 0)
+    console.log(sum)
+    let disValue = total - sum;
+    if (disValue > 0) {
+        a[0] = a[0] + disValue
+    } else {
+        a[a.length - 1] = a[a.length - 1] + disValue
+    }
+    return a
+}
+function calculateOtherLeg(adSideLength: number, angleInDegrees: number) {
+    // 将角度转换为弧度
+    const angleRadians = angleInDegrees * (Math.PI / 180);
+
+    // 计算斜边 c 的长度
+    const c = adSideLength / Math.sin(angleRadians);
+
+    // 使用勾股定理计算另一条直角边 b 的长度
+    const b = Math.sqrt(c * c - adSideLength * adSideLength);
+
+    return b;
+}
+function calculateHypotenuse(adjacentSideLength: number, angleInDegrees: number) {
+    // 将角度从度转换为弧度
+    const angleInRadians = angleInDegrees * (Math.PI / 180);
+    // 使用正弦函数计算
+    const hypotenuseLength = adjacentSideLength / Math.sin(angleInRadians);
+    return hypotenuseLength;
 }
 
 type ThrottleOrDebounceFunction<T extends (...args: any[]) => any> = T & {
