@@ -1,15 +1,19 @@
 <template>
   <div class="status-bar flex">
-    <div>经度: {{ longitude.toFixed(6) }}</div>
-    <div>纬度: {{ latitude.toFixed(6) }}</div>
-    <!-- <div class="hide1000">横：{{ easting }} 纵：{{ northing }}</div> -->
-    <div>海拔：{{ altitude.toFixed(2) }} 米</div>
-    <!-- <div class="hide700">层级：{{ zoomLevel }}</div> -->
-    <div>方向：{{ heading.toFixed(2) }}°</div>
-    <div>俯仰角：{{ pitch.toFixed(2) }}°</div>
-    <div>视高：{{ eyeHeight.toFixed(2) }} 米</div>
-    <div>帧率：{{ frameRateFPS }} FPS</div>
-    <div>延迟：{{ frameRateMS }} MS</div>
+    <div class="flex">
+      <div>经度: {{ longitude.toFixed(6) }}</div>
+      <div>纬度: {{ latitude.toFixed(6) }}</div>
+      <div>海拔：{{ altitude.toFixed(2) }} 米</div>
+    </div>
+    <div class="flex">
+      <div>方向：{{ heading.toFixed(2) }}°</div>
+      <div>俯仰角：{{ pitch.toFixed(2) }}°</div>
+      <div>视高：{{ eyeHeight.toFixed(2) }} 米</div>
+    </div>
+    <div class="flex">
+      <div>帧率：{{ frameRateFPS }} FPS</div>
+      <div>延迟：{{ frameRateMS }} MS</div>
+    </div>
   </div>
 </template>
 
@@ -24,13 +28,12 @@ const props = defineProps({
   }
 });
 // 定义状态栏数据
-
 const longitude = ref(0);
 const latitude = ref(0);
-const easting = ref(0);
-const northing = ref(0);
+// const easting = ref(0);
+// const northing = ref(0);
 const altitude = ref(0);
-const zoomLevel = ref(0);
+// const zoomLevel = ref(0);
 const heading = ref(0);
 const pitch = ref(0);
 const eyeHeight = ref(0);
@@ -43,11 +46,12 @@ let FPSInfo = new GetFPSInfo();
 onMounted(() => {
   viewer = props.viewer
   // 更新状态栏信息
-  // updateStatus();
   if (viewer) {
     // 监听相机变化
     viewer?.scene.camera.changed.addEventListener(updateStatus);
+    // 监听渲染
     viewer?.scene.postRender.addEventListener(updateFPS)
+    // 监听鼠标移动
     viewer?.screenSpaceEventHandler.setInputAction(updatePosition, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
   }
 });
@@ -59,8 +63,6 @@ const updateStatus = throttle(() => {
 
     heading.value = Cesium.Math.toDegrees(viewer.camera.heading);
     pitch.value = Cesium.Math.toDegrees(viewer.camera.pitch);
-
-    zoomLevel.value = viewer.camera.positionCartographic.height;
   }
 }, 200)
 
@@ -137,7 +139,7 @@ onUnmounted(() => {
 .status-bar {
   position: absolute;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-between;
   align-items: center;
   bottom: 0px;
   left: 0px;
