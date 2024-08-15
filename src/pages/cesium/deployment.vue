@@ -49,7 +49,7 @@ import Map from '@/components/cesium/map.vue'
 import statusBar from '@/components/cesium/status-bar.vue'
 import 'cesium/Source/Widgets/widgets.css';
 import { Refresh, Brush, Location } from '@element-plus/icons-vue'
-import { getCirclePosition, getRectPosition, getWedgePosition, throttle, debounce, caculateTest } from './tool'
+import { getCirclePosition, getRectPosition, getWedgePosition, throttle, debounce } from './tool'
 import { ElMessage } from "element-plus";
 var viewer: Cesium.Viewer;
 const activeName = ref('rect');
@@ -68,7 +68,6 @@ const angle = ref(60);
 const entitiyList = ref<Cesium.Entity[]>([]);
 const targetEntity = ref<Cesium.Entity>();
 const handleNumberChange = throttle(() => {
-    caculateTest(totalNumber.value, layerNumber.value, angle.value)
     entitiyList.value.forEach((entity: Cesium.Entity) => {
         viewer.entities.remove(entity)
     })
@@ -111,51 +110,21 @@ const addCircle = () => {
         var point1 = turf.point([target.value.longitude, target.value.latitude]);
         var point2 = turf.point([coordinates[i][0], coordinates[i][1]]);
         const heading = turf.bearing(point1, point2);
-        handleAddModel("circle_" + i, position, heading + 90)
-        // var property = new Cesium.SampledPositionProperty();
-        // property.addSample(startTime, position);
-        // property.addSample(endTime, position);
-        // let model = viewer.entities.add({
-        //     name: "圆形" + i,
-        //     id: "circle_" + i,
-        //     position: property,
-        //     orientation: Cesium.Transforms.headingPitchRollQuaternion(
-        //         position,
-        //         Cesium.HeadingPitchRoll.fromDegrees(heading + 90, 0, 0)
-        //     ),
-        //     model: {
-        //         uri: '/models/Cesium_Man.glb',
-        //     },
-        // })
-        // entitiyList.value.push(model)
+        handleAddModel("model_" + i, position, heading + 90)
     }
 }
 const addRect = () => {
     const coordinates = getRectPosition(target.value, layerNumber.value, totalNumber.value, 1.5)
     for (let i = 0; i < totalNumber.value; i++) {
         const position = Cesium.Cartesian3.fromDegrees(coordinates[i][0], coordinates[i][1]);
-        handleAddModel("rect_" + i, position, 0)
-        // var property = new Cesium.SampledPositionProperty();
-        // property.addSample(startTime, position);
-        // property.addSample(endTime, position);
-
-        // let model = viewer.entities.add({
-        //     name: "矩形" + i,
-        //     id: "rect_" + i,
-        //     position: property,
-        //     model: {
-        //         uri: '/models/Cesium_Man.glb',
-        //     },
-        // })
-        // entitiyList.value.push(model)
+        handleAddModel("model_" + i, position, 0)
     }
 }
 const addWedge = () => {
     const coordinates = getWedgePosition(target.value, angle.value, layerNumber.value, totalNumber.value, 1.5)
-    console.log(coordinates)
     for (let i = 0; i < coordinates.length; i++) {
         const position = Cesium.Cartesian3.fromDegrees(coordinates[i][0], coordinates[i][1]);
-        handleAddModel("wedge_" + i, position, -90)
+        handleAddModel("model_" + i, position, -90)
     }
 }
 const handleAddModel = (id: string, position: Cesium.Cartesian3, heading: number) => {
