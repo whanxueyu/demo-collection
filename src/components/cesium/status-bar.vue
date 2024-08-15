@@ -37,19 +37,19 @@ const eyeHeight = ref(0);
 const frameRateFPS = ref<number | string>(0);
 const frameRateMS = ref<number | string>(0);
 // 获取 Cesium 视图对象
-let viewer: Cesium.Viewer | undefined = props.viewer;
+let viewer: Cesium.Viewer | undefined;
 let FPSInfo = new GetFPSInfo();
 // 初始化状态栏
 onMounted(() => {
   viewer = props.viewer
   // 更新状态栏信息
-  updateStatus();
-  if(viewer){
-  // 监听相机变化
-  viewer?.scene.camera.changed.addEventListener(updateStatus);
-  viewer?.scene.postRender.addEventListener(updateFPS)
-  viewer?.screenSpaceEventHandler.setInputAction(updatePosition, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
-}
+  // updateStatus();
+  if (viewer) {
+    // 监听相机变化
+    viewer?.scene.camera.changed.addEventListener(updateStatus);
+    viewer?.scene.postRender.addEventListener(updateFPS)
+    viewer?.screenSpaceEventHandler.setInputAction(updatePosition, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+  }
 });
 
 // 更新状态栏信息
@@ -62,20 +62,22 @@ const updateStatus = throttle(() => {
 
     zoomLevel.value = viewer.camera.positionCartographic.height;
   }
-},200)
+}, 200)
 
 const updateFPS = throttle(() => {
-  let info = FPSInfo.update();
-  frameRateFPS.value = info.fps
-  frameRateMS.value = info.ms
+  if (viewer) {
+    let info = FPSInfo.update();
+    frameRateFPS.value = info.fps
+    frameRateMS.value = info.ms
+  }
 }, 200)
 const updatePosition = throttle((movement: { endPosition: Cesium.Cartesian2 }) => {
   // 获取鼠标在屏幕上的位置
   const screenPosition = movement.endPosition;
   // 将屏幕位置转换为经纬度
-  const cartesian = viewer.scene.globe.pick(viewer.camera.getPickRay(screenPosition), viewer.scene);
+  const cartesian = viewer?.scene.globe.pick(viewer.camera.getPickRay(screenPosition), viewer.scene);
   if (cartesian) {
-    const cartographic = viewer.scene.globe.ellipsoid.cartesianToCartographic(cartesian);
+    const cartographic = viewer?.scene.globe.ellipsoid.cartesianToCartographic(cartesian);
     longitude.value = Cesium.Math.toDegrees(cartographic.longitude);
     latitude.value = Cesium.Math.toDegrees(cartographic.latitude);
     altitude.value = cartographic.height;
