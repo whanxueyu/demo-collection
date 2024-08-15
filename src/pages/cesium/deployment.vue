@@ -1,6 +1,6 @@
 <template>
     <div class="menubox">
-        <el-tabs v-model="activeName" class="demo-tabs">
+        <el-tabs v-model="activeName" @tab-change="handleTabChange" class="demo-tabs">
             <el-tab-pane label="矩阵" name="rect"></el-tab-pane>
             <el-tab-pane label="圆形" name="circle"></el-tab-pane>
             <el-tab-pane label="楔形" name="wedge"></el-tab-pane>
@@ -49,7 +49,7 @@ import Map from '@/components/cesium/map.vue'
 import statusBar from '@/components/cesium/status-bar.vue'
 import 'cesium/Source/Widgets/widgets.css';
 import { Refresh, Brush, Location } from '@element-plus/icons-vue'
-import { getCirclePosition, getRectPosition, getWedgePosition, throttle, debounce } from './tool'
+import { getCirclePosition, getRectPosition, getWedgePosition, throttle, debounce,devideLayer } from './tool'
 import { ElMessage } from "element-plus";
 var viewer: Cesium.Viewer;
 const activeName = ref('rect');
@@ -58,6 +58,8 @@ const target = ref({
     latitude: 39.907204,
     height: 0,
 });
+let startTime = Cesium.JulianDate.addHours(Cesium.JulianDate.now(), 8, new Cesium.JulianDate());
+let endTime = Cesium.JulianDate.addSeconds(startTime, 3600, new Cesium.JulianDate())
 const loaded = ref(false);
 const totalNumber = ref(4);
 const layerNumber = ref(1);
@@ -66,9 +68,12 @@ const angle = ref(60);
 const entitiyList = ref<Cesium.Entity[]>([]);
 const targetEntity = ref<Cesium.Entity>();
 const handleNumberChange = throttle(() => {
+    devideLayer(totalNumber.value, layerNumber.value)
     entitiyList.value.forEach((entity: Cesium.Entity) => {
         viewer.entities.remove(entity)
     })
+    entitiyList.value = []
+    startAnimate(startTime, endTime)
     nextTick(() => {
         switch (activeName.value) {
             case "rect":
@@ -100,15 +105,18 @@ const handleAngleChange = throttle(() => {
     }
 }, 1000)
 const addCircle = () => {
-    let coordinates = getCirclePosition(target.value, 1.5, totalNumber.value)
-    coordinates.forEach((coordinate, index) => {
-        const position = Cesium.Cartesian3.fromDegrees(coordinate[0], coordinate[1]);
+    let coordinates = getCirclePosition(target.value, 1.5, totalNumber.value,layerNumber.value)
+    for (let i = 0; i < totalNumber.value; i++) {
+        const position = Cesium.Cartesian3.fromDegrees(coordinates[i][0], coordinates[i][1]);
         var point1 = turf.point([target.value.longitude, target.value.latitude]);
-        var point2 = turf.point([coordinate[0], coordinate[1]]);
+        var point2 = turf.point([coordinates[i][0], coordinates[i][1]]);
         const heading = turf.bearing(point1, point2);
+        var property = new Cesium.SampledPositionProperty();
+        property.addSample(startTime, position);
+        property.addSample(endTime, position);
         let model = viewer.entities.add({
-            name: "锚点",
-            position: position,
+            name: "圆形" + i,
+            position: property,
             orientation: Cesium.Transforms.headingPitchRollQuaternion(
                 position,
                 Cesium.HeadingPitchRoll.fromDegrees(heading + 90, 0, 0)
@@ -118,16 +126,19 @@ const addCircle = () => {
             },
         })
         entitiyList.value.push(model)
-    });
+    }
 }
 const addRect = () => {
     const coordinates = getRectPosition(target.value, layerNumber.value, totalNumber.value, 1.5)
     for (let i = 0; i < totalNumber.value; i++) {
         const position = Cesium.Cartesian3.fromDegrees(coordinates[i][0], coordinates[i][1]);
-        console.log(position)
+        var property = new Cesium.SampledPositionProperty();
+        property.addSample(startTime, position);
+        property.addSample(endTime, position);
+
         let model = viewer.entities.add({
-            name: "锚点",
-            position: position,
+            name: "矩形" + i,
+            position: property,
             model: {
                 uri: '/models/Cesium_Man.glb',
             },
@@ -140,9 +151,13 @@ const addWedge = () => {
     console.log(coordinates)
     for (let i = 0; i < coordinates.length; i++) {
         const position = Cesium.Cartesian3.fromDegrees(coordinates[i][0], coordinates[i][1]);
+        var property = new Cesium.SampledPositionProperty();
+        property.addSample(startTime, position);
+        property.addSample(endTime, position);
+
         let model = viewer.entities.add({
-            name: "锚点",
-            position: position,
+            name: "楔形" + i,
+            position: property,
             orientation: Cesium.Transforms.headingPitchRollQuaternion(
                 position,
                 Cesium.HeadingPitchRoll.fromDegrees(-90, 0, 0)
@@ -176,6 +191,79 @@ const deploy = () => {
         }
     })
 }
+
+const handleTabChange = (name: string) => {
+    activeName.value = name;
+    viewer.clock.shouldAnimate = false;
+
+    let duration = 5
+    // let startTime = Cesium.JulianDate.addHours(Cesium.JulianDate.now(), 8, new Cesium.JulianDate());
+    // let endTime = Cesium.JulianDate.addSeconds(startTime, duration, new Cesium.JulianDate())
+    if (entitiyList.value.length > 0) {
+        startAnimate(startTime, endTime)
+        let getFun = {
+            circle: getCirclePosition(target.value, 1.5, totalNumber.value,layerNumber.value),
+            rect: getRectPosition(target.value, layerNumber.value, totalNumber.value, 1.5),
+            wedge: getWedgePosition(target.value, angle.value, layerNumber.value, totalNumber.value, 1.5)
+        }
+        let coordinates: any[] = getFun[activeName.value]
+        let entityArr = entitiyList.value
+        entityArr.forEach((entity, index) => {
+            entity.availability = new Cesium.TimeIntervalCollection([
+                new Cesium.TimeInterval({
+                    start: startTime,
+                    stop: endTime,
+                }),
+            ])
+            // 判断 position 是否为 类型
+            let stp = entity.position.getValue(viewer.clock.currentTime)
+            if (stp) {
+                let positionProperty = movePosition(stp, coordinates[index], startTime.clone(), endTime.clone());
+                // let orientationProperty = moveOrientation(coordinates[index], endTime.clone())
+                entity.position = positionProperty;
+                entity.orientation = new Cesium.VelocityOrientationProperty(positionProperty)
+                console.log('forEach', index)
+            }
+        })
+    }
+
+}
+const movePosition = (startPosition: Cesium.Cartesian3, coordinate: Cesium.Cartesian3, startTime: Cesium.JulianDate, endTime: Cesium.JulianDate) => {
+    var property = new Cesium.SampledPositionProperty();
+    let endPosition = Cesium.Cartesian3.fromDegrees(coordinate[0], coordinate[1]);
+    let stopTime = Cesium.JulianDate.addSeconds(startTime, 5, new Cesium.JulianDate());
+    property.addSample(startTime.clone(), startPosition);
+    property.addSample(stopTime.clone(), endPosition);
+    // if(property.removeSample(endTime.clone())){
+    //     console.log('removeSample')
+    // }
+    property.addSample(endTime.clone(), endPosition);
+    return property;
+}
+
+const moveOrientation = (coordinate: Cesium.Cartesian3, endTime: Cesium.JulianDate) => {
+    var property = new Cesium.SampledProperty(Cesium.EllipsoidSurfaceAppearance);
+    let endPosition = Cesium.Cartesian3.fromDegrees(coordinate[0], coordinate[1]);
+    var point1 = turf.point([target.value.longitude, target.value.latitude]);
+    var point2 = turf.point([coordinate[0], coordinate[1]]);
+    const heading = turf.bearing(point1, point2);
+    let hpr = Cesium.HeadingPitchRoll.fromDegrees(heading, 0, 0)
+    let last = Cesium.JulianDate.addSeconds(endTime.clone(), 1, new Cesium.JulianDate())
+    property.addSample(last, Cesium.Transforms.headingPitchRollQuaternion(endPosition, hpr));
+    return property;
+}
+
+const startAnimate = (startTime: Cesium.JulianDate, endTime: Cesium.JulianDate) => {
+    // viewer.clock.clockRange = Cesium.ClockRange.CLAMPED;
+    viewer.clock.startTime = startTime.clone();
+    viewer.clock.stopTime = endTime.clone();
+    // viewer.clock.stopTime = Cesium.JulianDate.addSeconds(endTime.clone(), 3, new Cesium.JulianDate());
+    // viewer.clock.clockRange = Cesium.ClockRange.UNBOUNDED;
+    viewer.clock.currentTime = startTime.clone();
+    viewer.clock.clockRange = Cesium.ClockRange.CLAMPED;
+    viewer.clock.multiplier = 1.0;
+    viewer.clock.shouldAnimate = true;
+}
 const handleMapLoaded = (cviewer: Cesium.Viewer) => {
     viewer = cviewer;
     loaded.value = true
@@ -208,11 +296,12 @@ const reset = () => {
     });
 }
 const removeAll = () => {
+    entitiyList.value = []
     viewer.entities.removeAll()
     sessionStorage.removeItem('markers')
 }
 onMounted(() => {
-
+    entitiyList.value = []
 })
 </script>
 
