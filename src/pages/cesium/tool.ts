@@ -9,12 +9,65 @@ export const calculateRadius = (num: number, gap: number) => {
     return radius;
 }
 
-export const getCirclePosition = (target: { longitude: number, latitude: number }, step: number, total) => {
-    let radius = calculateRadius(total, step)
-    var center = [target.longitude, target.latitude];
-    var options = { steps: total };
-    let turfCircle = turf.circle(center, radius / 1000, options);
-    return turfCircle.geometry.coordinates[0]
+export const getCirclePosition = (target: { longitude: number, latitude: number }, step: number, total: number, num: number) => {
+    let devideArr = devideLayer(total, num)
+    let coordinates = []
+    devideArr.forEach(item => {
+        let radius = calculateRadius(item, step)
+        var center = [target.longitude, target.latitude];
+        var options = { steps: item };
+        let turfCircle = turf.circle(center, radius / 1000, options);
+        let indexCoordinates = turfCircle.geometry.coordinates[0];
+        coordinates = coordinates.concat(indexCoordinates)
+    })
+    // let radius = calculateRadius(total, step)
+    // var center = [target.longitude, target.latitude];
+    // var options = { steps: total };
+    // let turfCircle = turf.circle(center, radius / 1000, options);
+    // let coordinates = turfCircle.geometry.coordinates[0]
+    return coordinates
+}
+
+export const devideLayer = (total: number, num: number) => {
+    let avager = Math.ceil(total / num)
+    let middle = 0
+    console.log('平均数', avager)
+    if (num % 2 == 0) {
+        console.log('偶数', num)
+        middle = num / 2
+        console.log('中间层', middle)
+
+        let arr: number[] = test0(total, num, middle, avager)
+        return arr
+    } else {
+        console.log('奇数', num)
+        middle = num / 2 + 0.5
+        console.log('中间层', middle)
+
+        let arr: number[] = test1(total, num, middle, avager)
+        return arr
+    }
+
+}
+const test1 = (total: number, num: number, middle: number, avager: number) => {
+    let arr = []
+    for (var i = num; i > 0; i--) {
+        let indexNum = avager + (i - middle) * 3
+        if (indexNum > 3)
+            arr.push(indexNum)
+    }
+    console.log("test1", arr)
+    return arr
+}
+const test0 = (total: number, num: number, middle: number, avager: number) => {
+    let arr = []
+    for (var i = num; i > 0; i--) {
+        let indexNum = avager + (i - middle) * 3
+        if (indexNum > 3)
+            arr.push(indexNum)
+    }
+    console.log("test0", arr)
+    return arr
 }
 
 export const distributeElements = (Sn: number, N: number,) => {
@@ -143,13 +196,13 @@ export const getWedgePosition = (target: {
         var rightPoint = turf.destination(point, (0.7 / 1000), 90);
         wedge.push(leftPoint.geometry.coordinates);
         wedge.push(rightPoint.geometry.coordinates);
-        for (var j = 1; j < total-1; j++) {
+        for (var j = 1; j < total - 1; j++) {
             if (j % 2 === 0) {
-                let point1 = turf.destination(rightPoint, (distance * j/2 / 1000), 180 - angle / 2);
+                let point1 = turf.destination(rightPoint, (distance * j / 2 / 1000), 180 - angle / 2);
                 wedge.push(point1.geometry.coordinates);
 
             } else {
-                let point1 = turf.destination(leftPoint, (distance * Math.ceil(j/2) / 1000), angle / 2 + 180);
+                let point1 = turf.destination(leftPoint, (distance * Math.ceil(j / 2) / 1000), angle / 2 + 180);
                 wedge.push(point1.geometry.coordinates);
             }
         }
