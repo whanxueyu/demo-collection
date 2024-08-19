@@ -118,6 +118,7 @@ const handleAngleChange = throttle(() => {
 
 const handleVerticalChange = () => {
     console.log(isVertical.value)
+    handleTabChange()
 }
 const addCircle = () => {
     let coordinates = getCirclePosition(target.value, spacing.value, totalNumber.value, layerNumber.value)
@@ -147,17 +148,14 @@ const handleAddModel = (id: string, position: Cesium.Cartesian3, heading: number
     var property = new Cesium.SampledPositionProperty();
     property.addSample(startTime, position);
     property.addSample(endTime, position);
-    // let quaternion = Cesium.Transforms.headingPitchRollQuaternion(
-    //     position,
-    //     Cesium.HeadingPitchRoll.fromDegrees(270, 0, 0)
-    // );
+    let orientationProperty = new Cesium.CallbackProperty(()=>{
+        return Cesium.HeadingPitchRoll.fromDegrees(heading, 0, 0)
+    },true)
     console.log('heading', heading)
     let model = viewer.entities.getById(id);
     if (model) {
         model.position = property;
-        model.orientation = new Cesium.CallbackProperty(() => {
-            return Cesium.HeadingPitchRoll.fromDegrees(heading, 0, 0)
-        }, false)
+        model.orientation = orientationProperty;
     } else {
         let model = viewer.entities.add({
             id: id,
@@ -196,11 +194,9 @@ const deploy = () => {
     })
 }
 
-const handleTabChange = (name: string) => {
-    activeName.value = name;
+const handleTabChange = () => {
     viewer.clock.shouldAnimate = false;
 
-    let duration = 5
     if (entitiyList.value.length > 0) {
         startAnimate(startTime, endTime)
         let getFun = {
@@ -223,12 +219,15 @@ const handleTabChange = (name: string) => {
                 let positionProperty = movePosition(stp, coordinates[index], startTime.clone(), endTime.clone());
                 // let orientationProperty = moveOrientation(coordinates[index], endTime.clone())
                 entity.position = positionProperty;
-                // entity.orientation = new Cesium.VelocityOrientationProperty(positionProperty)
+                entity.orientation = new Cesium.VelocityOrientationProperty(positionProperty)
                 // entity.orientation = new Cesium.CallbackProperty(() => {
-                //     return Cesium.HeadingPitchRoll.fromDegrees(heading, 0, 0)
+                //     return Cesium.HeadingPitchRoll.fromDegrees(0, 0, 0)
                 // }, false)
             }
         })
+        setTimeout(() => {
+            handleNumberChange()
+        }, 5200);
     }
 
 }
