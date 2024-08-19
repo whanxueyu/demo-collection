@@ -9,7 +9,7 @@ export const calculateRadius = (num: number, gap: number) => {
     return radius;
 }
 
-export const getCirclePosition = (target: { longitude: number, latitude: number }, step: number, total: number, num: number) => {
+export const getCirclePosition = (target: { longitude: number, latitude: number }, step: number, total: number, num: number, bearing: number) => {
     let devideArr = devideLayer(total, num)
     let coordinates = []
     devideArr.forEach(item => {
@@ -144,7 +144,7 @@ export function distributeRect(totalNumber, layerNumber) {
 export function getRectPosition(target: {
     longitude: number;
     latitude: number;
-}, layerNumber: number, total: number, distance: number, isVertical: boolean) {
+}, layerNumber: number, total: number, distance: number, bearing: number, isVertical: boolean) {
     let result = distributeRect(total, layerNumber)
     let n = result[0]
     let pn1 = isVertical ? (layerNumber - 1) : (n - 1)
@@ -163,7 +163,9 @@ export function getRectPosition(target: {
         // matrix.push(point3.geometry.coordinates);
         for (var j = 0; j < n; j++) {
             var point4 = turf.destination(point3, (distance * j / 1000), angle2);
-            matrix.push(point4.geometry.coordinates);
+            var options = { pivot: [target.longitude, target.latitude] };
+            var rotatedPoly = turf.transformRotate(point4, bearing, options);
+            matrix.push(rotatedPoly.geometry.coordinates);
         }
     }
     return matrix;
@@ -173,7 +175,7 @@ export function getRectPosition(target: {
 export const getWedgePosition = (target: {
     longitude: number;
     latitude: number;
-}, angle: number, layerNumber: number, total: number, distance: number) => {
+}, angle: number, layerNumber: number, total: number, distance: number, bearing: number) => {
     // 1. 根据中心点计算矩阵原点
     var point = turf.point([target.longitude, target.latitude]);
 
@@ -197,17 +199,22 @@ export const getWedgePosition = (target: {
             leftPoint = turf.destination(leftOrigin, (hypotenuse * i / 1000), 180);
             rightPoint = turf.destination(rightOrigin, (hypotenuse * i / 1000), 180);
         }
-        wedge.push(leftPoint.geometry.coordinates);
-        wedge.push(rightPoint.geometry.coordinates);
+        var options = { pivot: [target.longitude, target.latitude] };
+        var rotatedLeft = turf.transformRotate(leftPoint, bearing, options);
+        var rotatedFight = turf.transformRotate(rightPoint, bearing, options);
+        wedge.push(rotatedLeft.geometry.coordinates);
+        wedge.push(rotatedFight.geometry.coordinates);
 
         for (var j = 1; j < layerArr[i] - 1; j++) {
             if (j % 2 === 0) {
                 let point1 = turf.destination(rightPoint, (distance * j / 2 / 1000), 180 - angle / 2);
-                wedge.push(point1.geometry.coordinates);
+                var rotatedPoint1 = turf.transformRotate(point1, bearing, options);
+                wedge.push(rotatedPoint1.geometry.coordinates);
 
             } else {
                 let point1 = turf.destination(leftPoint, (distance * Math.ceil(j / 2) / 1000), angle / 2 + 180);
-                wedge.push(point1.geometry.coordinates);
+                var rotatedPoint1 = turf.transformRotate(point1, bearing, options);
+                wedge.push(rotatedPoint1.geometry.coordinates);
             }
         }
     }

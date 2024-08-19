@@ -121,7 +121,7 @@ const handleVerticalChange = () => {
     handleTabChange()
 }
 const addCircle = () => {
-    let coordinates = getCirclePosition(target.value, spacing.value, totalNumber.value, layerNumber.value)
+    let coordinates = getCirclePosition(target.value, spacing.value, totalNumber.value, layerNumber.value, bearing.value)
     for (let i = 0; i < totalNumber.value; i++) {
         const position = Cesium.Cartesian3.fromDegrees(coordinates[i][0], coordinates[i][1]);
         var point1 = turf.point([target.value.longitude, target.value.latitude]);
@@ -131,14 +131,14 @@ const addCircle = () => {
     }
 }
 const addRect = () => {
-    const coordinates = getRectPosition(target.value, layerNumber.value, totalNumber.value, spacing.value, isVertical.value)
+    const coordinates = getRectPosition(target.value, layerNumber.value, totalNumber.value, spacing.value, bearing.value, isVertical.value)
     for (let i = 0; i < totalNumber.value; i++) {
         const position = Cesium.Cartesian3.fromDegrees(coordinates[i][0], coordinates[i][1]);
         handleAddModel("model_" + i, position, isVertical.value ? 0 : 270)
     }
 }
 const addWedge = () => {
-    const coordinates = getWedgePosition(target.value, angle.value, layerNumber.value, totalNumber.value, spacing.value)
+    const coordinates = getWedgePosition(target.value, angle.value, layerNumber.value, totalNumber.value, spacing.value, bearing.value)
     for (let i = 0; i < coordinates.length; i++) {
         const position = Cesium.Cartesian3.fromDegrees(coordinates[i][0], coordinates[i][1]);
         handleAddModel("model_" + i, position, -90)
@@ -148,9 +148,9 @@ const handleAddModel = (id: string, position: Cesium.Cartesian3, heading: number
     var property = new Cesium.SampledPositionProperty();
     property.addSample(startTime, position);
     property.addSample(endTime, position);
-    let orientationProperty = new Cesium.CallbackProperty(()=>{
+    let orientationProperty = new Cesium.CallbackProperty(() => {
         return Cesium.HeadingPitchRoll.fromDegrees(heading, 0, 0)
-    },true)
+    }, true)
     console.log('heading', heading)
     let model = viewer.entities.getById(id);
     if (model) {
@@ -200,9 +200,9 @@ const handleTabChange = () => {
     if (entitiyList.value.length > 0) {
         startAnimate(startTime, endTime)
         let getFun = {
-            circle: getCirclePosition(target.value, spacing.value, totalNumber.value, layerNumber.value),
-            rect: getRectPosition(target.value, layerNumber.value, totalNumber.value, spacing.value, isVertical.value),
-            wedge: getWedgePosition(target.value, angle.value, layerNumber.value, totalNumber.value, spacing.value)
+            circle: getCirclePosition(target.value, spacing.value, totalNumber.value, layerNumber.value, bearing.value),
+            rect: getRectPosition(target.value, layerNumber.value, totalNumber.value, spacing.value, bearing.value, isVertical.value),
+            wedge: getWedgePosition(target.value, angle.value, layerNumber.value, totalNumber.value, spacing.value, bearing.value)
         }
         let coordinates: any[] = getFun[activeName.value]
         let entityArr = entitiyList.value
