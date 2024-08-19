@@ -1,6 +1,10 @@
 /* eslint-disable */
 import { Cartesian3, Cartesian2, Viewer, SceneTransforms } from "cesium";
 import { createApp, h } from "vue";
+/**
+ * 创建一个DivBillboard
+
+ */
 class DivBillboard {
     protected viewer: Viewer;
     protected position: Cartesian3;
@@ -12,6 +16,14 @@ class DivBillboard {
     private vueComponent: any;
     private enableMouse: boolean
 
+/**
+ * 
+ * @param viewer Viewer
+ * @param position Cartesian3
+ * @param content string HTMLElement的string
+ * @param vueComponent vue组件
+ * @param enableMouse 是否允许鼠标事件
+ */
     constructor(viewer: Viewer, position: Cartesian3, content: string, vueComponent: any, enableMouse?: boolean) {
         this.viewer = viewer;
         this.position = position;

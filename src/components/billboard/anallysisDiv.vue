@@ -1,6 +1,6 @@
 <template>
     <div :id="id" class="resultMarker">
-        <div @click="handleClose" class="btn">*</div>
+        <div @click="handleClose" class="btn">×</div>
         <div v-html="htmlContent"></div>
     </div>
 </template>
@@ -27,9 +27,9 @@ const handleClose = () => {
 .resultMarker {
     text-align: start;
     padding: 5px 10px;
-    padding-right: 15px;
+    padding-right: 20px;
     border-radius: 4px;
-    font-size: 12px;
+    font-size: 14px;
     color: #fff;
     background-color: #0009;
     user-select: none;
@@ -45,7 +45,8 @@ const handleClose = () => {
 .btn{
     color: rgb(255, 0, 0);
     text-align: center;
-    font-size: 24px;
+    font-size: 20px;
+    line-height: 10px;
     cursor: pointer;
     text-align: end;
     position: absolute;
