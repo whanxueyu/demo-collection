@@ -10,6 +10,13 @@
             <el-button :icon="Refresh" @click="reset" type="success"></el-button>
             <el-button :icon="Brush" @click="removeAll" type="danger"></el-button>
             <el-checkbox @Change="handleShrinkChange" v-model="shrink" label="是否收缩" :value="true"></el-checkbox>
+            <div v-if="activeName == 'rect'" class="flex form-cell">
+                <div class="form-cell-label">纵向横向：</div>
+                <div class="form-cell-content">
+                    <el-switch v-model="isVertical" :active-value="true" :inactive-value="false"
+                        @change="handleVerticalChange"></el-switch>
+                </div>
+            </div>
             <div class="flex form-cell">
                 <div class="form-cell-label">人数：</div>
                 <div>
@@ -68,9 +75,10 @@ const totalNumber = ref(4);
 const layerNumber = ref(1);
 const bearing = ref(0);
 const angle = ref(60);
+const isVertical = ref(true)
 const entitiyList = ref<Cesium.Entity[]>([]);
 const targetEntity = ref<Cesium.Entity>();
-const handleNumberChange = throttle(() => {
+const handleNumberChange = () => {
     entitiyList.value.forEach((entity: Cesium.Entity) => {
         viewer.entities.remove(entity)
     })
@@ -89,7 +97,7 @@ const handleNumberChange = throttle(() => {
                 break;
         }
     })
-}, 1000)
+}
 const handleLayerChange = throttle(() => {
     handleNumberChange()
 }, 1000)
@@ -102,10 +110,15 @@ const handleAngleChange = throttle(() => {
     console.log("开口角度", angle.value)
     if (angle.value < 30) {
         ElMessage.warning("请勿选择小于30度的开口角度")
+        angle.value = 30
     } else {
         handleNumberChange()
     }
 }, 1000)
+
+const handleVerticalChange = () => {
+    console.log(isVertical.value)
+}
 const addCircle = () => {
     let coordinates = getCirclePosition(target.value, spacing.value, totalNumber.value, layerNumber.value)
     for (let i = 0; i < totalNumber.value; i++) {
@@ -117,10 +130,10 @@ const addCircle = () => {
     }
 }
 const addRect = () => {
-    const coordinates = getRectPosition(target.value, layerNumber.value, totalNumber.value, spacing.value)
+    const coordinates = getRectPosition(target.value, layerNumber.value, totalNumber.value, spacing.value, isVertical.value)
     for (let i = 0; i < totalNumber.value; i++) {
         const position = Cesium.Cartesian3.fromDegrees(coordinates[i][0], coordinates[i][1]);
-        handleAddModel("model_" + i, position, 0)
+        handleAddModel("model_" + i, position, isVertical.value ? 0 : 270)
     }
 }
 const addWedge = () => {
@@ -134,13 +147,17 @@ const handleAddModel = (id: string, position: Cesium.Cartesian3, heading: number
     var property = new Cesium.SampledPositionProperty();
     property.addSample(startTime, position);
     property.addSample(endTime, position);
-    if (viewer.entities.getById(id)) {
-        let model = viewer.entities.getById(id);
+    // let quaternion = Cesium.Transforms.headingPitchRollQuaternion(
+    //     position,
+    //     Cesium.HeadingPitchRoll.fromDegrees(270, 0, 0)
+    // );
+    console.log('heading', heading)
+    let model = viewer.entities.getById(id);
+    if (model) {
         model.position = property;
-        // model.orientation = Cesium.Transforms.headingPitchRollQuaternion(
-        //     position,
-        //     Cesium.HeadingPitchRoll.fromDegrees(heading, 0, 0)
-        // );
+        model.orientation = new Cesium.CallbackProperty(() => {
+            return Cesium.HeadingPitchRoll.fromDegrees(heading, 0, 0)
+        }, false)
     } else {
         let model = viewer.entities.add({
             id: id,
@@ -188,7 +205,7 @@ const handleTabChange = (name: string) => {
         startAnimate(startTime, endTime)
         let getFun = {
             circle: getCirclePosition(target.value, spacing.value, totalNumber.value, layerNumber.value),
-            rect: getRectPosition(target.value, layerNumber.value, totalNumber.value, spacing.value),
+            rect: getRectPosition(target.value, layerNumber.value, totalNumber.value, spacing.value, isVertical.value),
             wedge: getWedgePosition(target.value, angle.value, layerNumber.value, totalNumber.value, spacing.value)
         }
         let coordinates: any[] = getFun[activeName.value]
@@ -206,7 +223,10 @@ const handleTabChange = (name: string) => {
                 let positionProperty = movePosition(stp, coordinates[index], startTime.clone(), endTime.clone());
                 // let orientationProperty = moveOrientation(coordinates[index], endTime.clone())
                 entity.position = positionProperty;
-                entity.orientation = new Cesium.VelocityOrientationProperty(positionProperty)
+                // entity.orientation = new Cesium.VelocityOrientationProperty(positionProperty)
+                // entity.orientation = new Cesium.CallbackProperty(() => {
+                //     return Cesium.HeadingPitchRoll.fromDegrees(heading, 0, 0)
+                // }, false)
             }
         })
     }

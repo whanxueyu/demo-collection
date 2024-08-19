@@ -144,21 +144,25 @@ export function distributeRect(totalNumber, layerNumber) {
 export function getRectPosition(target: {
     longitude: number;
     latitude: number;
-}, layerNumber: number, total: number, distance: number) {
+}, layerNumber: number, total: number, distance: number, isVertical: boolean) {
     let result = distributeRect(total, layerNumber)
     let n = result[0]
+    let pn1 = isVertical ? (layerNumber - 1) : (n - 1)
+    let pn2 = isVertical ? (n - 1) : (layerNumber - 1)
 
     // 1. 根据中心点计算矩阵原点
     var point = turf.point([target.longitude, target.latitude]);
-    let point1 = turf.destination(point, (distance * (layerNumber - 1) / 2000), 90);
-    let point2 = turf.destination(point1, (distance * (n - 1) / 2000), 0);
+    let point1 = turf.destination(point, (distance * pn1 / 2000), isVertical ? 90 : 270);
+    let point2 = turf.destination(point1, (distance * pn2 / 2000), 0);
     const matrix = [];
+    let angle1 = isVertical ? 270 : 180
+    let angle2 = isVertical ? 180 : 90
 
     for (var i = 0; i < layerNumber; i++) {
-        var point3 = turf.destination(point2, (distance * i / 1000), -90);
+        var point3 = turf.destination(point2, (distance * i / 1000), angle1);
         // matrix.push(point3.geometry.coordinates);
         for (var j = 0; j < n; j++) {
-            var point4 = turf.destination(point3, (distance * j / 1000), 180);
+            var point4 = turf.destination(point3, (distance * j / 1000), angle2);
             matrix.push(point4.geometry.coordinates);
         }
     }
