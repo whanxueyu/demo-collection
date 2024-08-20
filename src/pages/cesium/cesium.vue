@@ -545,7 +545,7 @@ const Cartesian3_to_WGS84 = (point) => {
 }
 const reset = () => {
     viewer.camera.flyTo({
-        destination: Cesium.Cartesian3.fromDegrees(116.391257, 39.907204, 1000),
+        destination: Cesium.Cartesian3.fromDegrees(116.391257, 39.907204, 30),
         orientation: {
             heading: Cesium.Math.toRadians(0),
             pitch: Cesium.Math.toRadians(-90),

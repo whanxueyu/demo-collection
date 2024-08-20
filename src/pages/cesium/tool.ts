@@ -116,14 +116,14 @@ export const calculateN = (total: number): number => {
 
     return n;
 }
-export function distributeRect(totalNumber, layerNumber) {
+export function distributeRect(totalNumber:number, layerNumber:number) {
     // 计算每行的基础数量
     const baseCount = Math.ceil(totalNumber / layerNumber);
     // 计算剩余的数量
     const remainder = totalNumber - baseCount * layerNumber;
 
     // 创建结果数组
-    const result = [];
+    const result:number[] = [];
 
     // 分配基础数量
     for (let i = 0; i < layerNumber - 1; i++) {
@@ -178,7 +178,6 @@ export const getWedgePosition = (target: {
 }, angle: number, layerNumber: number, total: number, distance: number, bearing: number) => {
     // 1. 根据中心点计算矩阵原点
     var point = turf.point([target.longitude, target.latitude]);
-
 
     var hypotenuse = calculateHypotenuse(distance, angle / 2);
     var otherLength = calculateOtherLeg(distance, angle / 2);

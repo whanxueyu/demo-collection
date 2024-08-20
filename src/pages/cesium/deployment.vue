@@ -79,10 +79,10 @@ const isVertical = ref(true)
 const entitiyList = ref<Cesium.Entity[]>([]);
 const targetEntity = ref<Cesium.Entity>();
 const handleNumberChange = () => {
-    entitiyList.value.forEach((entity: Cesium.Entity) => {
-        viewer.entities.remove(entity)
-    })
-    entitiyList.value = []
+    // entitiyList.value.forEach((entity: Cesium.Entity) => {
+    //     viewer.entities.remove(entity)
+    // })
+    // entitiyList.value = []
     startAnimate(startTime, endTime)
     nextTick(() => {
         switch (activeName.value) {
@@ -148,14 +148,19 @@ const handleAddModel = (id: string, position: Cesium.Cartesian3, heading: number
     var property = new Cesium.SampledPositionProperty();
     property.addSample(startTime, position);
     property.addSample(endTime, position);
-    let orientationProperty = new Cesium.CallbackProperty(() => {
-        return Cesium.HeadingPitchRoll.fromDegrees(heading, 0, 0)
-    }, true)
-    console.log('heading', heading)
-    let model = viewer.entities.getById(id);
-    if (model) {
-        model.position = property;
-        model.orientation = orientationProperty;
+    let orientationProperty = new Cesium.ConstantProperty(
+        Cesium.Transforms.headingPitchRollQuaternion(
+            position,
+            Cesium.HeadingPitchRoll.fromDegrees(heading, 0, 0)
+        )
+    )
+    console.log('orientationProperty', orientationProperty)
+    let entity = viewer.entities.getById(id);
+    console.log('model', entity)
+    if (entity) {
+        entity.position = property;
+        // 执行到这一步报错，RangeError: Invalid array length RangeError: Invalid array length     at updateFrustums
+        entity.orientation = orientationProperty;
     } else {
         let model = viewer.entities.add({
             id: id,
@@ -198,11 +203,24 @@ const handleTabChange = () => {
     viewer.clock.shouldAnimate = false;
 
     if (entitiyList.value.length > 0) {
-        startAnimate(startTime, endTime)
         let getFun = {
             circle: getCirclePosition(target.value, spacing.value, totalNumber.value, layerNumber.value, bearing.value),
             rect: getRectPosition(target.value, layerNumber.value, totalNumber.value, spacing.value, bearing.value, isVertical.value),
             wedge: getWedgePosition(target.value, angle.value, layerNumber.value, totalNumber.value, spacing.value, bearing.value)
+        }
+        let getHeading = {
+            circle: ((coordinate) => {
+                var point1 = turf.point([target.value.longitude, target.value.latitude]);
+                var point2 = turf.point([coordinate[0], coordinate[1]]);
+                const head = turf.bearing(point1, point2);
+                return head + 90
+            }),
+            rect: (()=>{
+                return isVertical.value ? 0 : 270
+            }),
+            wedge: (()=>{
+                return -90
+            }),
         }
         let coordinates: any[] = getFun[activeName.value]
         let entityArr = entitiyList.value
@@ -217,17 +235,20 @@ const handleTabChange = () => {
             let stp = entity.position.getValue(viewer.clock.currentTime)
             if (stp) {
                 let positionProperty = movePosition(stp, coordinates[index], startTime.clone(), endTime.clone());
-                // let orientationProperty = moveOrientation(coordinates[index], endTime.clone())
                 entity.position = positionProperty;
                 entity.orientation = new Cesium.VelocityOrientationProperty(positionProperty)
-                // entity.orientation = new Cesium.CallbackProperty(() => {
-                //     return Cesium.HeadingPitchRoll.fromDegrees(0, 0, 0)
-                // }, false)
             }
+            let heading: number = getHeading[activeName.value](coordinates[index])
+            setTimeout(() => {
+                entity.orientation = new Cesium.ConstantProperty(
+                    Cesium.Transforms.headingPitchRollQuaternion(
+                        entity.position.getValue(viewer.clock.currentTime),
+                        Cesium.HeadingPitchRoll.fromDegrees(heading, 0, 0)
+                    )
+                )
+            }, 5200);
         })
-        setTimeout(() => {
-            handleNumberChange()
-        }, 5200);
+        startAnimate(startTime, endTime)
     }
 
 }
