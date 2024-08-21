@@ -6,27 +6,34 @@
             <el-tab-pane label="楔形" name="wedge"></el-tab-pane>
         </el-tabs>
         <div>
-            <el-button :icon="Location" @click="deploy" type="primary"></el-button>
-            <el-button :icon="Refresh" @click="reset" type="success"></el-button>
-            <el-button :icon="Brush" @click="removeAll" type="danger"></el-button>
-            <el-checkbox @Change="handleShrinkChange" v-model="shrink" label="是否收缩" :value="true"></el-checkbox>
+            <el-button :icon="Location" size="small" @click="deploy" type="primary">锚点</el-button>
+            <el-button :icon="Refresh" size="small" @click="reset" type="success">还原</el-button>
+            <el-button :icon="Brush" size="small" @click="removeAll" type="danger">清空</el-button>
             <div v-if="activeName == 'rect'" class="flex form-cell">
-                <div class="form-cell-label">纵向横向：</div>
+                <div class="form-cell-label">队列方向：</div>
                 <div class="form-cell-content">
-                    <el-switch v-model="isVertical" :active-value="true" :inactive-value="false"
-                        @change="handleVerticalChange"></el-switch>
+                    <el-switch v-model="isVertical" @change="handleVerticalChange" :active-value="true"
+                        :inactive-value="false" inline-prompt active-text="纵向队列" inactive-text="横向队列" />
+                </div>
+            </div>
+            <div class="flex form-cell">
+                <div class="form-cell-label">队列展开：</div>
+                <div class="form-cell-content">
+                    <el-switch v-model="shrink" @change="handleShrinkChange" :active-value="true" :inactive-value="false"
+                inline-prompt active-text="队列收缩" inactive-text="队列展开" />
                 </div>
             </div>
             <div class="flex form-cell">
                 <div class="form-cell-label">人数：</div>
-                <div>
+                <div class="form-cell-content">
                     <el-input-number :min="4" :max="1000" v-model="totalNumber" :step="1"
                         @change="handleNumberChange"></el-input-number>
                 </div>
             </div>
+            
             <div class="flex form-cell">
                 <div class="form-cell-label">层数：</div>
-                <div>
+                <div class="form-cell-content">
                     <el-input-number :min="1" :max="1000" v-model="layerNumber" :step="1"
                         @change="handleLayerChange"></el-input-number>
                 </div>
@@ -41,6 +48,18 @@
                 <div class="form-cell-label">开口角度：</div>
                 <div class="form-cell-content">
                     <el-slider v-model="angle" :min="0" :max="180" @change="handleAngleChange" />
+                </div>
+            </div>
+            <div class="flex form-cell">
+                <div class="form-cell-label">转换时间：</div>
+                <div class="form-cell-content">
+                    <el-input-number v-model="animationTime" :min="0" :max="30" :setp="0.1"/>
+                </div>
+            </div>
+            <div class="flex form-cell">
+                <div class="form-cell-label">时间倍速：</div>
+                <div class="form-cell-content">
+                    <el-input-number v-model="multiplier" :min="0" @change="startAnimate(startTime,endTime)" />
                 </div>
             </div>
         </div>
@@ -75,6 +94,8 @@ const totalNumber = ref(4);
 const layerNumber = ref(1);
 const bearing = ref(0);
 const angle = ref(60);
+const animationTime = ref(5)
+const multiplier = ref(1.0)
 const isVertical = ref(true)
 const entitiyList = ref<Cesium.Entity[]>([]);
 const targetEntity = ref<Cesium.Entity>();
@@ -215,10 +236,10 @@ const handleTabChange = () => {
                 const head = turf.bearing(point1, point2);
                 return head + 90
             }),
-            rect: (()=>{
+            rect: (() => {
                 return isVertical.value ? 0 : 270
             }),
-            wedge: (()=>{
+            wedge: (() => {
                 return -90
             }),
         }
@@ -255,7 +276,7 @@ const handleTabChange = () => {
 const movePosition = (startPosition: Cesium.Cartesian3, coordinate: Cesium.Cartesian3, startTime: Cesium.JulianDate, endTime: Cesium.JulianDate) => {
     var property = new Cesium.SampledPositionProperty();
     let endPosition = Cesium.Cartesian3.fromDegrees(coordinate[0], coordinate[1]);
-    let stopTime = Cesium.JulianDate.addSeconds(startTime, 5, new Cesium.JulianDate());
+    let stopTime = Cesium.JulianDate.addSeconds(startTime, animationTime.value, new Cesium.JulianDate());
     property.addSample(startTime.clone(), startPosition);
     property.addSample(stopTime.clone(), endPosition);
     // if(property.removeSample(endTime.clone())){
@@ -285,7 +306,7 @@ const startAnimate = (startTime: Cesium.JulianDate, endTime: Cesium.JulianDate) 
     // viewer.clock.clockRange = Cesium.ClockRange.UNBOUNDED;
     viewer.clock.currentTime = startTime.clone();
     viewer.clock.clockRange = Cesium.ClockRange.CLAMPED;
-    viewer.clock.multiplier = 1.0;
+    viewer.clock.multiplier = multiplier.value;
     viewer.clock.shouldAnimate = true;
 }
 const handleMapLoaded = (cviewer: Cesium.Viewer) => {
