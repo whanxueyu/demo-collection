@@ -159,6 +159,15 @@ const routes = [
                             hidden:false
                         },
                     },
+                    {
+                        path: '/imagery',
+                        name: 'imagery',
+                        component: () => import('@/pages/cesium/imageryLayer.vue'),
+                        meta: {
+                            name: '图层编辑',
+                            hidden:false
+                        },
+                    },
                 ]
             },
         ]
