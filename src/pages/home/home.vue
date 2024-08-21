@@ -24,8 +24,8 @@
                 <cyber-text :textStr="state.title1"></cyber-text>
             </div>
             <div class="btn">
-                <svg-btn1>{{ state.btn1 }}</svg-btn1>
-                <svg-btn2>{{ state.btn2 }}</svg-btn2>
+                <!-- <svg-btn1>{{ state.btn1 }}</svg-btn1>
+                <svg-btn2>{{ state.btn2 }}</svg-btn2> -->
                 <errorbutton>{{ state.btn3 }}</errorbutton>
             </div>
             <div class="btn">
@@ -52,11 +52,11 @@
                 <left-shadow></left-shadow>
             </div>
             <div class="movetext">
-                <move-text></move-text>
+                <move-text text="CyberPunk"></move-text>
             </div>
             <move-card></move-card>
         </div>
-        <div class="section5">
+        <!-- <div class="section5">
             <div class="stages">
                 <div class="container">
                     <div class="tabbar tab-style1">
@@ -151,7 +151,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
 
@@ -251,7 +251,7 @@ onMounted(() => {
 @media (min-width:800px) {
     .section1 {
         width: 100%;
-        height: 100%;
+        // height: 100%;
         display: block;
 
         .banner {
@@ -325,7 +325,7 @@ onMounted(() => {
 @media (max-width:800px) {
     .section1 {
         width: 100%;
-        height: 100%;
+        // height: 100%;
         display: block;
 
         .banner {
