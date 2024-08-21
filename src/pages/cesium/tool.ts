@@ -185,8 +185,8 @@ export const getWedgePosition = (target: {
 
     var layerArr = caculateTest(total, layerNumber, desPer)
     console.log(layerArr)
-    var leftOrigin = turf.destination(point, (distance / 2000), -90);
-    var rightOrigin = turf.destination(point, (distance / 2000), 90);
+    var leftOrigin = turf.destination(point, (distance / 3000), -90);
+    var rightOrigin = turf.destination(point, (distance / 3000), 90);
     let wedge = []
     for (var i = 0; i < layerNumber; i++) {
         var leftPoint = null;
