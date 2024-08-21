@@ -41,7 +41,7 @@ const baseMapList = [
     { id: 4, name: '高德矢量', type: 'gd_v', icon: baseMapIcon.gaode_vec },
     { id: 5, name: 'Bing路网', type: 'BingRoad', icon: baseMapIcon.bing_vec },
     { id: 6, name: 'Bing影像', type: 'BingAerial', icon: baseMapIcon.bing_img },
-    { id: 7, name: '网格', type: 'grid', icon: baseMapIcon.grid },
+    { id: 7, name: '网格', type: 'grid', icon: baseMapIcon.earth },
     { id: 8, name: '瓦片网格', type: 'tileGrid', icon: baseMapIcon.grid },
 ]
 
