@@ -1,21 +1,21 @@
 <template>
 	<div class="glow">
-		<h1>{{ props.moveText }}</h1>
-		<h1>{{ props.moveText }}</h1>
-		<h1>{{ props.moveText }}</h1>
-		<h1>{{ props.moveText }}</h1>
-		<h1>{{ props.moveText }}</h1>
-		<h1>{{ props.moveText }}</h1>
-		<h1>{{ props.moveText }}</h1>
-		<h1>{{ props.moveText }}</h1>
-		<h1>{{ props.moveText }}</h1>
-		<h1>{{ props.moveText }}</h1>
+		<h1>{{ props.text }}</h1>
+		<h1>{{ props.text }}</h1>
+		<h1>{{ props.text }}</h1>
+		<h1>{{ props.text }}</h1>
+		<h1>{{ props.text }}</h1>
+		<h1>{{ props.text }}</h1>
+		<h1>{{ props.text }}</h1>
+		<h1>{{ props.text }}</h1>
+		<h1>{{ props.text }}</h1>
+		<h1>{{ props.text }}</h1>
 	</div>
 </template>
 <script setup>
 import { defineProps} from 'vue'
 const props = defineProps({
-	moveText: {
+	text: {
 		type: String,
 		default: 'TEXT'
 	}

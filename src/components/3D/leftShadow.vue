@@ -23,7 +23,7 @@ const props = defineProps({
 	text-align: center;
     font-size: 40px;
     line-height: 60px;
-	text-shadow: makelongleftshadow(rgba(174, 14, 214, 0.548));
-    color: hsl(310, 90%, 61%);
+	text-shadow: makelongleftshadow(#ae0ed68c);
+    color: #f542d7;
 }
 </style>

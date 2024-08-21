@@ -16,11 +16,12 @@ const props = defineProps({
 <style lang="scss" scoped>
 .text-magic {
     position: relative;
-    text-align: left;
-    width: 100%;
     font-size: 26px;
     font-family: Raleway, Verdana, Arial;
     color: #fff;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .white {
