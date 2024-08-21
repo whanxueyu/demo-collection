@@ -42,6 +42,7 @@ const baseMapList = [
     { id: 5, name: 'Bing路网', type: 'BingRoad', icon: baseMapIcon.bing_vec },
     { id: 6, name: 'Bing影像', type: 'BingAerial', icon: baseMapIcon.bing_img },
     { id: 7, name: '网格', type: 'grid', icon: baseMapIcon.grid },
+    { id: 8, name: '瓦片网格', type: 'tileGrid', icon: baseMapIcon.grid },
 ]
 
 const changeMapType = (map) => {
@@ -133,6 +134,11 @@ const changeBaseMap = async (type) => {
         viewer.scene.globe.baseColor = Cesium.Color.BLACK;
         removeTerrain()
 
+    }else if(type == 'tileGrid'){
+        var TileGridImagery = new Cesium.TileCoordinatesImageryProvider({color: Cesium.Color.fromCssColorString('#ccc')});
+        viewer.imageryLayers.addImageryProvider(TileGridImagery);
+        viewer.scene.globe.baseColor = Cesium.Color.BLACK;
+        removeTerrain()
     }
 }
 const currentTerrainProvider = ref(null)
