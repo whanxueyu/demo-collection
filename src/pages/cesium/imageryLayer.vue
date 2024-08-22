@@ -2,56 +2,8 @@
     <div class="menubox">
         <el-switch v-model="activeTool" active-value="drawLine" inactive-value=""></el-switch>
         <el-color-picker v-model="lineColor" show-alpha color-format="hex"></el-color-picker>
-        <div id="toolbar">
-            <table>
-                <tbody>
-                    <tr>
-                        <td>Brightness</td>
-                        <td>
-                            <input @change="setParmas('brightness')" type="range" min="0" max="3" step="0.02"
-                                v-model="viewModel.brightness">
-                            <input @change="setParmas('brightness')" type="text" size="5"
-                                v-model="viewModel.brightness">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Contrast</td>
-                        <td>
-                            <input @change="setParmas('contrast')" type="range" min="0" max="3" step="0.02"
-                                v-model="viewModel.contrast">
-                            <input @change="setParmas('contrast')" type="text" size="5" v-model="viewModel.contrast">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Hue</td>
-                        <td>
-                            <input @change="setParmas('hue')" type="range" min="0" max="3" step="0.02"
-                                v-model="viewModel.hue">
-                            <input @change="setParmas('hue')" type="text" size="5" v-model="viewModel.hue">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Saturation</td>
-                        <td>
-                            <input @change="setParmas('saturation')" type="range" min="0" max="3" step="0.02"
-                                v-model="viewModel.saturation">
-                            <input @change="setParmas('saturation')" type="text" size="5"
-                                v-model="viewModel.saturation">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Gamma</td>
-                        <td>
-                            <input @change="setParmas('gamma')" type="range" min="0" max="3" step="0.02"
-                                v-model="viewModel.gamma">
-                            <input @change="setParmas('gamma')" type="text" size="5" v-model="viewModel.gamma">
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
     </div>
-    <Map @loaded="handleMapLoaded"></Map>
+    <Map @loaded="handleMapLoaded" map-type="tileGrid"></Map>
     <status-bar v-if="loaded" :viewer="viewer"></status-bar>
 </template>
 
@@ -60,8 +12,6 @@ import { nextTick, onMounted, reactive, ref } from "vue";
 import * as Cesium from "cesium";
 import Map from '@/components/cesium/map.vue'
 import 'cesium/Source/Widgets/widgets.css';
-import { LocationInformation, Delete, Refresh, OfficeBuilding, Rank, Picture, EditPen, Share } from '@element-plus/icons-vue'
-import { ElMessage } from "element-plus";
 import PolylineTrailLinkMaterialProperty from '@/modules/material/PolylineTrailLinkMaterial'
 import statusBar from '@/components/cesium/status-bar.vue'
 var viewer;
