@@ -2,6 +2,9 @@
     <div class="menubox">
         <el-switch v-model="activeTool" active-value="drawLine" inactive-value=""></el-switch>
         <el-color-picker v-model="lineColor" show-alpha color-format="hex"></el-color-picker>
+        <el-button type="parimary" @click="loadData">添加管道</el-button>
+        <el-button type="parimary" @click="loadRadar">添加雷达</el-button>
+        <el-button type="parimary" @click="loadRadar">添加雷达</el-button>
     </div>
     <Map @loaded="handleMapLoaded" map-type="tileGrid"></Map>
     <status-bar v-if="loaded" :viewer="viewer"></status-bar>
@@ -13,7 +16,9 @@ import * as Cesium from "cesium";
 import Map from '@/components/cesium/map.vue'
 import 'cesium/Source/Widgets/widgets.css';
 import PolylineTrailLinkMaterialProperty from '@/modules/material/PolylineTrailLinkMaterial'
+// import SpriteLineMaterialProperty from '@/modules/material/SpriteLineMaterialProperty'
 import statusBar from '@/components/cesium/status-bar.vue'
+import radaeScanMaterial from "@/modules/material/radaeScanMaterial";
 var viewer;
 const loaded = ref(false);
 const viewModel = reactive({
@@ -41,11 +46,101 @@ function updateViewModel() {
     }
 }
 
-const setParmas = (name: string) => {
-    const layer = imageryLayers.value.get(0);
-    if (layer) {
-        layer[name] = viewModel[name]
-    }
+const loadData = () => {
+    function computeCircle(radius) {
+        var positions = []
+        for (var i = 0; i < 360; i++) {
+          var radians = Cesium.Math.toRadians(i)
+          positions.push(
+            new Cesium.Cartesian2(
+              radius * Math.cos(radians),
+              radius * Math.sin(radians)
+            )
+          )
+        }
+        return positions
+      }
+      // Create the polyline volume geometry instance.  The shape defined by the
+      // shapePositions option will be extruded along the polylinePositions.
+      var geometry = new Cesium.PolylineVolumeGeometry({
+        polylinePositions: Cesium.Cartesian3.fromDegreesArray([
+          -85.0,
+          32.0,
+          -85.0,
+          36.0,
+          -89.0,
+          36.0,
+        ]),
+        vertexFormat: Cesium.VertexFormat.POSITION_NORMAL_AND_ST,
+        shapePositions: computeCircle(6000.0),
+        cornerType: Cesium.CornerType.MITERED,
+      })
+
+      // Add all instances to primitives.
+      var primitive = viewer.scene.primitives.add(
+        new Cesium.Primitive({
+          geometryInstances: new Cesium.GeometryInstance({
+            geometry: geometry,
+          }),
+          appearance: new Cesium.MaterialAppearance({
+            material: new Cesium.Material({
+              fabric: {
+                uniforms: {
+                  color: new Cesium.Color(1.0, 0.0, 0.0, 1.0),
+                  percentage: 0.1,
+                  offset: 0.0,
+                },
+                source: `
+                  uniform vec4 color;
+                  uniform float percentage;
+                  uniform float offset;
+                  czm_material czm_getMaterial(czm_materialInput materialInput)
+                  {
+                      czm_material material = czm_getDefaultMaterial(materialInput);
+                      vec2 st = materialInput.st;
+                      material.diffuse = color.rgb;
+                      material.alpha = 1.0-mod(st.s+offset,percentage)*(1.0/percentage);
+                      return material;
+                  }`,
+              },
+            }),
+          }),
+        })
+      )
+
+      viewer.camera.flyToBoundingSphere(
+        Cesium.PolylineVolumeGeometry.createGeometry(geometry).boundingSphere
+      )
+
+      viewer.scene.preUpdate.addEventListener(function() {
+        var offset = primitive.appearance.material.uniforms.offset
+        offset += 0.001
+        if (offset > 1.0) {
+          offset = 0.0
+        }
+        primitive.appearance.material.uniforms.offset = offset
+      })
+}
+const loadRadar = ()=>{
+    var circleGeometry = new Cesium.CircleGeometry({
+        center: Cesium.Cartesian3.fromDegrees(-74.02, 40.69),
+        radius: 200.0,
+        vertexFormat: Cesium.VertexFormat.POSITION_AND_ST,
+      })
+      var instance = new Cesium.GeometryInstance({
+        geometry: circleGeometry,
+      })
+      viewer.scene.primitives.add(
+        new Cesium.GroundPrimitive({
+          geometryInstances: instance,
+          appearance: new Cesium.MaterialAppearance({
+            material: radaeScanMaterial(new Cesium.Color(0.0, 1.0, 0.0)),
+          }),
+        })
+      )
+      viewer.camera.flyToBoundingSphere(
+        Cesium.CircleGeometry.createGeometry(circleGeometry).boundingSphere
+      )
 }
 const drawSketch = () => {
     //   let uuid = generateUniqueId()
@@ -91,6 +186,15 @@ const handleMapLoaded = (cviewer) => {
             drawSketch()
         }
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+    handler.setInputAction(function (event) {
+        if (activeTool.value === 'drawLine') {
+            mapData.tempSketch.pop();
+            drawSketch()
+        }
+    }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+    handler.setInputAction(function (event) {
+        activeTool.value === ''
+    }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
 }
 onMounted(() => {
 
