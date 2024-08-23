@@ -11,7 +11,7 @@ const radaeScanMaterial = (color: Cesium.Color) => {
       uniforms: {
         color: color,
         rotate: 90.0,
-        percent: 0.1,
+        percent: 0.3,
       },
       source: `
           uniform vec4 color;
@@ -38,9 +38,9 @@ const radaeScanMaterial = (color: Cesium.Color) => {
             vec2 base = vec2(0.5,0.0);
             vec2 dir = st-vec2(0.5,0.5);
             float len = length(dir);
-            if(len > 0.49){
-              material.alpha = 1.0;
-              material.diffuse = vec3(1.0,1.0,0.0);
+            if(len > 0.495){
+              material.alpha = 0.8;
+              material.diffuse = czm_gammaCorrect(color.rgb);
               material.emission=vec3(0.2);
             }
             else{

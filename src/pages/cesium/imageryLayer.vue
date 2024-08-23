@@ -145,17 +145,18 @@ const drawVolume = () => {
 const handleMapLoaded = (cviewer) => {
   viewer = cviewer;
   let handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
-  loaded.value = true
+  loaded.value = true;
+  handler.setInputAction(handleMouseMove.bind(this), Cesium.ScreenSpaceEventType.MOUSE_MOVE);
   handler.setInputAction(handleLeftClick.bind(this), Cesium.ScreenSpaceEventType.LEFT_CLICK);
   handler.setInputAction(function (event) {
     activeTool.value === '';
   }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
   handler.setInputAction(handleRightClick.bind(this), Cesium.ScreenSpaceEventType.RIGHT_CLICK);
-  handler.setInputAction(handleMouseMove.bind(this), Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 }
 const handleLeftClick = (event) => {
   let ray = viewer.camera.getPickRay(event.position);
   let cartesian = viewer.scene.globe.pick(ray, viewer.scene);
+
   // let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
   // let lng = Cesium.Math.toDegrees(cartographic.longitude); // 经度
   // let lat = Cesium.Math.toDegrees(cartographic.latitude); // 纬度
@@ -183,15 +184,20 @@ const handleRightClick = (event) => {
 const handleMouseMove = (event) => {
   let ray = viewer.camera.getPickRay(event.endPosition);
   let cartesian = viewer.scene.globe.pick(ray, viewer.scene);
-  // if (cartesian) {
-  //   if (activeTool.value === 'drawLine') {
-  //     mapData.lineTempPos.pop();
-  //     mapData.lineTempPos.push(cartesian);
-  //   } else if (activeTool.value === 'drawVolume') {
-  //     mapData.volumeTempPos.pop();
-  //     mapData.lineTempPos.push(cartesian);
-  //   }
-  // }
+  if (cartesian) {
+    if (activeTool.value === 'drawLine') {
+      if (mapData.lineTempPos.length > 1) {
+        mapData.lineTempPos.pop();
+      }
+      mapData.lineTempPos.push(cartesian);
+    } else if (activeTool.value === 'drawVolume') {
+      if (mapData.volumeTempPos.length > 1) {
+        mapData.volumeTempPos.pop();
+      }
+      mapData.volumeTempPos.push(cartesian);
+      drawVolume()
+    }
+  }
 
 }
 onMounted(() => {
