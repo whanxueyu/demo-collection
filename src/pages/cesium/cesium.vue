@@ -712,32 +712,12 @@ const defaultMark = (longitude, latitude, mark) => {
 
 // 加载3DTileset
 const load3DTileset = async () => {
-    // const tilesets = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
-    //     url: "https://zouyaoji.top/vue-cesium/SampleData/Cesium3DTiles/Tilesets/dayanta/tileset.json",
-    // }));
-
     try {
         const tileset = await Cesium.Cesium3DTileset.fromUrl(
             "https://zouyaoji.top/vue-cesium/SampleData/Cesium3DTiles/Tilesets/dayanta/tileset.json"
         );
         viewer.scene.primitives.add(tileset);
         var height = 738.0
-        // tileset.readyPromise.then(function (tile) {
-        //     console.log('readyPromise');
-        //     // 贴地
-        //     //计算中心点位置
-        //     var cartographic = Cesium.Cartographic.fromCartesian(tile.boundingSphere.center)
-        //     var lng = Cesium.Math.toDegrees(cartographic.longitude) //使用经纬度和弧度的转换，将WGS84弧度坐标系转换到目标值，弧度转度
-        //     var lat = Cesium.Math.toDegrees(cartographic.latitude)
-        //     // var lat = 34.219588
-        //     // var lng = 108.959397
-        //     //计算中心点位置的地表坐标
-        //     var surface = Cesium.Cartesian3.fromRadians(lng, lat, 0.0)
-        //     //偏移后的坐标
-        //     var offset = Cesium.Cartesian3.fromRadians(lng + 0.0022, lat + 0.0053, height)
-        //     var translation = Cesium.Cartesian3.subtract(offset, surface, new Cesium.Cartesian3())
-        //     tile.modelMatrix = Cesium.Matrix4.fromTranslation(translation)
-        // })
         tileset.initialTilesLoaded.addEventListener(function () {
             console.log('Initial tiles are loaded');
             var cartographic = Cesium.Cartographic.fromCartesian(tileset.boundingSphere.center)
