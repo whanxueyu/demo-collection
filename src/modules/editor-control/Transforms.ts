@@ -1,32 +1,7 @@
 
 import * as Cesium from "cesium";
 import { EventArgs, Subscriber } from "../subscriber";
-interface ThreeDTilesetSource {
-    id: string
-    name: string
-    url: string
-    visible: boolean
-    enable?: boolean
-    longitude?: number
-    latitude?: number
-    altitude?: number
-    // axis:xz|xy|zx|zy
-    x: number
-    y: number
-    z: number
-    skipLevelOfDetail?: boolean
-    dynamicScreenSpaceError?: boolean
-    brightness?: number
-    alpha?: number
-    scale?: number
-    afterReady?: (viewer: Cesium.Viewer, success: boolean) => void
-    outlinecolor?: string
-    showOutline?: boolean
-    parentId?: string
-    rotationX: number,
-    rotationY: number,
-    rotationZ: number
-  }
+
 interface hprOffset {
     heading: number,
     pitch: number,
@@ -36,7 +11,7 @@ interface hprOffset {
 export default class Transforms {
     //#region 属性
     private viewer: Cesium.Viewer;
-    private tileset: Cesium.Cesium3DTileset;
+    private transform: Cesium.Matrix4;
     //是否选择X轴
     private isAxisxDrag: boolean = false;
     //是否选择Y轴
@@ -86,27 +61,25 @@ export default class Transforms {
     private Switchprimitive: Cesium.Model | undefined = undefined;
     private subscriber: Subscriber;
     private callbacks: string[] = [];
-    private prop: ThreeDTilesetSource;
     private offset: hprOffset = {
         heading: 0,
         pitch: 0,
         roll: 0,
     }
+    callback: (transform: Cesium.Matrix4) => void;
     //#endregion
 
     //#region 初始化
-    constructor(viewer: Cesium.Viewer, tileset: Cesium.Cesium3DTileset, prop: ThreeDTilesetSource) {
+    constructor(viewer: Cesium.Viewer, transform: Cesium.Matrix4, callback: (transform: Cesium.Matrix4) => void) {
         this.viewer = viewer;
-        this.tileset = tileset;
+        this.transform = transform;
         this.subscriber = new Subscriber(this.viewer);
-        this.prop = prop
         //获得原始矩阵
-        this.DefaultMatrix = this.tileset.root.transform;
+        this.DefaultMatrix = transform;
         this.viewer.scene.globe.depthTestAgainstTerrain = true;
         this.AxialprimitivesCollection = this.viewer.scene.primitives.add(this.AxialprimitivesCollection);
         this.RotationAxialprimitivesCollection = this.viewer.scene.primitives.add(this.RotationAxialprimitivesCollection);
-
-        //warn        // this.tileset.allowPicking = false
+        this.callback = callback;
         //绘制控制柄
         this.updateDrawArrow();
         //添加事件
@@ -115,24 +88,18 @@ export default class Transforms {
     //#endregion
 
     get axialy() {
-        const transform = this.tileset.root.transform;
+        const transform = this.transform;
         return new Cesium.Cartesian3(transform[0], transform[1], transform[2])
     };
 
     get axialx() {
-        const transform = this.tileset.root.transform;
+        const transform = this.transform;
         return new Cesium.Cartesian3(transform[4], transform[5], transform[6]);
     };
     get axialz() {
-        const transform = this.tileset.root.transform;
+        const transform = this.transform;
         return new Cesium.Cartesian3(transform[8], transform[9], transform[10]);
     };
-    get propData(): ThreeDTilesetSource {
-        this.prop.rotationZ = this.prop.rotationZ + Cesium.Math.toDegrees(this.offset.heading);
-        this.prop.rotationX = this.prop.rotationX + Cesium.Math.toDegrees(this.offset.pitch);
-        this.prop.rotationY = this.prop.rotationY + Cesium.Math.toDegrees(this.offset.roll);
-        return this.prop
-    }
 
     //#region 移动方法
 
@@ -146,18 +113,17 @@ export default class Transforms {
             if (!worldPosition) return
             const newWorldPosition = Cesium.Cartesian3.add(worldPosition, offict, new Cesium.Cartesian3());
             if (Cesium.defined(newWorldPosition)) {
-                const newtransform = Cesium.Matrix4.setTranslation(this.tileset.root.transform, newWorldPosition, new Cesium.Matrix4())
-                this.tileset.root.transform = newtransform;
+                const newtransform = Cesium.Matrix4.setTranslation(this.transform, newWorldPosition, new Cesium.Matrix4())
+                this.transform = newtransform;
+                this.callback(newtransform);
             }
         }
     }
     //移动到
     public TranslationModel(offset: Cesium.Cartesian3) {
-        this.prop.x = this.prop.x + offset.x;
-        this.prop.y = this.prop.y + offset.y;
-        this.prop.z = this.prop.z + offset.z;
-        const newtransform = Cesium.Matrix4.multiplyByTranslation(this.tileset.root.transform, offset, new Cesium.Matrix4())
-        this.tileset.root.transform = newtransform;
+        const newtransform = Cesium.Matrix4.multiplyByTranslation(this.transform, offset, new Cesium.Matrix4())
+        this.transform = newtransform;
+        this.callback(newtransform);
     }
     //#endregion
     public computeCircle(radius: number) {
@@ -172,7 +138,7 @@ export default class Transforms {
     //创建轴向控制柄模型
     public creataxisModel(axialarray: Cesium.Cartesian3[], color: Cesium.Color, name: string, width = 20) {
         const Primitive = new Cesium.Primitive({
-            modelMatrix: this.tileset.root.transform,
+            modelMatrix: this.transform,
             releaseGeometryInstances: true,
             geometryInstances: new Cesium.GeometryInstance({
                 geometry: new Cesium.PolylineGeometry({
@@ -212,7 +178,7 @@ export default class Transforms {
                 color: Cesium.Color.YELLOW.withAlpha(1),
                 colorBlendMode: Cesium.ColorBlendMode.MIX,
                 colorBlendAmount: 0,
-                modelMatrix: this.tileset.root.transform,
+                modelMatrix: this.transform,
 
             });
             model.id = name;
@@ -260,13 +226,13 @@ export default class Transforms {
     //更新 轴向
     public UpdateAxis() {
         if (Cesium.defined(this.axialxPrimitive) && this.axialxPrimitive) {
-            this.axialxPrimitive.modelMatrix = this.tileset.root.transform;
+            this.axialxPrimitive.modelMatrix = this.transform;
         }
         if (Cesium.defined(this.axialyPrimitive) && this.axialyPrimitive) {
-            this.axialyPrimitive.modelMatrix = this.tileset.root.transform;
+            this.axialyPrimitive.modelMatrix = this.transform;
         }
         if (Cesium.defined(this.axialzPrimitive) && this.axialzPrimitive) {
-            this.axialzPrimitive.modelMatrix = this.tileset.root.transform;
+            this.axialzPrimitive.modelMatrix = this.transform;
         }
 
     }
@@ -280,7 +246,7 @@ export default class Transforms {
     //#region  旋转控制轴
     //创建旋转轴模型
     public creatRotationAxisModel(axial: Cesium.Cartesian3, radius: number, color: Cesium.Color, name: string, width = 20) {
-        // const center = Cesium.Matrix4.getTranslation(this.tileset.root.transform, new Cesium.Cartesian3());
+        // const center = Cesium.Matrix4.getTranslation(this.transform, new Cesium.Cartesian3());
         const center = new Cesium.Cartesian3(0, 0, 0);
         //计算路径
         const points = [];
@@ -301,7 +267,7 @@ export default class Transforms {
         }
         points.push(points[0]);
         const Primitive = new Cesium.Primitive({
-            modelMatrix: this.tileset.root.transform,
+            modelMatrix: this.transform,
             releaseGeometryInstances: true,
             geometryInstances: new Cesium.GeometryInstance({
                 geometry: new Cesium.PolylineGeometry({
@@ -346,7 +312,7 @@ export default class Transforms {
                 color: Cesium.Color.YELLOW.withAlpha(1),
                 colorBlendMode: Cesium.ColorBlendMode.MIX,
                 colorBlendAmount: 0,
-                modelMatrix: this.tileset.root.transform,
+                modelMatrix: this.transform,
             });
             model.id = name;
             this.RotationAxialprimitivesCollection.add(model);
@@ -381,13 +347,13 @@ export default class Transforms {
     //刷新旋转轴
     public UpdateRotationAxis() {
         if (Cesium.defined(this.rotationAxialxPrimitive) && this.rotationAxialxPrimitive) {
-            this.rotationAxialxPrimitive.modelMatrix = this.tileset.root.transform;
+            this.rotationAxialxPrimitive.modelMatrix = this.transform;
         }
         if (Cesium.defined(this.rotationAxialyPrimitive) && this.rotationAxialyPrimitive) {
-            this.rotationAxialyPrimitive.modelMatrix = this.tileset.root.transform;
+            this.rotationAxialyPrimitive.modelMatrix = this.transform;
         }
         if (Cesium.defined(this.rotationAxialzPrimitive) && this.rotationAxialzPrimitive) {
-            this.rotationAxialzPrimitive.modelMatrix = this.tileset.root.transform;
+            this.rotationAxialzPrimitive.modelMatrix = this.transform;
         }
     }
     //显示旋转轴
@@ -459,7 +425,7 @@ export default class Transforms {
         // 包围盒中心点
         // const center = tileset.boundingSphere.center;
         //物体中心点
-        const center = Cesium.Matrix4.getTranslation(this.tileset.root.transform, new Cesium.Cartesian3());
+        const center = Cesium.Matrix4.getTranslation(this.transform, new Cesium.Cartesian3());
         const arrowEndX = Cesium.Cartesian3.add(center, Cesium.Cartesian3.multiplyByScalar(modelXYZ, scale, new Cesium.Cartesian3()), new Cesium.Cartesian3());
         return [center, arrowEndX]
     }
@@ -487,7 +453,7 @@ export default class Transforms {
     }
     // 计算射线与平面的交点
     public GetIntersectRayPlane(ray: Cesium.Ray, planeNormal: Cesium.Cartesian3) {
-        const planePoint = Cesium.Matrix4.getTranslation(this.tileset.root.transform, new Cesium.Cartesian3())
+        const planePoint = Cesium.Matrix4.getTranslation(this.transform, new Cesium.Cartesian3())
         const rayDirection = ray.direction;
         const rayOrigin = ray.origin;
         // 计算射线与平面的交点
@@ -528,7 +494,7 @@ export default class Transforms {
             //二次点击
             if (!clickpoint) return
             if (!this.onelocalPosition) return
-            this.towlocalPostion = this.GetLocalPosition(this.tileset.root.transform, clickpoint);
+            this.towlocalPostion = this.GetLocalPosition(this.transform, clickpoint);
             DistanceL = this.towlocalPostion.x - this.onelocalPosition.x;
             offsetVector = new Cesium.Cartesian3(DistanceL, 0, 0);
         }
@@ -538,7 +504,7 @@ export default class Transforms {
             //二次点击
             if (!clickpoint) return
             if (!this.onelocalPosition) return
-            this.towlocalPostion = this.GetLocalPosition(this.tileset.root.transform, clickpoint);
+            this.towlocalPostion = this.GetLocalPosition(this.transform, clickpoint);
             DistanceL = this.towlocalPostion.y - this.onelocalPosition.y;
             offsetVector = new Cesium.Cartesian3(0, DistanceL, 0);
         } else if (Cesium.Cartesian3.equals(axial, this.axialz)) {
@@ -547,7 +513,7 @@ export default class Transforms {
             //二次点击
             if (!clickpoint) return
             if (!this.onelocalPosition) return
-            this.towlocalPostion = this.GetLocalPosition(this.tileset.root.transform, clickpoint);
+            this.towlocalPostion = this.GetLocalPosition(this.transform, clickpoint);
             DistanceL = this.towlocalPostion.z - this.onelocalPosition.z;
             offsetVector = new Cesium.Cartesian3(0, 0, DistanceL);
         }
@@ -603,8 +569,9 @@ export default class Transforms {
         const hpr = new Cesium.HeadingPitchRoll(offset.heading, offset.pitch, offset.roll);
         //Cesium.Matrix3.fromRotationY
         const RotationMatrix3 = Cesium.Matrix3.fromHeadingPitchRoll(hpr);
-        const newTransform = Cesium.Matrix4.multiplyByMatrix3(Matrix, RotationMatrix3, new Cesium.Matrix4());
-        this.tileset.root.transform = newTransform;
+        const newtransform = Cesium.Matrix4.multiplyByMatrix3(Matrix, RotationMatrix3, new Cesium.Matrix4());
+        this.transform = newtransform;
+        this.callback(newtransform);
     }
     //旋转偏移量
     public GetOffsetRotationXYZ(ray: Cesium.Ray, axial: Cesium.Cartesian3) {
@@ -617,7 +584,7 @@ export default class Transforms {
             roll: 0
         }
         //物体中心点
-        const center = Cesium.Matrix4.getTranslation(this.tileset.root.transform, new Cesium.Cartesian3());
+        const center = Cesium.Matrix4.getTranslation(this.transform, new Cesium.Cartesian3());
         //计算弧度
         if (!this.onelocalPosition) return
         const radian = this.GetComputeRadian(this.onelocalPosition, center, this.towlocalPostion, axial);
@@ -639,14 +606,14 @@ export default class Transforms {
         let picked = this.viewer.scene.pick(movement.position)
         if (!picked) return
         const pickedFeature = picked;
-        // this.DefaultMatrix = this.tileset.root.transform;
+        // this.DefaultMatrix = this.transform;
         if (Cesium.defined(pickedFeature)) {
             //--------------------------------------------
             if (Cesium.defined(pickedFeature.id)) {
                 this.viewer.scene.screenSpaceCameraController.enableZoom = false;
                 this.viewer.scene.screenSpaceCameraController.enableRotate = false;
                 this.viewer.scene.screenSpaceCameraController.enableTranslate = false;
-                this.DefaultMatrix = this.tileset.root.transform;
+                this.DefaultMatrix = this.transform;
                 if (pickedFeature.id === "axisX") {
                     this.isAxisxDrag = true;
                 }
@@ -680,7 +647,7 @@ export default class Transforms {
             const clickpoint = this.GetIntersectRayPlane(ray, this.axialz)
             //局部坐标
             if (!clickpoint) return
-            const offset = this.GetLocalPosition(this.tileset.root.transform, clickpoint);
+            const offset = this.GetLocalPosition(this.transform, clickpoint);
 
             this.onelocalPosition = offset;
         }
@@ -688,7 +655,7 @@ export default class Transforms {
             const clickpoint = this.GetIntersectRayPlane(ray, this.axialy)
             //局部坐标
             if (!clickpoint) return
-            const offset = this.GetLocalPosition(this.tileset.root.transform, clickpoint);
+            const offset = this.GetLocalPosition(this.transform, clickpoint);
             this.onelocalPosition = offset;
         }
         //点击旋转z轴

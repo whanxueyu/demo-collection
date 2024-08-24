@@ -101,6 +101,7 @@ import { getCirclePosition, getRectPosition, getWedgePosition, throttle, debounc
 import { ElMessage } from "element-plus";
 import { ControlEntity } from '@/modules/editor-control/editor-translate'
 import { objectControl } from '@/modules/editor-control/control-model'
+import Transforms from '@/modules/editor-control/Transforms'
 var viewer: Cesium.Viewer;
 const activeName = ref('rect');
 const target = ref({
@@ -389,21 +390,39 @@ const handleMapLoaded = (cviewer: Cesium.Viewer) => {
         var pick = viewer.scene.pick(event.position);//拾取鼠标所在的entity
         if (Cesium.defined(pick)) {
             if (pick.id.name === '模型') {
-                let entity = pick.id
+                let entity: Cesium.Entity = pick.id
                 let sid = pick.id.id
                 let position = entity?.position?.getValue(viewer.clock.currentTime)
-                let positionsCallback = (newPosition: Cesium.Cartesian3) => {
+                let orientation = entity?.orientation.getValue(viewer.clock.currentTime);
+                // let positionsCallback = (newPosition: Cesium.Cartesian3) => {
+                //     if (entity)
+                //         entity!.position = new Cesium.ConstantPositionProperty(
+                //             newPosition
+                //         )
+                // };
+                // control.value = new ControlEntity(viewer, { id: sid, type: 'translate', position }, positionsCallback)
+                let transform = Cesium.Matrix4.fromTranslationQuaternionRotationScale(position, orientation, new Cesium.Cartesian3(1, 1, 1), new Cesium.Matrix4());//得到entity的位置朝向矩阵
+                let callback = (transformMatrix4: Cesium.Matrix4) => {
+                    console.log(transformMatrix4)// someArray是一个包含16个元素的数组
+
+                    // 我们要计算的position可以表示为一个三维向量，这里我们用Cesium.Cartesian3
+                    var position = new Cesium.Cartesian3(); // 初始化一个空的Cartesian3对象来存储计算结果
+
+                    // 使用Cesium的工具函数来从矩阵中提取位置信息
+                    Cesium.Matrix4.getTranslation(transformMatrix4, position);
+                    var orientation = Cesium.Quaternion.fromRotationMatrix(transformMatrix4);
                     if (entity)
-                        entity!.position = new Cesium.ConstantPositionProperty(
-                            newPosition
-                        )
-                };
-                control.value = new ControlEntity(viewer, { id: sid, type: 'translate', position }, positionsCallback)
+                        entity!.position = new Cesium.ConstantPositionProperty(position);
+                    entity!.orientation = new Cesium.ConstantProperty(orientation)
+                }
+                new Transforms(viewer, transform, callback)
                 console.log("模型", pick.id)
                 console.log("模型.id", pick.id.id)
                 console.log("模型.model", pick.id.model)
                 pick.id.model.color = Cesium.Color.fromCssColorString('#00ff55')
                 pick.id.model.colorBlendMode = Cesium.ColorBlendMode.HIGHLIGHT;
+
+
             }
 
         }
@@ -427,6 +446,10 @@ const handleMapLoaded = (cviewer: Cesium.Viewer) => {
 const dragAddModel = (cartesian) => {
     let model = viewer.entities.add({
         position: new Cesium.ConstantPositionProperty(cartesian),
+        orientation: Cesium.Transforms.headingPitchRollQuaternion(
+            cartesian,
+            Cesium.HeadingPitchRoll.fromDegrees(0, 0, 0)
+        ),
         name: '模型',
         model: {
             uri: currentUrl.value,
