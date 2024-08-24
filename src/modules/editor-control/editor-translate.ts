@@ -32,7 +32,9 @@ class ControlEntityProp extends Entity {
         super(options);
     }
 }
-
+/**
+ * 适用于entity  无旋转
+ */
 export class ControlEntity {
     private sid?: string;
     private left_press: boolean = false;
@@ -289,7 +291,7 @@ export class ControlEntity {
 
             const width = - primitiveInCamera.z * Math.tan(cameraFov / 2) * 2;
             const factor = width / this.viewer.canvas.width;
-            const distance = Cesium.Cartesian3.dot(vector3d, chooseNormal) * factor*2; //得到实际世界距离
+            const distance = Cesium.Cartesian3.dot(vector3d, chooseNormal) * factor * 10; //得到实际世界距离
 
             //需要计算平移后的点，并且找到相对地表同高度的点
             //平移前的点（经纬度）

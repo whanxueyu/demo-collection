@@ -928,7 +928,9 @@ export class ControlModel {
         this.handler.removeInputAction(Cesium.ScreenSpaceEventType.RIGHT_CLICK);
     }
 }
-
+/**
+ * 适用于primitive  model
+ */
 export class objectControl {
     control: ControlModel;
     viewer: Cesium.Viewer;

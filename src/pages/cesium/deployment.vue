@@ -1,11 +1,11 @@
 <template>
-    <div class="menubox">
+    <div :class="['menubox box1', showPanel1 ? '' : 'hide']" @dblclick="handleShowPanel(1)">
         <el-tabs v-model="activeName" @tab-change="handleTabChange" class="demo-tabs">
             <el-tab-pane label="矩阵" name="rect"></el-tab-pane>
             <el-tab-pane label="圆形" name="circle"></el-tab-pane>
             <el-tab-pane label="楔形" name="wedge"></el-tab-pane>
         </el-tabs>
-        <div>
+        <div class="menucell">
             <el-button :icon="Location" size="small" @click="deploy" type="primary">锚点</el-button>
             <el-button :icon="Refresh" size="small" @click="reset" type="success">还原</el-button>
             <el-button :icon="Brush" size="small" @click="removeAll" type="danger">清空</el-button>
@@ -19,8 +19,8 @@
             <div class="flex form-cell">
                 <div class="form-cell-label">队列展开：</div>
                 <div class="form-cell-content">
-                    <el-switch v-model="shrink" @change="handleShrinkChange" :active-value="true" :inactive-value="false"
-                inline-prompt active-text="队列收缩" inactive-text="队列展开" />
+                    <el-switch v-model="shrink" @change="handleShrinkChange" :active-value="true"
+                        :inactive-value="false" inline-prompt active-text="队列收缩" inactive-text="队列展开" />
                 </div>
             </div>
             <div class="flex form-cell">
@@ -30,7 +30,7 @@
                         @change="handleNumberChange"></el-input-number>
                 </div>
             </div>
-            
+
             <div class="flex form-cell">
                 <div class="form-cell-label">层数：</div>
                 <div class="form-cell-content">
@@ -53,15 +53,36 @@
             <div class="flex form-cell">
                 <div class="form-cell-label">转换时间：</div>
                 <div class="form-cell-content">
-                    <el-input-number v-model="animationTime" :min="0" :max="30" :setp="0.1"/>
+                    <el-input-number v-model="animationTime" :min="0" :max="30" :setp="0.1" />
                 </div>
             </div>
             <div class="flex form-cell">
                 <div class="form-cell-label">时间倍速：</div>
                 <div class="form-cell-content">
-                    <el-input-number v-model="multiplier" :min="0" @change="startAnimate(startTime,endTime)" />
+                    <el-input-number v-model="multiplier" :min="0" @change="startAnimate(startTime, endTime)" />
                 </div>
             </div>
+        </div>
+        <div v-if="!showPanel1" class="hideicon">
+            <el-icon size="40">
+                <Operation />
+            </el-icon>
+        </div>
+    </div>
+    <div :class="['menubox box2', showPanel2 ? '' : 'hide']" @dblclick="handleShowPanel(1)">
+        <div class="el-tabs">
+            <div class="modelList">
+                <div class="model" v-for="model in modelList" @mousedown="selectModel(model)">
+                    {{ model.name }}
+                </div>
+            </div>
+        </div>
+        <div class="menucell">
+        </div>
+        <div v-if="!showPanel1" class="hideicon">
+            <el-icon size="40">
+                <Grid />
+            </el-icon>
         </div>
     </div>
     <Map @loaded="handleMapLoaded" :lazy="false" :duration="0" map-type="grid"></Map>
@@ -75,9 +96,11 @@ import * as Cesium from "cesium";
 import Map from '@/components/cesium/map.vue'
 import statusBar from '@/components/cesium/status-bar.vue'
 import 'cesium/Source/Widgets/widgets.css';
-import { Refresh, Brush, Location } from '@element-plus/icons-vue'
+import { Refresh, Brush, Location, Operation, Grid } from '@element-plus/icons-vue'
 import { getCirclePosition, getRectPosition, getWedgePosition, throttle, debounce } from './tool'
 import { ElMessage } from "element-plus";
+import { ControlEntity } from '@/modules/editor-control/editor-translate'
+import { objectControl } from '@/modules/editor-control/control-model'
 var viewer: Cesium.Viewer;
 const activeName = ref('rect');
 const target = ref({
@@ -85,6 +108,24 @@ const target = ref({
     latitude: 39.907204,
     height: 0,
 });
+const modelList = [
+    {
+        name: '警车',
+        url: './models/警车.glb'
+    },
+    {
+        name: '特警用车',
+        url: './models/Car5.glb'
+    },
+    {
+        name: '装甲车',
+        url: './models/装甲车.glb'
+    },
+    {
+        name: '水泡车',
+        url: './models/水炮车.glb'
+    },
+]
 let startTime = Cesium.JulianDate.addHours(Cesium.JulianDate.now(), 8, new Cesium.JulianDate());
 let endTime = Cesium.JulianDate.addSeconds(startTime, 3600, new Cesium.JulianDate())
 const shrink = ref(false);
@@ -99,11 +140,27 @@ const multiplier = ref(1.0)
 const isVertical = ref(true)
 const entitiyList = ref<Cesium.Entity[]>([]);
 const targetEntity = ref<Cesium.Entity>();
+
+const showPanel1 = ref(true)
+const showPanel2 = ref(true)
+const currentUrl = ref('')
+const drawModel = ref(false)
+const selectModel = (model) => {
+    currentUrl.value = model.url;
+    drawModel.value = true
+}
+const handleShowPanel = (index: number) => {
+    switch (index) {
+        case 1:
+            showPanel1.value = !showPanel1.value;
+            break;
+        case 2:
+            showPanel2.value = !showPanel2.value;
+            break;
+    }
+}
+
 const handleNumberChange = () => {
-    // entitiyList.value.forEach((entity: Cesium.Entity) => {
-    //     viewer.entities.remove(entity)
-    // })
-    // entitiyList.value = []
     startAnimate(startTime, endTime)
     nextTick(() => {
         switch (activeName.value) {
@@ -309,6 +366,8 @@ const startAnimate = (startTime: Cesium.JulianDate, endTime: Cesium.JulianDate) 
     viewer.clock.multiplier = multiplier.value;
     viewer.clock.shouldAnimate = true;
 }
+const control = ref<ControlEntity>()
+const controlM = ref<objectControl>()
 const handleMapLoaded = (cviewer: Cesium.Viewer) => {
     viewer = cviewer;
     loaded.value = true
@@ -325,9 +384,56 @@ const handleMapLoaded = (cviewer: Cesium.Viewer) => {
             height: Number(0),
         };
         target.value = coordinate;
-        viewer.entities.remove(targetEntity.value)
-        deploy()
+        // viewer.entities.remove(targetEntity.value)
+        // deploy()
+        var pick = viewer.scene.pick(event.position);//拾取鼠标所在的entity
+        if (Cesium.defined(pick)) {
+            if (pick.id.name === '模型') {
+                let entity = pick.id
+                let sid = pick.id.id
+                let position = entity?.position?.getValue(viewer.clock.currentTime)
+                let positionsCallback = (newPosition: Cesium.Cartesian3) => {
+                    if (entity)
+                        entity!.position = new Cesium.ConstantPositionProperty(
+                            newPosition
+                        )
+                };
+                control.value = new ControlEntity(viewer, { id: sid, type: 'translate', position }, positionsCallback)
+                console.log("模型", pick.id)
+                console.log("模型.id", pick.id.id)
+                console.log("模型.model", pick.id.model)
+                pick.id.model.color = Cesium.Color.fromCssColorString('#00ff55')
+                pick.id.model.colorBlendMode = Cesium.ColorBlendMode.HIGHLIGHT;
+            }
+
+        }
     }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+
+    document.addEventListener('mouseup', throttle((event) => {
+        console.log('鼠标抬起事件触发', event, new Cesium.Cartesian2(event.offsetX, event.offsetY));
+        // 你可以在这里添加其他的逻辑处理
+        if (drawModel.value) {
+            let ray = viewer.camera.getPickRay(new Cesium.Cartesian2(event.offsetX, event.offsetY));
+            if (ray) {
+                let cartesian = viewer.scene.globe.pick(ray, viewer.scene);
+                // 如果你想要的是Cesium的长度坐标（Cartesian3），可以直接使用转换后的世界坐标
+                if (cartesian) {
+                    dragAddModel(cartesian)
+                }
+            }
+        }
+    }, 300));
+}
+const dragAddModel = (cartesian) => {
+    let model = viewer.entities.add({
+        position: new Cesium.ConstantPositionProperty(cartesian),
+        name: '模型',
+        model: {
+            uri: currentUrl.value,
+        },
+    })
+    console.log(model)
+    // drawModel.value = false
 }
 const reset = () => {
     viewer.camera.flyTo({
@@ -363,9 +469,52 @@ onMounted(() => {
     position: absolute;
     z-index: 999;
     border-bottom-right-radius: 10px;
-    padding: 20px;
+    padding: 0 10px 10px;
     border: 1px solid rgba(139, 139, 139, 0.2);
     background-color: #222222;
+    user-select: none;
+
+    &.hide {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        padding: 0;
+        background-color: #01a1fd;
+        // border: 1px solid #00eeff;
+        box-shadow: 0 0 8px 2px #00eeff;
+
+        .el-tabs {
+            display: none;
+        }
+
+        .menucell {
+            display: none;
+        }
+    }
+
+    &.box1 {
+        left: 5px;
+        top: 65px;
+    }
+
+    &.box2 {
+        left: 5px;
+        bottom: 65px;
+    }
+
+    .hideicon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .modelList {
+        .model {
+            width: 60px;
+            height: 40px;
+            border: 1px solid #00eeff;
+            margin: 10px;
+        }
+    }
 
     .tab-body {
         width: 250px;
