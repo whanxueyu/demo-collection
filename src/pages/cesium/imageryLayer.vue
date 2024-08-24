@@ -1,9 +1,17 @@
 <template>
   <div class="menubox">
     <el-color-picker v-model="lineColor" show-alpha color-format="hex"></el-color-picker>
-    <el-button type="primary" @click="changeTool('drawLine')">添加线</el-button>
-    <el-button type="primary" @click="changeTool('drawVolume')">添加管道</el-button>
-    <el-button type="primary" @click="loadRadar">添加雷达</el-button>
+    <el-button :type="activeTool==='drawLine'?'success':'primary'" @click="changeTool('drawLine')">添加线</el-button>
+    <el-button :type="activeTool==='drawVolume'?'success':'primary'" @click="changeTool('drawVolume')">添加管道</el-button>
+    <el-button :type="activeTool==='drawRadar'?'success':'primary'" @click="changeTool('drawRadar')">添加雷达</el-button>
+    <el-button :type="activeTool==='drawPlane'?'success':'primary'" @click="changeTool('drawPlane')">视频面板</el-button>
+    <video id="trailer" style="width:0px" controls autoplay muted loop>
+      <source src="@/assets/oceans.mp4" type="video/mp4">
+      Your browser does not support the <code>video</code> element.
+    </video>
+    <!-- <div id="trailer">
+      <borderDiv html-content="88888"></borderDiv>
+    </div> -->
   </div>
   <Map @loaded="handleMapLoaded" :duration="0" map-type="tileGrid"></Map>
   <status-bar v-if="loaded" :viewer="viewer"></status-bar>
@@ -18,12 +26,17 @@ import PolylineTrailLinkMaterialProperty from '@/modules/material/PolylineTrailL
 // import SpriteLineMaterialProperty from '@/modules/material/SpriteLineMaterialProperty'
 import statusBar from '@/components/cesium/status-bar.vue'
 import radaeScanMaterial from "@/modules/material/radaeScanMaterial";
+import volumeFlowMaterial from "@/modules/material/volumeFlowMaterial";
+import borderDiv from "@/components/billboard/borderDiv.vue";
 var viewer: Cesium.Viewer;
 const loaded = ref(false);
 
-const mapData = reactive({
+const mapData = reactive<{
+  lineTempPos: Cesium.Cartesian3[];
+  volumeTempPos: Cesium.Cartesian3[];
+}>({
   lineTempPos: [],
-  volumeTempPos: []
+  volumeTempPos: [],
 })
 const lineColor = ref('#000000')
 const activeTool = ref('')
@@ -65,6 +78,43 @@ const loadRadar = () => {
     Cesium.CircleGeometry.createGeometry(circleGeometry).boundingSphere
   )
 }
+const drawPlane = (center: Cesium.Cartesian3) => {
+  activeTool.value = '';
+  let cartographic = Cesium.Cartographic.fromCartesian(center);
+  let lng = Cesium.Math.toDegrees(cartographic.longitude); // 经度
+  let lat = Cesium.Math.toDegrees(cartographic.latitude); // 纬度
+  let alt = cartographic.height
+  const videoElement = document.getElementById("trailer");
+  viewer.entities.add({
+    position: Cesium.Cartesian3.fromDegrees(lng, lat, 540 + alt),
+    plane: {
+      plane: new Cesium.Plane(Cesium.Cartesian3.UNIT_Y, 0.0),
+      dimensions: new Cesium.Cartesian2(1920.0, 1080.0),
+      material: videoElement as any,
+      outline: true,
+      outlineColor: Cesium.Color.BLACK,
+    },
+  });
+}
+const drawRadar = (center: Cesium.Cartesian3) => {
+  activeTool.value = '';
+  var circleGeometry = new Cesium.CircleGeometry({
+    center: center,
+    radius: 200.0,
+    vertexFormat: Cesium.VertexFormat.POSITION_AND_ST,
+  })
+  var instance = new Cesium.GeometryInstance({
+    geometry: circleGeometry,
+  })
+  viewer.scene.primitives.add(
+    new Cesium.GroundPrimitive({
+      geometryInstances: instance,
+      appearance: new Cesium.MaterialAppearance({
+        material: radaeScanMaterial(new Cesium.Color(0.0, 1.0, 0.0)),
+      }),
+    })
+  )
+}
 const drawLine = () => {
   //   let uuid = generateUniqueId()
   if (mapData.lineTempPos.length === 0) return
@@ -104,27 +154,7 @@ const drawVolume = () => {
         geometry: geometry,
       }),
       appearance: new Cesium.MaterialAppearance({
-        material: new Cesium.Material({
-          fabric: {
-            uniforms: {
-              color: new Cesium.Color(1.0, 0.0, 0.0, 1.0),
-              percentage: 0.1,
-              offset: 0.0,
-            },
-            source: `
-                  uniform vec4 color;
-                  uniform float percentage;
-                  uniform float offset;
-                  czm_material czm_getMaterial(czm_materialInput materialInput)
-                  {
-                      czm_material material = czm_getDefaultMaterial(materialInput);
-                      vec2 st = materialInput.st;
-                      material.diffuse = color.rgb;
-                      material.alpha = 1.0-mod(st.s+offset,percentage)*(1.0/percentage);
-                      return material;
-                  }`,
-          },
-        }),
+        material: volumeFlowMaterial(new Cesium.Color(1.0, 0.0, 0.0))
       }),
     })
   )
@@ -149,7 +179,7 @@ const handleMapLoaded = (cviewer) => {
   handler.setInputAction(handleMouseMove.bind(this), Cesium.ScreenSpaceEventType.MOUSE_MOVE);
   handler.setInputAction(handleLeftClick.bind(this), Cesium.ScreenSpaceEventType.LEFT_CLICK);
   handler.setInputAction(function (event) {
-    activeTool.value === '';
+    activeTool.value = '';
   }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
   handler.setInputAction(handleRightClick.bind(this), Cesium.ScreenSpaceEventType.RIGHT_CLICK);
 }
@@ -171,6 +201,10 @@ const handleLeftClick = (event) => {
   } else if (activeTool.value === 'drawVolume') {
     mapData.volumeTempPos.push(cartesian);
     drawVolume()
+  } else if (activeTool.value === 'drawRadar') {
+    drawRadar(cartesian)
+  } else if (activeTool.value === 'drawPlane') {
+    drawPlane(cartesian)
   }
 }
 const handleRightClick = (event) => {
@@ -186,21 +220,27 @@ const handleMouseMove = (event) => {
   let cartesian = viewer.scene.globe.pick(ray, viewer.scene);
   if (cartesian) {
     if (activeTool.value === 'drawLine') {
-      if (mapData.lineTempPos.length > 1) {
-        mapData.lineTempPos.pop();
+
+      if (mapData.lineTempPos.length > 0) {
+        if (mapData.lineTempPos.length > 1) {
+          mapData.lineTempPos.pop();
+        }
+        mapData.lineTempPos.push(cartesian);
       }
-      mapData.lineTempPos.push(cartesian);
     } else if (activeTool.value === 'drawVolume') {
-      if (mapData.volumeTempPos.length > 1) {
-        mapData.volumeTempPos.pop();
+      if (mapData.volumeTempPos.length > 0) {
+        if (mapData.volumeTempPos.length > 1) {
+          mapData.volumeTempPos.pop();
+        }
+        mapData.volumeTempPos.push(cartesian);
+        drawVolume()
       }
-      mapData.volumeTempPos.push(cartesian);
-      drawVolume()
     }
   }
-
 }
+
 onMounted(() => {
+
 })
 </script>
 
