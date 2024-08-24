@@ -122,15 +122,15 @@ const initCesium = () => {
     }
 
     // 监听点击事件
-    let handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
-    // 右
-    handler.setInputAction(function (click) {
-        let pickedObject = viewer.scene.pick(click.position);
-        if (Cesium.defined(pickedObject)) {
-            console.log('点击了实体:', pickedObject);
-            rightMenu(mouseData.x, mouseData.y, pickedObject)
-        }
-    }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+    // let handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+    // // 右
+    // handler.setInputAction(function (click) {
+    //     let pickedObject = viewer.scene.pick(click.position);
+    //     if (Cesium.defined(pickedObject)) {
+    //         console.log('点击了实体:', pickedObject);
+    //         rightMenu(mouseData.x, mouseData.y, pickedObject)
+    //     }
+    // }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
 }
 const reset = () => {
     viewer.camera.flyTo({
