@@ -69,10 +69,11 @@
             </el-icon>
         </div>
     </div>
-    <div :class="['menubox box2', showPanel2 ? '' : 'hide']" @dblclick="handleShowPanel(1)">
+    <div :class="['menubox box2', showPanel2 ? '' : 'hide']" @dblclick="handleShowPanel(2)">
         <div class="el-tabs">
             <div class="modelList">
-                <div class="model" v-for="model in modelList" @mousedown="selectModel(model)">
+                <div class="model" draggable="true" v-for="model in modelList" @mousedown="selectModel(model)"
+                    @dragend="dragEnd" @dragstart="dragstart">
                     {{ model.name }}
                 </div>
             </div>
@@ -146,9 +147,33 @@ const showPanel1 = ref(true)
 const showPanel2 = ref(true)
 const currentUrl = ref('')
 const drawModel = ref(false)
-const selectModel = (model) => {
+const selectModel = (model: any) => {
     currentUrl.value = model.url;
     drawModel.value = true
+}
+const dragstart = () => {
+    // currentUrl.value = model.url;
+    drawModel.value = true
+}
+const dragEnd = (event) => {
+    console.log("dragEnd", event)
+    console.log("screenX//", event.screenX, event.screenY)
+    console.log("clientX//", event.screenX, event.clientY)
+    console.log("pageX//", event.pageX, event.pageY)
+    console.log("offsetX//", event.offsetX, event.offsetY)
+    console.log("layerX", event.layerX, event.layerY)
+    console.log("X//", event.x, event.y)
+    if (drawModel.value) {
+        let ray = viewer.camera.getPickRay(new Cesium.Cartesian2(event.x, event.y));
+        if (ray) {
+            let cartesian = viewer.scene.globe.pick(ray, viewer.scene);
+            // 如果你想要的是Cesium的长度坐标（Cartesian3），可以直接使用转换后的世界坐标
+            if (cartesian) {
+                dragAddModel(cartesian)
+            }
+        }
+    }
+    drawModel.value = false
 }
 const handleShowPanel = (index: number) => {
     switch (index) {
@@ -431,12 +456,12 @@ const handleMapLoaded = (cviewer: Cesium.Viewer) => {
                         )
                         if (callbackParams.newQuaternion)
                             entity!.orientation = new Cesium.ConstantProperty(callbackParams.newQuaternion)
-                        if(callbackParams.newScale){
+                        if (callbackParams.newScale) {
                             entity!.model.scale = new Cesium.ConstantProperty(callbackParams.newScale)
                         }
                     }
                 };
-                control.value = new ControlEntity(viewer, { id: sid, type: 'translate,roate', position, orientation: hpr, scale: 1 }, positionsCallback)
+                control.value = new ControlEntity(viewer, { id: sid, type: 'translate,roate,scale', position, orientation: hpr, scale: 1 }, positionsCallback)
                 // let transform = Cesium.Matrix4.fromTranslationQuaternionRotationScale(position, orientation, new Cesium.Cartesian3(1, 1, 1), new Cesium.Matrix4());//得到entity的位置朝向矩阵
                 // let callback = (transformMatrix4: Cesium.Matrix4) => {
                 //     console.log(transformMatrix4)// someArray是一个包含16个元素的数组
@@ -565,6 +590,11 @@ onMounted(() => {
             height: 40px;
             border: 1px solid #00eeff;
             margin: 10px;
+            -webkit-user-drag: element;
+
+            &:hover {
+                background-color: #00eeff33;
+            }
         }
     }
 
