@@ -99,7 +99,7 @@ import 'cesium/Source/Widgets/widgets.css';
 import { Refresh, Brush, Location, Operation, Grid } from '@element-plus/icons-vue'
 import { getCirclePosition, getRectPosition, getWedgePosition, throttle, debounce } from './tool'
 import { ElMessage } from "element-plus";
-import { ControlEntity } from '@/modules/editor-control/editor-translate'
+import { ControlEntity, callbackParams } from '@/modules/editor-control/editor-translate'
 import { objectControl } from '@/modules/editor-control/control-model'
 import Transforms from '@/modules/editor-control/Transforms'
 var viewer: Cesium.Viewer;
@@ -368,13 +368,14 @@ const startAnimate = (startTime: Cesium.JulianDate, endTime: Cesium.JulianDate) 
     viewer.clock.shouldAnimate = true;
 }
 const control = ref<ControlEntity>()
-const controlM = ref<objectControl>()
+const selectId = ref<string>()
 const handleMapLoaded = (cviewer: Cesium.Viewer) => {
     viewer = cviewer;
     loaded.value = true
     let handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
     handler.setInputAction(function (event) {
         let ray = viewer.camera.getPickRay(event.position);
+        if (!ray) return
         let cartesian = viewer.scene.globe.pick(ray, viewer.scene);
         let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
         let lng = Cesium.Math.toDegrees(cartographic.longitude); // 经度
@@ -389,42 +390,70 @@ const handleMapLoaded = (cviewer: Cesium.Viewer) => {
         // deploy()
         var pick = viewer.scene.pick(event.position);//拾取鼠标所在的entity
         if (Cesium.defined(pick)) {
+            if (pick.id.id === selectId.value) {
+                let entity = viewer.entities.getById(selectId.value)
+                if (entity) {
+                    entity.model.color = new Cesium.ConstantProperty(Cesium.Color.WHITE);
+                    // entity.model.colorBlendMode = Cesium.ColorBlendMode.HIGHLIGHT;
+                }
+
+                selectId.value = '';
+                if (control.value) {
+                    control.value.destroy()
+                }
+                return
+            }
             if (pick.id.name === '模型') {
                 let entity: Cesium.Entity = pick.id
                 let sid = pick.id.id
+                selectId.value = sid
                 let position = entity?.position?.getValue(viewer.clock.currentTime)
                 let orientation = entity?.orientation.getValue(viewer.clock.currentTime);
-                // let positionsCallback = (newPosition: Cesium.Cartesian3) => {
-                //     if (entity)
-                //         entity!.position = new Cesium.ConstantPositionProperty(
-                //             newPosition
-                //         )
-                // };
-                // control.value = new ControlEntity(viewer, { id: sid, type: 'translate', position }, positionsCallback)
-                let transform = Cesium.Matrix4.fromTranslationQuaternionRotationScale(position, orientation, new Cesium.Cartesian3(1, 1, 1), new Cesium.Matrix4());//得到entity的位置朝向矩阵
-                let callback = (transformMatrix4: Cesium.Matrix4) => {
-                    console.log(transformMatrix4)// someArray是一个包含16个元素的数组
+                // 四元数计算三维旋转矩阵
+                let mtx3 = Cesium.Matrix3.fromQuaternion(orientation, new Cesium.Matrix3());
 
-                    // 我们要计算的position可以表示为一个三维向量，这里我们用Cesium.Cartesian3
-                    var position = new Cesium.Cartesian3(); // 初始化一个空的Cartesian3对象来存储计算结果
+                // 四维转换矩阵
+                let mtx4 = Cesium.Matrix4.fromRotationTranslation(mtx3, position, new Cesium.Matrix4());
 
-                    // 使用Cesium的工具函数来从矩阵中提取位置信息
-                    Cesium.Matrix4.getTranslation(transformMatrix4, position);
-                    var orientation = Cesium.Quaternion.fromRotationMatrix(transformMatrix4);
-                    if (entity)
-                        entity!.position = new Cesium.ConstantPositionProperty(position);
-                    entity!.orientation = new Cesium.ConstantProperty(orientation)
-                }
-                new Transforms(viewer, transform, callback)
-                console.log("模型", pick.id)
-                console.log("模型.id", pick.id.id)
-                console.log("模型.model", pick.id.model)
-                pick.id.model.color = Cesium.Color.fromCssColorString('#00ff55')
-                pick.id.model.colorBlendMode = Cesium.ColorBlendMode.HIGHLIGHT;
+                // 计算HeadingPitchRoll，结果为弧度
+                let hpr = Cesium.Transforms.fixedFrameToHeadingPitchRoll(
+                    mtx4,
+                    Cesium.Ellipsoid.WGS84,
+                    Cesium.Transforms.eastNorthUpToFixedFrame,
+                    new Cesium.HeadingPitchRoll(),
+                );
 
-
+                console.log("orientation", orientation)
+                let positionsCallback = (callbackParams: callbackParams) => {
+                    if (entity) {
+                        entity!.position = new Cesium.ConstantPositionProperty(
+                            callbackParams.newPosition
+                        )
+                        if (callbackParams.newQuaternion)
+                            entity!.orientation = new Cesium.ConstantProperty(callbackParams.newQuaternion)
+                        if(callbackParams.newScale){
+                            entity!.model.scale = new Cesium.ConstantProperty(callbackParams.newScale)
+                        }
+                    }
+                };
+                control.value = new ControlEntity(viewer, { id: sid, type: 'translate,roate', position, orientation: hpr, scale: 1 }, positionsCallback)
+                // let transform = Cesium.Matrix4.fromTranslationQuaternionRotationScale(position, orientation, new Cesium.Cartesian3(1, 1, 1), new Cesium.Matrix4());//得到entity的位置朝向矩阵
+                // let callback = (transformMatrix4: Cesium.Matrix4) => {
+                //     console.log(transformMatrix4)// someArray是一个包含16个元素的数组
+                //     // 我们要计算的position可以表示为一个三维向量，这里我们用Cesium.Cartesian3
+                //     var position = new Cesium.Cartesian3(); // 初始化一个空的Cartesian3对象来存储计算结果
+                //     // 使用Cesium的工具函数来从矩阵中提取位置信息
+                //     Cesium.Matrix4.getTranslation(transformMatrix4, position);
+                //     var orientation = Cesium.Quaternion.fromRotationMatrix(transformMatrix4);
+                //     if (entity) {
+                //         entity!.position = new Cesium.ConstantPositionProperty(position);
+                //         entity!.orientation = new Cesium.ConstantProperty(orientation)
+                //     }
+                // }
+                // new Transforms(viewer, transform, callback)
+                pick!.id!.model.color = Cesium.Color.fromCssColorString('#00ff55')
+                // pick.id.model.colorBlendMode = Cesium.ColorBlendMode.HIGHLIGHT;
             }
-
         }
     }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
 
