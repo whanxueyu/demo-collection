@@ -41,8 +41,9 @@
         "packages/**/*.ts",
         "src/**/*.ts",
         "src/**/*.tsx",
-        "src/**/*.vue"
-, "src/router/index.js"    ],
+        "src/**/*.vue",
+        "src/router/index.js"
+    ],
     "exclude": [
         "node_modules",
         "src/**/*.js",

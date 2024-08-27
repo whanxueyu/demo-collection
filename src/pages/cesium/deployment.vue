@@ -63,8 +63,8 @@
                 </div>
             </div>
         </div>
-        <div v-if="!showPanel1" class="hideicon">
-            <el-icon size="40">
+        <div v-if="!showPanel1" class="hideicon" @click="handleShowPanel(1)">
+            <el-icon size="30">
                 <Operation />
             </el-icon>
         </div>
@@ -72,16 +72,17 @@
     <div :class="['menubox box2', showPanel2 ? '' : 'hide']" @dblclick="handleShowPanel(2)">
         <div class="el-tabs">
             <div class="modelList">
-                <div class="model" draggable="true" v-for="model in modelList" @mousedown="selectModel(model)"
+                <div class="model" :draggable="true" v-for="model in modelList" @mousedown="selectModel(model)"
                     @dragend="dragEnd" @dragstart="dragstart">
-                    {{ model.name }}
+                    <img class="icon" width="120px" height="80px" :src="model.icon" alt="">
+                    <div class="name">{{ model.name }}</div>
                 </div>
             </div>
         </div>
         <div class="menucell">
         </div>
-        <div v-if="!showPanel1" class="hideicon">
-            <el-icon size="40">
+        <div v-if="!showPanel2" class="hideicon" @click="handleShowPanel(2)">
+            <el-icon size="30">
                 <Grid />
             </el-icon>
         </div>
@@ -111,22 +112,35 @@ const target = ref({
     height: 0,
 });
 const modelList = [
+    // {
+    //     name: '警车（问题模型）',
+    //     url: './models/警车.glb',
+    //     icon: ''
+    // },
     {
-        name: '警车',
-        url: './models/警车.glb'
+        name: '猛士车',
+        url: './models/猛士车.glb',
+        icon: '/models/猛士车.png'
     },
     {
-        name: '特警用车',
-        url: './models/Car5.glb'
+        name: '水炮车',
+        url: './models/水炮车.glb',
+        icon: './models/水炮车.png'
     },
+    // {
+    //     name: '特警车（问题模型）',
+    //     url: './models/特警用车.glb'
+    // },
     {
-        name: '装甲车',
-        url: './models/装甲车.glb'
+        name: '武警巡逻车',
+        url: './models/武警巡逻车.glb',
+        icon: './models/武警巡逻车.png'
     },
-    {
-        name: '水泡车',
-        url: './models/水炮车.glb'
-    },
+    // {
+    //     name: '装甲车（问题模型）',
+    //     url: './models/装甲车.glb'
+    // },
+
 ]
 let startTime = Cesium.JulianDate.addHours(Cesium.JulianDate.now(), 8, new Cesium.JulianDate());
 let endTime = Cesium.JulianDate.addSeconds(startTime, 3600, new Cesium.JulianDate())
@@ -157,14 +171,14 @@ const dragstart = () => {
 }
 const dragEnd = (event) => {
     console.log("dragEnd", event)
-    console.log("screenX//", event.screenX, event.screenY)
-    console.log("clientX//", event.screenX, event.clientY)
-    console.log("pageX//", event.pageX, event.pageY)
-    console.log("offsetX//", event.offsetX, event.offsetY)
-    console.log("layerX", event.layerX, event.layerY)
-    console.log("X//", event.x, event.y)
+    console.log(event.x, event.y, "X")
+    console.log(event.clientX, event.clientY, "client")
+    console.log(event.pageX, event.pageY, "page")
+    console.log(event.screenX, event.screenY, "screen")
+    console.log(event.offsetX, event.offsetY, "offset")
+    console.log(event.layerX, event.layerY, "layer")
     if (drawModel.value) {
-        let ray = viewer.camera.getPickRay(new Cesium.Cartesian2(event.x, event.y));
+        let ray = viewer.camera.getPickRay(new Cesium.Cartesian2(event.x, event.y-60));
         if (ray) {
             let cartesian = viewer.scene.globe.pick(ray, viewer.scene);
             // 如果你想要的是Cesium的长度坐标（Cartesian3），可以直接使用转换后的世界坐标
@@ -258,12 +272,9 @@ const handleAddModel = (id: string, position: Cesium.Cartesian3, heading: number
             Cesium.HeadingPitchRoll.fromDegrees(heading, 0, 0)
         )
     )
-    console.log('orientationProperty', orientationProperty)
     let entity = viewer.entities.getById(id);
-    console.log('model', entity)
     if (entity) {
         entity.position = property;
-        // 执行到这一步报错，RangeError: Invalid array length RangeError: Invalid array length     at updateFrustums
         entity.orientation = orientationProperty;
     } else {
         let model = viewer.entities.add({
@@ -509,8 +520,9 @@ const dragAddModel = (cartesian) => {
             uri: currentUrl.value,
         },
     })
-    console.log(model)
-    // drawModel.value = false
+    viewer.zoomTo(model).then((res) => {
+        console.log('zoomto', res)
+    })
 }
 const reset = () => {
     viewer.camera.flyTo({
@@ -550,6 +562,7 @@ onMounted(() => {
     border: 1px solid rgba(139, 139, 139, 0.2);
     background-color: #222222;
     user-select: none;
+    transition: all .3s;
 
     &.hide {
         width: 40px;
@@ -559,6 +572,7 @@ onMounted(() => {
         background-color: #01a1fd;
         // border: 1px solid #00eeff;
         box-shadow: 0 0 8px 2px #00eeff;
+        transition: all .3s;
 
         .el-tabs {
             display: none;
@@ -580,20 +594,48 @@ onMounted(() => {
     }
 
     .hideicon {
-        width: 40px;
-        height: 40px;
+        width: 30px;
+        height: 30px;
+        padding: 5px;
+        transition: all .3s;
     }
 
     .modelList {
+        width: 130px;
+        display: flex;
+        flex-wrap: wrap;
+
         .model {
-            width: 60px;
-            height: 40px;
-            border: 1px solid #00eeff;
+            width: 100px;
+            height: 100px;
+            border: 1px solid #00eeff33;
             margin: 10px;
             -webkit-user-drag: element;
 
+            .icon {
+                width: 80px;
+                height: 60px;
+                padding: 5px;
+                transition: all .3s;
+            }
+
+            .name {
+                // height: 40px;
+                // line-height: 32px;
+                text-align: center;
+            }
+
             &:hover {
                 background-color: #00eeff33;
+                border: 1px solid #00eeff;
+
+
+                .icon {
+                    width: 100px;
+                    height: 80px;
+                    padding: 0px;
+                    transition: all .3s;
+                }
             }
         }
     }
