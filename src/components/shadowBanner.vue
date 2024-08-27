@@ -41,7 +41,7 @@ $imgCount : 8;
     .stage {
         position: relative;
         width: 800px;
-        height: 240px;
+        height: 320px;
         margin: 20px auto;
         perspective: 2000px;
         transform-style: preserve-3d;

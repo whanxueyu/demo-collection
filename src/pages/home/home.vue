@@ -1,157 +1,66 @@
 <template>
-    <div class="homePage">
-        <div class="section1">
-            <div class="title">
-                <cyber-text textStr="Cyberpunk Banner"></cyber-text>
+    <div class="outer-box" ref="fullPage">
+        <div ref="element" :class="{ activeTranstion: isCloseTranstion }" class="inner-box" @mousewheel="mousewheel"
+            @touchstart="handleTouchStart" @touchend="handleTouchEnd" @touchmove="handleTouchMove">
+            <div class="section section1 scroll-element">
+                <div class="title">
+                    <cyber-text textStr="Cyberpunk Banner"></cyber-text>
+                </div>
+                <div class="banner">
+                    <shadow-banner></shadow-banner>
+                </div>
             </div>
-            <div class="banner">
-                <shadow-banner></shadow-banner>
+            <div class="section section1 scroll-element">
+                <div class="title">
+                    <cyber-text textStr="Cyberpunk Image"></cyber-text>
+                </div>
+                <div class="img">
+                    <cyber-img :imgurl="state.imgurl">
+                        <div class="tip">
+                            <typing word="Pure CSS Typing Animation Cyberpunk Style."></typing>
+                        </div>
+                    </cyber-img>
+                </div>
             </div>
-            <div class="title">
-                <cyber-text textStr="Cyberpunk Image"></cyber-text>
+            <div class="section section2 scroll-element">
+                <div class="title">
+                    <cyber-text :textStr="state.title1"></cyber-text>
+                </div>
+                <div class="btn">
+                    <errorbutton>{{ state.btn3 }}</errorbutton>
+                </div>
+                <div class="btn">
+                    <neon-button1>{{ state.neonBtn }}</neon-button1>
+                    <neon-button2>{{ state.neonBtn }}</neon-button2>
+                    <neon-button3>{{ state.neonBtn }}</neon-button3>
+                </div>
+                <div class="btn">
+                    <shadow-btn1 class="shadow">NEON</shadow-btn1>
+                    <shadow-btn2 class="shadow">NEON</shadow-btn2>
+                    <shadow-btn3 class="shadow">NEON</shadow-btn3>
+                    <shadow-btn4 class="shadow">NEON</shadow-btn4>
+                </div>
             </div>
-            <div class="img">
-
-                <cyber-img :imgurl="state.imgurl">
-                    <div class="tip">
-                        <typing word="Pure CSS Typing Animation Cyberpunk Style."></typing>
-                    </div>
-                </cyber-img>
+            <div class="section section3 scroll-element">
+                <big-eye></big-eye>
+            </div>
+            <div class="section section4 scroll-element">
+                <div class="title flex justify-between">
+                    <right-shadow></right-shadow>
+                    <left-shadow></left-shadow>
+                </div>
+                <div class="movetext">
+                    <move-text text="CyberPunk"></move-text>
+                </div>
+                <move-card></move-card>
             </div>
         </div>
-        <div class="section2">
-            <div class="title">
-                <cyber-text :textStr="state.title1"></cyber-text>
-            </div>
-            <div class="btn">
-                <!-- <svg-btn1>{{ state.btn1 }}</svg-btn1>
-                <svg-btn2>{{ state.btn2 }}</svg-btn2> -->
-                <errorbutton>{{ state.btn3 }}</errorbutton>
-            </div>
-            <div class="btn">
-                <neon-button1>{{ state.neonBtn }}</neon-button1>
-                <neon-button2>{{ state.neonBtn }}</neon-button2>
-                <neon-button3>{{ state.neonBtn }}</neon-button3>
-            </div>
-            <div class="btn">
-                <shadow-btn1 class="shadow">NEON</shadow-btn1>
-                <shadow-btn2 class="shadow">NEON</shadow-btn2>
-                <shadow-btn3 class="shadow">NEON</shadow-btn3>
-                <shadow-btn4 class="shadow">NEON</shadow-btn4>
-            </div>
-        </div>
-        <div class="section3">
-            <div class="title no">
-                <pink-text :textStr="state.title2"></pink-text>
-            </div>
-            <big-eye></big-eye>
-        </div>
-        <div class="section4">
-            <div class="title flex justify-between">
-                <right-shadow></right-shadow>
-                <left-shadow></left-shadow>
-            </div>
-            <div class="movetext">
-                <move-text text="CyberPunk"></move-text>
-            </div>
-            <move-card></move-card>
-        </div>
-        <!-- <div class="section5">
-            <div class="stages">
-                <div class="container">
-                    <div class="tabbar tab-style1">
-                        <ul class="flex-center">
-                            <li class="home active" data-where="home"><span class="material-icons-outlined">home </span>
-                            </li>
-                            <li class="products" data-where="products"><span
-                                    class="material-icons-outlined">shopping_bag
-                                </span></li>
-                            <li class="services" data-where="services"><span class="material-icons-outlined">plumbing
-                                </span></li>
-                            <li class="about" data-where="about"><span class="material-icons-outlined">business </span>
-                            </li>
-                            <li class="help" data-where="help"><span class="material-icons-outlined">help_outline
-                                </span>
-                            </li>
-                            <li class="follow">&nbsp;</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="container">
-                    <div class="tabbar tab-style2">
-                        <ul class="flex-center">
-                            <li class="home active" data-where="home"><span class="material-icons-outlined">home </span>
-                            </li>
-                            <li class="products" data-where="products"><span
-                                    class="material-icons-outlined">shopping_bag
-                                </span></li>
-                            <li class="services" data-where="services"><span class="material-icons-outlined">plumbing
-                                </span></li>
-                            <li class="about" data-where="about"><span class="material-icons-outlined">business </span>
-                            </li>
-                            <li class="help" data-where="help"><span class="material-icons-outlined">help_outline
-                                </span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="container">
-                    <div class="tabbar tab-style3">
-                        <ul class="flex-center">
-                            <li class="home active" data-where="home"><span class="material-icons-outlined">home </span>
-                            </li>
-                            <li class="products" data-where="products"><span
-                                    class="material-icons-outlined">shopping_bag
-                                </span></li>
-                            <li class="services" data-where="services"><span class="material-icons-outlined">plumbing
-                                </span></li>
-                            <li class="about" data-where="about"><span class="material-icons-outlined">business </span>
-                            </li>
-                            <li class="help" data-where="help"><span class="material-icons-outlined">help_outline
-                                </span>
-                            </li>
-                            <li class="follow">&nbsp;</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="container">
-                    <div class="tabbar tab-style4">
-                        <ul class="flex-center">
-                            <li class="home active" data-where="home"><span class="material-icons-outlined">home </span>
-                            </li>
-                            <li class="products" data-where="products"><span
-                                    class="material-icons-outlined">shopping_bag
-                                </span></li>
-                            <li class="services" data-where="services"><span class="material-icons-outlined">plumbing
-                                </span></li>
-                            <li class="about" data-where="about"><span class="material-icons-outlined">business </span>
-                            </li>
-                            <li class="help" data-where="help"><span class="material-icons-outlined">help_outline
-                                </span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="container">
-                    <div class="tabbar tab-style5">
-                        <ul class="flex-center">
-                            <li class="home active" data-where="home"><span class="material-icons-outlined">home </span>
-                            </li>
-                            <li class="products" data-where="products"><span
-                                    class="material-icons-outlined">shopping_bag
-                                </span></li>
-                            <li class="services" data-where="services"><span class="material-icons-outlined">plumbing
-                                </span></li>
-                            <li class="about" data-where="about"><span class="material-icons-outlined">business </span>
-                            </li>
-                            <li class="help" data-where="help"><span class="material-icons-outlined">help_outline
-                                </span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div> -->
+        <ul class="aside">
+            <li v-for="(item, index) in asideData" @click="changeBac(index)">
+                <span :class="{ active: index === $index }"></span>
+                <div v-show="index === $index" class="show-dec">{{ item.title }}</div>
+            </li>
+        </ul>
     </div>
 </template>
 
@@ -182,45 +91,168 @@ const state = reactive({
     imgurl: require('@/static/img/Cyber2.jpg'),
     title: 'Cyberpunk 赛博朋克风格',
     title1: 'Cyberpunk Button',
-    title2: '3D眼睛鼠标跟随',
     btn1: "横向按钮",
     btn2: "竖向按钮",
     btn3: 'AVAILABLE NOW',
     neonBtn: 'NEON BUTTON'
 })
+import { useWindowSize } from '@vueuse/core'
+import { ref, computed, watchEffect } from 'vue'
+
+const asideData = ref([
+    {
+        title: '轮播图',
+    },
+    {
+        title: '故障图片',
+    },
+    {
+        title: '按钮',
+    },
+    {
+        title: '大眼睛',
+    },
+    {
+        title: '3D文字',
+    }
+])
+// ELEMENT
+const element = ref('element')
+watchEffect(() => {
+    if (element.value.style) {
+        // element.value.style.transform = transformScroll.value
+        element.value.style.top = transformScroll.value
+    }
+})
+
+//HEIGHT
+const { height } = useWindowSize()
+const windowHeight = computed(() => {
+    // 高度变化时需要关闭动画
+    isCloseTranstion.value = true
+    return height.value
+})
+const transformScroll = computed(() => {
+    // return `translateY(-${$index.value * windowHeight.value}px)`
+    return `-${$index.value * windowHeight.value}px`
+})
+
+const isCloseTranstion = ref(false) //控制是否显示动画效果
+const canRun = ref(true) //节流控制器
+
+function mousewheel(e) {
+    isCloseTranstion.value = false
+    if (canRun.value) {
+        canRun.value = false
+        goScroll(e)
+        setTimeout(() => {
+            canRun.value = true
+        }, 500)
+    }
+}
+
+//#region 移动端
+const startY = ref(0) //记录开始位置
+const endY = ref(0) //记录结束位置
+const moveDistance = ref(0) //滑动距离
+
+// 触摸开始
+function handleTouchStart(e) {
+    startY.value = e.touches[0].pageY || e.changedTouches[0].pageY
+}
+
+// 触摸抬起
+function handleTouchEnd(e) {
+    e.preventDefault()
+    // 抬起时开启动画
+    isCloseTranstion.value = false
+    // 计算结束距离
+    endY.value = e.changedTouches[0].pageY || e.touches[0].pageY
+    // 计算移动距离，判断应该上一页还是下一页，直接更改index即可在原先基础上整页移动
+    moveDistance.value = endY.value - startY.value
+    // 这里我做了一个最小值 大于50才翻页
+    if (Math.abs(moveDistance.value) >= 60) {
+        if ($index.value < asideData.value.length - 1 && moveDistance.value < 0) {
+            $index.value++
+        }
+        if ($index.value > 0 && moveDistance.value > 0) {
+            $index.value--
+        }
+    } else {
+        // 当临界值小于60意味着不需要翻页 就恢复原来的位置即可
+        // element.value.style.transform = `translateY(-${$index.value * windowHeight.value}px)`
+        element.value.style.top = `-${$index.value * windowHeight.value}px`
+    }
+}
+
+// 触摸移动
+function handleTouchMove(e) {
+    isCloseTranstion.value = true // 开始移动 关闭动画
+    // e.stopPropagation()
+    e.preventDefault()
+    // if (isIOS()) {
+    //   return
+    // }
+    moveDistance.value = (e.changedTouches[0].pageY || e.touches[0].pageY) - startY.value // 计算移动距离\
+    //判断临界点
+    const isCriticalPoint =
+        ($index.value === asideData.value.length - 1 && moveDistance.value < 0) ||
+        ($index.value === 0 && moveDistance.value > 0)
+    // 如果是临界点就直接返回
+    if (isCriticalPoint) {
+        return
+    }
+    // 否则直接对内层容器应用 随之移动
+    // element.value.style.transform = `translateY(-${$index.value * windowHeight.value + moveDistance.value * -1}px)`
+    element.value.style.top = `-${$index.value * windowHeight.value + moveDistance.value * -1}px`
+}
+//#endregion
+
+//ANOTHER writting about full-page
+// const { y } = useScroll(document)
+// watchThrottled(
+//   y,
+//   (newValue, oldValue) => {
+//     if (newValue > oldValue && newValue > 120) {
+//       next()
+//     } else {
+//       last()
+//     }
+//   },
+//   { throttle: 300 },
+// )
+
+function goScroll(e) {
+    //e.wheelDelta 用来判断上一个下一个 <0 下一个 >0上一个
+    if (e.wheelDelta < 0) {
+        next()
+    } else {
+        last()
+    }
+}
+
+//$INDEX
+const $index = ref(0) //索引控制第几个显示
+// 下一个
+function next() {
+    if ($index.value < asideData.value.length - 1) {
+        $index.value++
+    }
+}
+// 上一个
+function last() {
+    if ($index.value > 1 || $index.value === 1) {
+        $index.value--
+    }
+}
+
+// 点击切换
+function changeBac(index) {
+    // 点击切换时需要开启动画
+    isCloseTranstion.value = false
+    $index.value = index
+}
 onMounted(() => {
-    const uls = document.querySelectorAll("ul");
-    uls.forEach((ul) => {
-        const resetClass = ul.parentNode.getAttribute("class");
-        const lis = ul.querySelectorAll("li");
-        lis.forEach((li) => {
-            li.addEventListener("click", (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                const target = e.currentTarget;
-                if (
-                    target.classList.contains("active") ||
-                    target.classList.contains("follow")
-                ) {
-                    return;
-                }
-                ul.parentNode.setAttribute(
-                    "class",
-                    `${resetClass} ${target.getAttribute("data-where")}-style`
-                );
-
-                lis.forEach((item) => clearClass(item, "active"));
-
-                setClass(target, "active");
-            });
-        });
-    });
-    function clearClass(node, className) {
-        node.classList.remove(className);
-    }
-    function setClass(node, className) {
-        node.classList.add(className);
-    }
 
 })
 </script>
@@ -228,6 +260,101 @@ onMounted(() => {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 @import url('./style.scss');
+
+.activeTranstion {
+    transition: all 0ms ease 0s !important;
+}
+
+.active {
+    display: inline-block;
+    width: 12px !important;
+    height: 12px !important;
+}
+
+.outer-box {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+
+    .inner-box {
+        position: absolute;
+        width: 100%;
+        transition: all ease-in-out 0.5s;
+
+        .scroll-element {
+            // height: 100%;
+            background-size: cover !important;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+    }
+
+    .section {
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .aside {
+        list-style: none;
+        position: fixed;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+
+        li {
+            height: 14px;
+            width: 14px;
+            margin: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+
+            .show-dec {
+                text-align: right;
+                position: absolute;
+                width: 100px;
+                right: 20px;
+                padding: 1px;
+                display: flex;
+                flex-direction: row-reverse;
+                color: #fff;
+                transition: all linear 0.1s;
+                font-size: 12px;
+
+                // background-color: #fff;
+                &::before {
+                    display: inline-block;
+                    content: "";
+                    width: 40px;
+                    height: 1px;
+                    background-color: #fff;
+                    margin-top: 6px;
+                    margin-left: 4px;
+                }
+            }
+
+            span {
+                border-radius: 100%;
+                border: #fff solid 1px;
+                width: 4px;
+                height: 4px;
+                display: inline-block;
+                background-color: #fff;
+                transition: all ease-in-out 0.2s;
+            }
+
+            &:hover span {
+                width: 10px;
+                height: 10px;
+                background-color: #fff;
+                cursor: pointer;
+            }
+        }
+    }
+}
 
 .homePage {
     margin: 0;
@@ -251,7 +378,7 @@ onMounted(() => {
 @media (min-width:800px) {
     .section1 {
         width: 100%;
-        // height: 100%;
+        height: 100%;
         display: block;
 
         .banner {
@@ -260,7 +387,7 @@ onMounted(() => {
 
         .img {
             width: 100vw;
-            height: 800px;
+            height: 100vh;
 
             .tip {
                 background: #000;
