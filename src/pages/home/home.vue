@@ -53,6 +53,7 @@
                     <move-text text="CyberPunk"></move-text>
                 </div>
                 <move-card></move-card>
+                <pink-text>123abcABC文字</pink-text>
             </div>
         </div>
         <ul class="aside">

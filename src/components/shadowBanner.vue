@@ -9,17 +9,26 @@
                     <div class="img img1">
                         <img src="@/static/img/Cyber.jpeg">
                     </div>
-                    <div class="img img2"><img src="@/static/img/Cyber2.jpg"></div>
-                    <div class="img img3"><img src="@/static/img/Cyber3.jpeg">
+                    <div class="img img2">
+                        <img src="@/static/img/Cyber2.jpg">
                     </div>
-                    <div class="img img4"><img src="@/static/img/Cyber4.jpeg">
+                    <div class="img img3">
+                        <img src="@/static/img/Cyber3.jpeg">
                     </div>
-                    <div class="img img5"><img src="@/static/img/Cyber5.jpeg">
+                    <div class="img img4">
+                        <img src="@/static/img/Cyber4.jpeg">
                     </div>
-                    <div class="img img6"><img src="@/static/img/Cyber6.jpg">
+                    <div class="img img5">
+                        <img src="@/static/img/Cyber5.jpeg">
                     </div>
-                    <div class="img img7"><img src="@/static/img/Cyber7.jpeg"></div>
-                    <div class="img img8"><img src="@/static/img/Cyber8.jpeg">
+                    <div class="img img6">
+                        <img src="@/static/img/Cyber6.jpg">
+                    </div>
+                    <div class="img img7">
+                        <img src="@/static/img/Cyber7.jpeg">
+                    </div>
+                    <div class="img img8">
+                        <img src="@/static/img/Cyber8.jpeg">
                     </div>
                 </div>
             </div>
