@@ -71,9 +71,9 @@
     </div>
     <div :class="['menubox box2', showPanel2 ? '' : 'hide']" @dblclick="handleShowPanel(2)">
         <div class="el-tabs">
-            <div class="modelList">
-                <div class="model" :draggable="true" v-for="model in modelList" @mousedown="selectModel(model)"
-                    @dragend="dragEnd" @dragstart="dragstart">
+            <div class="modelList" dropzone="copy">
+                <div class="model" draggable="true" v-for="model in modelList" @mousedown="selectModel(model)"
+                    @dragend="dragEnd" @dragstart="dragstart" @dragover="dragover">
                     <img class="icon" width="120px" height="80px" :src="model.icon" alt="">
                     <div class="name">{{ model.name }}</div>
                 </div>
@@ -87,7 +87,7 @@
             </el-icon>
         </div>
     </div>
-    <Map @loaded="handleMapLoaded" :lazy="false" :duration="0" map-type="grid"></Map>
+    <Map @loaded="handleMapLoaded" class="dropzone" :lazy="false" :duration="0" map-type="grid"></Map>
     <status-bar v-if="loaded" :viewer="viewer"></status-bar>
 </template>
 
@@ -163,14 +163,16 @@ const currentUrl = ref('')
 const drawModel = ref(false)
 const selectModel = (model: any) => {
     currentUrl.value = model.url;
-    drawModel.value = true
 }
-const dragstart = () => {
-    // currentUrl.value = model.url;
+const dragstart = (event) => {
     drawModel.value = true
+    event.dataTransfer.setData('drag_text', event.target.innerHTML)
+}
+const dragover = (event) => {
+    event.preventDefault()
+    event.dataTransfer.dropEffect = 'copy';
 }
 const dragEnd = (event) => {
-    console.log("dragEnd", event)
     console.log(event.x, event.y, "X")
     console.log(event.clientX, event.clientY, "client")
     console.log(event.pageX, event.pageY, "page")
@@ -178,7 +180,7 @@ const dragEnd = (event) => {
     console.log(event.offsetX, event.offsetY, "offset")
     console.log(event.layerX, event.layerY, "layer")
     if (drawModel.value) {
-        let ray = viewer.camera.getPickRay(new Cesium.Cartesian2(event.x, event.y-60));
+        let ray = viewer.camera.getPickRay(new Cesium.Cartesian2(event.x, event.y - 60));
         if (ray) {
             let cartesian = viewer.scene.globe.pick(ray, viewer.scene);
             // 如果你想要的是Cesium的长度坐标（Cartesian3），可以直接使用转换后的世界坐标
@@ -610,7 +612,10 @@ onMounted(() => {
             height: 100px;
             border: 1px solid #00eeff33;
             margin: 10px;
-            -webkit-user-drag: element;
+
+            &:active {
+                cursor: grab;
+            }
 
             .icon {
                 width: 80px;

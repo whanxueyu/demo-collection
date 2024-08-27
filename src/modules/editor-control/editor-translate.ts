@@ -132,7 +132,7 @@ export class ControlEntity {
             for (var i = 0; i < translateModels.length; i++) {
                 let modelGriph: ModelGraphics = new ModelGraphics({
                     uri: translateModels[i],
-                    minimumPixelSize: 150,
+                    minimumPixelSize: 300,
                     // maximumScale: 20000,
                     scale: 1,
                     show: true,
@@ -158,8 +158,8 @@ export class ControlEntity {
             for (var i = 0; i < roateModels.length; i++) {
                 let modelGriph: ModelGraphics = new ModelGraphics({
                     uri: roateModels[i],
-                    minimumPixelSize: 200,
-                    // maximumScale: 20000,
+                    minimumPixelSize: 300,
+                    // maximumScale: 15000,
                     scale: 1,
                     show: i > 1 ? true : false,
                     colorBlendMode: ColorBlendMode.MIX,
@@ -184,8 +184,8 @@ export class ControlEntity {
             for (var i = 0; i < scaleModels.length; i++) {
                 let modelGriph: ModelGraphics = new ModelGraphics({
                     uri: scaleModels[i],
-                    minimumPixelSize: 200,
-                    // maximumScale: 20000,
+                    minimumPixelSize: 300,
+                    // maximumScale: 15000,
                     scale: 1,
                     show: i === 0 ? true : false,
                     colorBlendMode: ColorBlendMode.MIX,
@@ -395,11 +395,14 @@ export class ControlEntity {
                 let statrDistance = this.getDistanceByWindowPosition(center, startPosition)
                 let endrDistance = this.getDistanceByWindowPosition(center, endPosition)
                 let newScale = this.options.scale * (endrDistance / statrDistance)
-                this.entitys.forEach((entity) => {
-                    if (entity) {
-                        entity!.model.scale = new Cesium.ConstantProperty(newScale)
-                    }
-                })
+                // this.entitys.forEach((entity) => {
+                //     if (entity) {
+                //         console.log(entity.name,entity.model.scale.getValue(this.viewer.clock.currentTime))
+                //         console.log('newScale',newScale)
+                //         // entity!.model.scale = new Cesium.ConstantProperty(newScale*entity.model.scale.getValue(this.viewer.clock.currentTime))
+                //     }
+                // })
+                // this.viewer.scene.requestRender();
                 this.options.scale = newScale
                 this.positionsCallback && this.positionsCallback({ newPosition: center, newQuaternion: undefined, newScale: newScale });
             }
