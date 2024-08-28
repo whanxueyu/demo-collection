@@ -29,7 +29,7 @@
 
 ### Get the project code
 ```bash
-git clone https://github.com/anncwb/vue-vben-admin.git
+git clone https://github.com/whanxueyu/demo-collection.git
 ```
 
 ### Install pnpm

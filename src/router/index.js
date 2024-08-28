@@ -30,6 +30,44 @@ const routes = [
                 },
             },
             {
+                path: '/cesium',
+                name: 'cesium',
+                component: () => import('@/pages/cesium/index.vue'),
+                meta: {
+                    name: 'cesium用例',
+                    hidden:false
+                },
+                children:[
+                    {
+                        path: '/map',
+                        name: 'map',
+                        component: () => import('@/pages/cesium/cesium.vue'),
+                        meta: {
+                            name: '标签图层',
+                            hidden:false
+                        },
+                    },
+                    {
+                        path: '/deployment',
+                        name: 'deployment',
+                        component: () => import('@/pages/cesium/deployment.vue'),
+                        meta: {
+                            name: '队列部署',
+                            hidden:false
+                        },
+                    },
+                    {
+                        path: '/imagery',
+                        name: 'imagery',
+                        component: () => import('@/pages/cesium/imageryLayer.vue'),
+                        meta: {
+                            name: '各类材质',
+                            hidden:false
+                        },
+                    },
+                ]
+            },
+            {
                 path: '/bigScreen',
                 name: 'bigScreen',
                 component: () => import('@/pages/bigscreen/bigscreen.vue'),
@@ -102,74 +140,7 @@ const routes = [
                         },
                     },
                 ]
-            },
-            // {
-            //     path: '/aframe',
-            //     name: 'aframe',
-            //     component: () => import('@/pages/aFrame/index.vue'),
-            //     meta: {
-            //         name: 'AFrame_VR',
-            //         hidden:false
-            //     },
-            //     children:[
-            //         {
-            //             path: '/aframebox',
-            //             name: 'aframebox',
-            //             component: () => import('@/pages/aFrame/aframe.vue'),
-            //             meta: {
-            //                 name: 'Aframe 动画',
-            //                 hidden:false
-            //             },
-            //         },
-            //         {
-            //             path: '/aframehouse',
-            //             name: 'aframehouse',
-            //             component: () => import('@/pages/aFrame/aframehouse.vue'),
-            //             meta: {
-            //                 name: 'Aframe 房间',
-            //                 hidden:false
-            //             },
-            //         },
-            //     ]
-            // },
-            {
-                path: '/cesium',
-                name: 'cesium',
-                component: () => import('@/pages/cesium/index.vue'),
-                meta: {
-                    name: 'cesium 地图',
-                    hidden:false
-                },
-                children:[
-                    {
-                        path: '/map',
-                        name: 'map',
-                        component: () => import('@/pages/cesium/cesium.vue'),
-                        meta: {
-                            name: '地图功能',
-                            hidden:false
-                        },
-                    },
-                    {
-                        path: '/deployment',
-                        name: 'deployment',
-                        component: () => import('@/pages/cesium/deployment.vue'),
-                        meta: {
-                            name: '队列计算',
-                            hidden:false
-                        },
-                    },
-                    {
-                        path: '/imagery',
-                        name: 'imagery',
-                        component: () => import('@/pages/cesium/imageryLayer.vue'),
-                        meta: {
-                            name: '图层编辑',
-                            hidden:false
-                        },
-                    },
-                ]
-            },
+            }
         ]
     },
     {

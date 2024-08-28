@@ -28,7 +28,7 @@
 
 ### 获取项目代码
 ```bash
-git clone https://github.com/anncwb/vue-vben-admin.git
+git clone https://github.com/whanxueyu/demo-collection.git
 ```
 
 ### 安装pnpm

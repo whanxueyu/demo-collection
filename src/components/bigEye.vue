@@ -112,8 +112,8 @@ const transformElement = (x, y) => {
     position: relative;
     height: 300px;
     border-radius: 50%;
-    border: 10px solid #02ffff;
-    box-shadow: inset 0 0 0 5px #2968d9;
+    border: 20px solid #02ffff;
+    box-shadow: inset 0 0 30px 25px #2968d9;
     box-sizing: border-box;
 }
 

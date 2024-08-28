@@ -270,6 +270,7 @@ onMounted(() => {
     display: inline-block;
     width: 12px !important;
     height: 12px !important;
+    transition: all .2s;
 }
 
 .outer-box {
@@ -281,13 +282,14 @@ onMounted(() => {
     .inner-box {
         position: absolute;
         width: 100%;
-        transition: all ease-in-out 0.5s;
+        transition: all ease-in-out 0.3s;
 
         .scroll-element {
             // height: 100%;
             background-size: cover !important;
             background-position: center;
             background-repeat: no-repeat;
+            transition: all ease-in-out .2s;
         }
     }
 
@@ -295,6 +297,7 @@ onMounted(() => {
         width: 100%;
         height: 100vh;
         overflow: hidden;
+        transition: all ease-in-out .2s;
     }
 
     .aside {
@@ -303,6 +306,7 @@ onMounted(() => {
         right: 20px;
         top: 50%;
         transform: translateY(-50%);
+        transition: all ease-in-out .2s;
 
         li {
             height: 14px;
@@ -312,6 +316,7 @@ onMounted(() => {
             align-items: center;
             justify-content: center;
             position: relative;
+            transition: all ease-in-out .2s;
 
             .show-dec {
                 text-align: right;
@@ -324,8 +329,6 @@ onMounted(() => {
                 color: #fff;
                 transition: all linear 0.1s;
                 font-size: 12px;
-
-                // background-color: #fff;
                 &::before {
                     display: inline-block;
                     content: "";
@@ -334,6 +337,7 @@ onMounted(() => {
                     background-color: #fff;
                     margin-top: 6px;
                     margin-left: 4px;
+                    transition: all ease-in-out .2s;
                 }
             }
 
@@ -352,6 +356,7 @@ onMounted(() => {
                 height: 10px;
                 background-color: #fff;
                 cursor: pointer;
+                transition: all ease-in-out .2s;
             }
         }
     }
