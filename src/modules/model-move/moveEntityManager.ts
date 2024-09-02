@@ -5,6 +5,7 @@ import StaticEntity from "./staticEntity"
 import { useDateFormat } from '@vueuse/core';
 import { useEventBus } from "@vueuse/core";
 import * as Cesium from 'cesium'
+import PolylineTrailLinkMaterialProperty from '@/modules/material/PolylineTrailLinkMaterial'
 const selectMoveModel = useEventBus("selectMoveModel");
 
 type Point = {
@@ -15,8 +16,8 @@ type Point = {
 
 type TimeEvent = {
     time: string,
-    [key: string]: string,
-    action: (string?: string) => {},
+    type:string,
+    action: (string?: string) => void,
 }
 /**
  * 定义一个模型移动选项的类型
@@ -63,7 +64,6 @@ class ModelManager {
     private timeEventList: TimeEvent[];
     protected tempEvents: TimeEvent[];
     private clickHandler: Cesium.ScreenSpaceEventHandler;
-    private gifCollection: typeof window.CesiumEMBBExtensions.EV_GifCollection;
     private connectLinks: Map<string, Cesium.Entity>;
     private highLightId: string
 
@@ -78,7 +78,6 @@ class ModelManager {
         this.startTime = timeRange.startTime ? Cesium.JulianDate.addHours(Cesium.JulianDate.fromDate(new Date(timeRange.startTime)), 0, new Cesium.JulianDate()) : Cesium.JulianDate.addHours(new Cesium.JulianDate(), 0, new Cesium.JulianDate());
         this.stopTime = timeRange.stopTime ? Cesium.JulianDate.addHours(Cesium.JulianDate.fromDate(new Date(timeRange.stopTime)), 0, new Cesium.JulianDate()) : Cesium.JulianDate.addHours(new Cesium.JulianDate(), 0, new Cesium.JulianDate());
         this.setViewerClock(this.startTime, this.stopTime)
-        // this.gifCollection = new window.CesiumEMBBExtensions.EV_GifCollection(this.viewer);
         this.startClickListening()
     }
     /**
@@ -210,29 +209,10 @@ class ModelManager {
         });
         this.viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY)
         // 创建GIF动画
-
-        if (type === 1) {
-            this.showBoom(evbillboard, "http://192.168.1.253:8099/libs/Cesium/Assets/EMExtensions/bomb2.gif")
-        } else {
-            this.showBoom(evbillboard, "http://192.168.1.253:8099/libs/Cesium/Assets/EMExtensions/bomb.gif")
-        }
-    }
-    private showBoom = (evbillboard: Cesium.Entity, url: string) => {
-        let bomb = this.gifCollection.add({
-            url: url,
-            fps: 5
-        });
-        bomb.readyPromise.promise.then((ready) => {
-            evbillboard.show = true;
-            evbillboard.billboard.image = bomb.canvas;
-            setTimeout(() => {
-                this.viewer.entities.remove(evbillboard)
-            }, 3000);
-        });
     }
 
     public createConnectLink = (startId: string, endId: string) => {
-        let dynamicMaterial = new Cesium.EV_DynamicPolyline(Cesium.Color.fromCssColorString('#ffee00'), 2000, Cesium.EV_DynamicPolyline.Direction.AntiClockWise);
+        let dynamicMaterial = new PolylineTrailLinkMaterialProperty('@/static/img/line.webp', Cesium.Color.fromCssColorString('#ffff88'), 2000)
         let link = this.viewer.entities.add({
             polyline: {
                 //位置
@@ -353,8 +333,8 @@ class ModelManager {
         const model = this.models.get(id);
         if (model) {
             const clock = this.viewer.clock;
-            clock.startTime = Cesium.JulianDate.fromIso8601(new Date(start * 1000));
-            clock.stopTime = Cesium.JulianDate.fromIso8601(new Date(end * 1000));
+            clock.startTime = Cesium.JulianDate.fromIso8601(new Date(start * 1000) as any);
+            clock.stopTime = Cesium.JulianDate.fromIso8601(new Date(end * 1000) as any);
             clock.currentTime = clock.startTime;
             clock.multiplier = (end - start) / (24 * 60 * 60); // 假设以秒为单位
         }

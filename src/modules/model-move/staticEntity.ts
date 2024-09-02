@@ -1,4 +1,5 @@
 import * as Cesium from 'cesium'
+import radaeScanMaterial from "@/modules/material/radaeScanMaterial";
 type Point = {
     longitude: number,
     latitude: number,
@@ -21,7 +22,7 @@ class StaticEntity {
     private panelEntity: Cesium.Entity;
     private modelPath: string;
     private modelName: string;
-    private modelId: string;
+    public modelId: string;
     private iconPath: string;
     private type: string
     protected radar?: any;
@@ -43,14 +44,30 @@ class StaticEntity {
     }
     private addModel = () => {
         if (this.type === 'radar') {
-            this.radar = new window.CesiumEMGEExtensions.EV_ParseArrayRadar({
-                viewer: this.viewer,
-                position: Cesium.Cartesian3.fromDegrees(this.position.longitude, this.position.latitude, this.position.height),
-                radius: 88000,
-                color: new Cesium.Color(0.5, 0.5, 1.0, 0.1),
-                lineColor: new Cesium.Color(0.2, 0.5, 0.5, 0.5),
-                showScan: true,
-            });
+            // this.radar = new window.CesiumEMGEExtensions.EV_ParseArrayRadar({
+            //     viewer: this.viewer,
+            //     position: Cesium.Cartesian3.fromDegrees(this.position.longitude, this.position.latitude, this.position.height),
+            //     radius: 88000,
+            //     color: new Cesium.Color(0.5, 0.5, 1.0, 0.1),
+            //     lineColor: new Cesium.Color(0.2, 0.5, 0.5, 0.5),
+            //     showScan: true,
+            // });
+            var circleGeometry = new Cesium.CircleGeometry({
+                center: Cesium.Cartesian3.fromDegrees(this.position.longitude, this.position.latitude, this.position.height),
+                radius: 2000.0,
+                vertexFormat: Cesium.VertexFormat.POSITION_AND_ST,
+              })
+              var instance = new Cesium.GeometryInstance({
+                geometry: circleGeometry,
+              })
+              this.radar = this.viewer.scene.primitives.add(
+                new Cesium.GroundPrimitive({
+                  geometryInstances: instance,
+                  appearance: new Cesium.MaterialAppearance({
+                    material: radaeScanMaterial(new Cesium.Color(0.0, 1.0, 0.0)),
+                  }),
+                })
+              )
             this.modeleEntity = this.viewer.entities.add({
                 position: Cesium.Cartesian3.fromDegrees(this.position.longitude, this.position.latitude, this.position.height),
                 // 模型数据
@@ -144,14 +161,14 @@ class StaticEntity {
 
     public hightLight = (val: boolean) => {
         if (val) {
-            this.modeleEntity.model.silhouetteSize = 4;
-            this.panelEntity.label.fillColor = Cesium.Color.fromCssColorString('#00ff00');
-            this.modeleEntity.model.color = Cesium.Color.fromCssColorString('#00ff00');
-            this.modeleEntity.model.colorBlendMode = Cesium.ColorBlendMode.HIGHLIGHT;
-            this.modeleEntity.model.colorBlendAmount = 0.5;
+            this.modeleEntity.model.silhouetteSize = new Cesium.ConstantProperty(4);
+            this.panelEntity.label.fillColor = new Cesium.ConstantProperty(Cesium.Color.fromCssColorString('#00ff00'));
+            this.modeleEntity.model.color = new Cesium.ConstantProperty(Cesium.Color.fromCssColorString('#00ff00'));
+            this.modeleEntity.model.colorBlendMode = new Cesium.ConstantProperty(Cesium.ColorBlendMode.HIGHLIGHT);
+            this.modeleEntity.model.colorBlendAmount = new Cesium.ConstantProperty(0.5);
         } else {
-            this.modeleEntity.model.silhouetteSize = 0;
-            this.panelEntity.label.fillColor = Cesium.Color.fromCssColorString('#ffffff')
+            this.modeleEntity.model.silhouetteSize = new Cesium.ConstantProperty(0);
+            this.panelEntity.label.fillColor = new Cesium.ConstantProperty(Cesium.Color.fromCssColorString('#ffffff'));
             this.modeleEntity.model.color = undefined;
             this.modeleEntity.model.colorBlendMode = undefined;
             this.modeleEntity.model.colorBlendAmount = undefined

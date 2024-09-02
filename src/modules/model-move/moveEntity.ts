@@ -1,5 +1,6 @@
 
 import * as Cesium from 'cesium'
+import PolylineTrailLinkMaterialProperty from '@/modules/material/PolylineTrailLinkMaterial'
 type Point = {
     longitude: number,
     latitude: number,
@@ -32,7 +33,7 @@ class ModelEntity {
     private modeleEntity: Cesium.Entity;
     private pointEntities: Cesium.Entity[];
     private panelEntity: Cesium.Entity;
-    private radarEntity: Cesium.Entity;
+    private radarEntity: any;
     private speed: number;
     private modelPath: string;
     private modelName: string;
@@ -53,7 +54,6 @@ class ModelEntity {
 
     constructor(viewer: Cesium.Viewer, points: Point[], option: ModelMoveOption) {
         this.viewer = viewer;
-        this.scan = new Cesium.EV_CircleScan(this.viewer);
         this.points = points;
         this.speed = option.speed;
         this.modelPath = option.modelPath;
@@ -106,9 +106,6 @@ class ModelEntity {
                 silhouetteColor: this.camp === 'blue' ? Cesium.Color.fromCssColorString('#44ccff') : Cesium.Color.fromCssColorString('#ff5555'),
                 silhouetteSize: 0,
                 scale: 2.5,
-                // depthTestAgainstTrrrain: false,
-                // clampToGround: true,
-                // heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND
                 heightReference: this.clampGround ? Cesium.HeightReference.CLAMP_TO_GROUND : Cesium.HeightReference.NONE
             },
             label: {
@@ -117,7 +114,6 @@ class ModelEntity {
                 pixelOffset: new Cesium.Cartesian2(60, -126),
                 horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
                 disableDepthTestDistance: Number.POSITIVE_INFINITY,
-                // verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
             },
             billboard: {
                 image: './img/icon/div2.png',
@@ -127,7 +123,6 @@ class ModelEntity {
                 pixelOffset: new Cesium.Cartesian2(5, -5),
                 width: 200,
                 height: 220,
-                // color: this.camp === 'blue' ? Cesium.Color.fromCssColorString('#44ccff') : Cesium.Color.fromCssColorString('#fff'),
             },
             path: {
                 show: this.showLine as boolean,
@@ -135,10 +130,10 @@ class ModelEntity {
                 width: 6,
                 leadTime: 0,
                 trailTime: 30,
-                material: new Cesium.EV_DynamicPolyline(Cesium.Color.fromCssColorString('#cc3333'), 1, Cesium.EV_DynamicPolyline.Direction.AntiClockWise)
+                material: new PolylineTrailLinkMaterialProperty('@/static/img/line.webp', Cesium.Color.fromCssColorString('#cc3333'), 2000)
             },
         });
-        this.modeleEntity.position.setInterpolationOptions({
+        property.setInterpolationOptions({
             interpolationDegree: 1,
             interpolationAlgorithm: Cesium.HermitePolynomialApproximation
             // interpolationAlgorithm: Cesium.LagrangePolynomialApproximation
@@ -172,76 +167,29 @@ class ModelEntity {
                 show: false,
                 uri: this.iconPath,
                 minimumPixelSize: 64,
-                maximumPixelSize: 128,
-                depthTestAgainstTrrrain: false,
                 distanceDisplayCondition: new Cesium.DistanceDisplayCondition(20000, Infinity),
-                // heightReference: this.clampGround ? Cesium.HeightReference.CLAMP_TO_GROUND : Cesium.HeightReference.NONE
             },
         })
     }
     private createPlaneRadar() {
-        // this.radarEntity = this.viewer.entities.add({
-        //     position: new Cesium.CallbackProperty(() => {
-        //         let position = this.modeleEntity.position.getValue(this.viewer.clock.currentTime)
-        //         if (position) {
-        //             let cartographic = Cesium.Cartographic.fromCartesian(position);
-        //             if (cartographic) {
-        //                 return Cesium.Cartesian3.fromRadians(Number(cartographic.longitude), Number(cartographic.latitude), Number(cartographic.height - 5000))
-        //             }
-        //         }
-        //     }),
-        //     cylinder: {
-        //         show: true,
-        //         length: 10000,
-        //         topRadius: 0,
-        //         bottomRadius: this.scanRadius ?? 3500,
-        //         fill: true,
-        //         outline: false,
-        //         slices: 64,
-        //         material: Cesium.Color.RED.withAlpha(0.1),
-        //     },
-        //     ellipse: {
-        //         semiMinorAxis: 0,
-        //         semiMajorAxis: 0,
-        //         material: Cesium.Color.AQUA.withAlpha(0.3),
-        //         outline: true,
-        //         outlineWidth: 25,
-        //         outlineColor: Cesium.Color.AQUA,
-        //         height: 10000
-        //     }
-        // })
-        // console.log("createPlaneRadar", this.radarEntity)
-        // this.viewer.zoomTo(this.radarEntity)
         var direction = Cesium.Cartesian3.subtract(
             Cesium.Cartesian3.fromDegrees(Number(this.points[0].longitude), Number(this.points[0].latitude), 2500),
             Cesium.Cartesian3.fromDegrees(Number(this.points[0].longitude), Number(this.points[0].latitude), 10000),
             new Cesium.Cartesian3()
         );
-        this.radarEntity = new CesiumEMGEExtensions.EV_CustomCylinder({
-            viewer: this.viewer,
-            startPosition: Cesium.Cartesian3.fromDegrees(Number(this.points[0].longitude), Number(this.points[0].latitude), Number(this.points[0].height)),
-            direction: direction,
-            length: 10000,
-            fillColor: new Cesium.Color(1.0, 0, 0, 0.5),
-            fillStyle: window.CesiumEMGEExtensions.EV_CustomCylinder.fillType.stripe,
-            speed: 1.0,
-            multiply: 10,
-            show: true,
-            bottomRadius: this.scanRadius ?? 3500,
-            topRadius: 0,
-        });
     }
     private createBoatRadar() {
         this.radarEntity = this.viewer.entities.add({
-            position: new Cesium.CallbackProperty(() => {
-                let position = this.modeleEntity.position.getValue(this.viewer.clock.currentTime)
-                if (position) {
-                    let cartographic = Cesium.Cartographic.fromCartesian(position);
-                    if (cartographic) {
-                        return Cesium.Cartesian3.fromRadians(Number(cartographic.longitude), Number(cartographic.latitude), Number(cartographic.height - 5000))
-                    }
-                }
-            },false),
+            // position: new Cesium.CallbackProperty(() => {
+            //     let position = this.modeleEntity.position.getValue(this.viewer.clock.currentTime)
+            //     if (position) {
+            //         let cartographic = Cesium.Cartographic.fromCartesian(position);
+            //         if (cartographic) {
+            //             return Cesium.Cartesian3.fromRadians(Number(cartographic.longitude), Number(cartographic.latitude), Number(cartographic.height - 5000))
+            //         }
+            //     }
+            // }, false),
+            
             ellipse: {
                 semiMinorAxis: 0,
                 semiMajorAxis: 0,
@@ -252,33 +200,21 @@ class ModelEntity {
                 height: 1,
             }
         })
-        console.log("createBoatRadar", this.radarEntity)
-
-        // this.radarEntity = this.scan.addCircleScan({
-        //     lon: Number(this.points[0].longitude),
-        //     lat: Number(this.points[0].latitude),
-        //     height: Number(this.points[0].height),
-        //     radius: 2000,
-        //     scanColor: new Cesium.Color(0.5, 0, 0),
-        //     interval: 5000,
-        //     quantity: 4
-        // });
-        
     }
-    public setRadarVisiable = (show:boolean)=>{
-            this.radarEntity.show = show
+    public setRadarVisiable = (show: boolean) => {
+        this.radarEntity.show = show
     }
 
     public hightLight = (val: boolean) => {
         if (val) {
-            this.modeleEntity.model.silhouetteSize = 4;
-            this.modeleEntity.label.fillColor = this.camp === 'blue' ? Cesium.Color.fromCssColorString('#0055ff') : Cesium.Color.fromCssColorString('#ff0055');
-            this.modeleEntity.model.color = this.camp === 'blue' ? Cesium.Color.fromCssColorString('#0055ff') : Cesium.Color.fromCssColorString('#ff0055');
-            this.modeleEntity.model.colorBlendMode = Cesium.ColorBlendMode.HIGHLIGHT;
-            this.modeleEntity.model.colorBlendAmount = 0.5;
+            this.modeleEntity.model.silhouetteSize = new Cesium.ConstantProperty(4);
+            this.modeleEntity.label.fillColor = new Cesium.ConstantProperty(this.camp === 'blue' ? Cesium.Color.fromCssColorString('#0055ff') : Cesium.Color.fromCssColorString('#ff0055'));
+            this.modeleEntity.model.color = new Cesium.ConstantProperty(this.camp === 'blue' ? Cesium.Color.fromCssColorString('#0055ff') : Cesium.Color.fromCssColorString('#ff0055'));
+            this.modeleEntity.model.colorBlendMode = new Cesium.ConstantProperty(Cesium.ColorBlendMode.HIGHLIGHT);
+            this.modeleEntity.model.colorBlendAmount = new Cesium.ConstantProperty(0.5);
         } else {
-            this.modeleEntity.model.silhouetteSize = 0;
-            this.modeleEntity.label.fillColor = Cesium.Color.fromCssColorString('#ffffff')
+            this.modeleEntity.model.silhouetteSize = new Cesium.ConstantProperty(0);
+            this.modeleEntity.label.fillColor = new Cesium.ConstantProperty(Cesium.Color.fromCssColorString('#ffffff'))
             this.modeleEntity.model.color = undefined;
             this.modeleEntity.model.colorBlendMode = undefined;
             this.modeleEntity.model.colorBlendAmount = undefined;
@@ -292,36 +228,33 @@ class ModelEntity {
     }
 
     public markedModel = () => {
-        this.modeleEntity.billboard.color = Cesium.Color.fromCssColorString('#ffff66')
+        this.modeleEntity.billboard.color = new Cesium.ConstantProperty(Cesium.Color.fromCssColorString('#ffff66'))
     }
 
     private updatePanleContent() {
         const position = this.modeleEntity.position.getValue(this.viewer.clock.currentTime)
         if (position) {
-            this.panelEntity.model.show = true
-            this.panelEntity.position = position;
+            var property = new Cesium.SampledPositionProperty();
+            property.addSample(this.viewer.clock.currentTime, position);
+            this.panelEntity.model.show = new Cesium.ConstantProperty(true)
+            this.panelEntity.position = property;
             this.panelEntity.orientation = this.modeleEntity.orientation;
             let cartographic = Cesium.Cartographic.fromCartesian(position);
-            this.modeleEntity.label.text = `ID：${this.modelId}\n名称：${this.modelName}\n经度：${Cesium.Math.toDegrees(cartographic.longitude).toFixed(6)}\n纬度：${Cesium.Math.toDegrees(cartographic.latitude).toFixed(6)}`
+            let labelText = `ID：${this.modelId}\n名称：${this.modelName}\n经度：${Cesium.Math.toDegrees(cartographic.longitude).toFixed(6)}\n纬度：${Cesium.Math.toDegrees(cartographic.latitude).toFixed(6)}`
+            this.modeleEntity.label.text = new Cesium.ConstantProperty(labelText)
 
             if (this.radarEntity) {
                 if (this.modelType === 'plane') {
-                    // this.updateWave(cartographic.height)
-                    // this.radarEntity.ellipse.semiMinorAxis = this.waveW
-                    // this.radarEntity.ellipse.semiMajorAxis = this.waveW
-                    // this.radarEntity.ellipse.height = this.waveH
                     this.radarEntity.startPosition = position
                 } else if (this.modelType === 'boat') {
                     this.updateWave2()
                     this.radarEntity.ellipse.semiMinorAxis = this.waveW
                     this.radarEntity.ellipse.semiMajorAxis = this.waveW
-                    // this.radarEntity.lon = Cesium.Math.toDegrees(cartographic.longitude);
-                    // this.radarEntity.lat = Cesium.Math.toDegrees(cartographic.latitude);
                 }
             }
         } else {
             if (this.panelEntity) {
-                this.panelEntity.model.show = false
+                this.panelEntity.model.show = new Cesium.ConstantProperty(false)
             }
         }
     }
@@ -356,8 +289,8 @@ class ModelEntity {
     }
 
     public handlePanelShow = (show: boolean) => {
-        this.modeleEntity.billboard.show = show
-        this.modeleEntity.label.show = show
+        this.modeleEntity.billboard.show = new Cesium.ConstantProperty(show)
+        this.modeleEntity.label.show = new Cesium.ConstantProperty(show)
     }
 
     public handlePointShow = (show: boolean) => {
@@ -368,14 +301,14 @@ class ModelEntity {
 
     public handlePathShow = (show: boolean) => {
         if (show) {
-            this.ModeleEntity.path.show = show;
+            this.ModeleEntity.path.show = new Cesium.ConstantProperty(show);
             this.ModeleEntity.path.leadTime = undefined;
             this.modeleEntity.path.trailTime = undefined;
-            this.modeleEntity.path.material = Cesium.Color.AQUA
+            this.modeleEntity.path.material = new Cesium.PolylineArrowMaterialProperty(Cesium.Color.AQUA)
         } else {
-            this.ModeleEntity.path.leadTime = 0;
-            this.modeleEntity.path.trailTime = 30;
-            this.modeleEntity.path.material = new Cesium.EV_DynamicPolyline(Cesium.Color.RED.withAlpha(0.9), 1, Cesium.EV_DynamicPolyline.Direction.AntiClockWise)
+            this.ModeleEntity.path.leadTime = new Cesium.ConstantProperty(0);
+            this.modeleEntity.path.trailTime = new Cesium.ConstantProperty(30);
+            this.modeleEntity.path.material = new PolylineTrailLinkMaterialProperty('@/static/img/line.webp', Cesium.Color.fromCssColorString('#cc3333'), 2000)
         }
     }
 
@@ -383,14 +316,11 @@ class ModelEntity {
         this.viewer.entities.remove(this.modeleEntity)
         this.viewer.entities.remove(this.panelEntity)
         if (this.radarEntity)
-            // this.viewer.entities.remove(this.radarEntity)
-            // this.viewer.entities.remove(this.radarEntity)
             if (this.radarEntity instanceof Cesium.Entity) {
                 this.viewer.entities.remove(this.radarEntity);
             } else if (this.radarEntity instanceof Cesium.Primitive) {
                 this.viewer.scene.primitives.remove(this.radarEntity);
             } else {
-                this.radarEntity.destroy();
             }
         this.scan.removeAll()
         this.pointEntities.forEach((item) => {
@@ -413,7 +343,6 @@ class ModelEntity {
                     color: Cesium.Color.fromCssColorString("green"),
                     outlineWidth: 2,
                     outlineColor: Cesium.Color.YELLOWGREEN,
-                    // heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
                 },
             });
             if (pointEntity)
@@ -442,17 +371,6 @@ class ModelEntity {
                 let startPoit = list[i - 1]
                 let endPoint = list[i]
                 duration = this.getDuration(startPoit, endPoint, speed)
-
-                // let pointNum = Math.floor(duration / 30)
-                // let line = turf.lineString([[Number(list[i - 1].longitude), Number(list[i - 1].latitude)], [Number(list[i].longitude), Number(list[i].latitude)]])
-                // let perHeight = (Number(list[i - 1].height) - Number(list[i].height)) / pointNum
-                // let perLength = 30 * this.speed
-                // for (i = 1; i < pointNum; i++) {
-                //     let point = turf.along(line, i * perLength, { units: 'meters' })
-                //     let heigt = Number(list[i - 1].height) - i * perHeight
-                //     console.log(point, heigt)
-                // }
-
             }
             var thisTime = Cesium.JulianDate.addSeconds(durationList[i], duration, new Cesium.JulianDate());
             durationList.push(thisTime)

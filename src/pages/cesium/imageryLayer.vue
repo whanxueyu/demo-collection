@@ -23,11 +23,9 @@ import * as Cesium from "cesium";
 import Map from '@/components/cesium/map.vue'
 import 'cesium/Source/Widgets/widgets.css';
 import PolylineTrailLinkMaterialProperty from '@/modules/material/PolylineTrailLinkMaterial'
-// import SpriteLineMaterialProperty from '@/modules/material/SpriteLineMaterialProperty'
 import statusBar from '@/components/cesium/status-bar.vue'
 import radaeScanMaterial from "@/modules/material/radaeScanMaterial";
 import volumeFlowMaterial from "@/modules/material/volumeFlowMaterial";
-import borderDiv from "@/components/billboard/borderDiv.vue";
 var viewer: Cesium.Viewer;
 const loaded = ref(false);
 
