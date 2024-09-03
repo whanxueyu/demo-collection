@@ -8,6 +8,7 @@
                 </div>
                 <div class="banner">
                     <shadowBanner></shadowBanner>
+                    <typed>Pure JavaScript Typing Animation Cyberpunk Style</typed>
                 </div>
             </div>
             <div class="section section1 scroll-element">
@@ -39,6 +40,9 @@
                     <shadowBtn2 class="shadow">NEON</shadowBtn2>
                     <shadowBtn3 class="shadow">NEON</shadowBtn3>
                     <shadowBtn4 class="shadow">NEON</shadowBtn4>
+                </div>
+                <div class="btn">
+                    <svgBtn></svgBtn>
                 </div>
             </div>
             <div class="section section3 scroll-element">
@@ -86,7 +90,8 @@ import moveText from '@/components/text/moveText.vue'
 import shadowText from '@/components/text/shadowText.vue'
 import breakText from '@/components/text/breakText.vue'
 import moveCard from '@/components/card/moveCard.vue'
-
+import svgBtn from '@/components/button/svgBtn.vue'
+import typed from '@/components/text/typed.vue'
 const state = reactive({
     imgurl: require('@/static/img/Cyber2.jpg'),
     title: 'Cyberpunk 赛博朋克风格',
@@ -389,6 +394,7 @@ onMounted(() => {
 
         .banner {
             height: 560px;
+            font-size: 28px
         }
 
         .img {
