@@ -4,56 +4,57 @@
             @touchstart="handleTouchStart" @touchend="handleTouchEnd" @touchmove="handleTouchMove">
             <div class="section section1 scroll-element">
                 <div class="title">
-                    <cyber-text textStr="Cyberpunk Banner"></cyber-text>
+                    <cyberText>Cyberpunk Banner</cyberText>
                 </div>
                 <div class="banner">
-                    <shadow-banner></shadow-banner>
+                    <shadowBanner></shadowBanner>
                 </div>
             </div>
             <div class="section section1 scroll-element">
                 <div class="title">
-                    <cyber-text textStr="Cyberpunk Image"></cyber-text>
+                    <cyberText>Cyberpunk Image</cyberText>
                 </div>
                 <div class="img">
-                    <cyber-img :imgurl="state.imgurl">
+                    <cyberImg :imgurl="state.imgurl">
                         <div class="tip">
                             <typing word="Pure CSS Typing Animation Cyberpunk Style."></typing>
                         </div>
-                    </cyber-img>
+                    </cyberImg>
                 </div>
             </div>
             <div class="section section2 scroll-element">
                 <div class="title">
-                    <cyber-text :textStr="state.title1"></cyber-text>
+                    <cyberText>{{ state.title1 }}</cyberText>
                 </div>
                 <div class="btn">
                     <errorbutton>{{ state.btn3 }}</errorbutton>
                 </div>
                 <div class="btn">
-                    <neon-button1>{{ state.neonBtn }}</neon-button1>
-                    <neon-button2>{{ state.neonBtn }}</neon-button2>
-                    <neon-button3>{{ state.neonBtn }}</neon-button3>
+                    <neonButton1>{{ state.neonBtn }}</neonButton1>
+                    <neonButton2>{{ state.neonBtn }}</neonButton2>
+                    <neonButton3>{{ state.neonBtn }}</neonButton3>
                 </div>
                 <div class="btn">
-                    <shadow-btn1 class="shadow">NEON</shadow-btn1>
-                    <shadow-btn2 class="shadow">NEON</shadow-btn2>
-                    <shadow-btn3 class="shadow">NEON</shadow-btn3>
-                    <shadow-btn4 class="shadow">NEON</shadow-btn4>
+                    <shadowBtn1 class="shadow">NEON</shadowBtn1>
+                    <shadowBtn2 class="shadow">NEON</shadowBtn2>
+                    <shadowBtn3 class="shadow">NEON</shadowBtn3>
+                    <shadowBtn4 class="shadow">NEON</shadowBtn4>
                 </div>
             </div>
             <div class="section section3 scroll-element">
-                <big-eye></big-eye>
+                <bigEye></bigEye>
             </div>
             <div class="section section4 scroll-element">
                 <div class="title flex justify-between">
-                    <right-shadow></right-shadow>
-                    <left-shadow></left-shadow>
+                    <shadowText direction="right">shadowText right</shadowText>
+                    <shadowText direction="left">shadowText left</shadowText>
                 </div>
                 <div class="movetext">
-                    <move-text text="CyberPunk"></move-text>
+                    <moveText text="CyberPunk"></moveText>
+                    <breakText>BREAK TEXT</breakText>
                 </div>
-                <move-card></move-card>
-                <pink-text>123abcABC文字</pink-text>
+                <moveCard></moveCard>
+                <pinkText>123abcABC文字</pinkText>
             </div>
         </div>
         <ul class="aside">
@@ -67,26 +68,24 @@
 
 <script setup>
 import { onMounted, reactive } from 'vue'
-import cyberText from '@/components/cyber/text.vue'
-import cyberImg from '@/components/cyber/img.vue'
-import svgBtn1 from '@/components/cyber/svgbutton1.vue'
-import svgBtn2 from '@/components/cyber/svgbutton2.vue'
+import cyberText from '@/components/text/text.vue'
+import cyberImg from '@/components/img/img.vue'
 import typing from '@/components/typing.vue'
 import bigEye from '@/components/bigEye.vue'
-import errorbutton from '@/components/cyber/errorbutton.vue'
-import pinkText from '@/components/neon/pinktext.vue'
-import neonButton1 from '@/components/neon/button1.vue'
-import neonButton2 from '@/components/neon/button2.vue'
-import neonButton3 from '@/components/neon/button3.vue'
-import shadowBtn1 from '@/components/neon/shadowBtn1.vue'
-import shadowBtn2 from '@/components/neon/shadowBtn2.vue'
-import shadowBtn3 from '@/components/neon/shadowBtn3.vue'
-import shadowBtn4 from '@/components/neon/shadowBtn4.vue'
-import shadowBanner from '@/components/shadowBanner.vue'
-import moveText from '@/components/3D/moveText.vue'
-import moveCard from '@/components/3D/moveCard.vue'
-import leftShadow from '@/components/3D/leftShadow.vue'
-import rightShadow from '@/components/3D/rightShadow.vue'
+import errorbutton from '@/components/button/errorbutton.vue'
+import pinkText from '@/components/text/glowText.vue'
+import neonButton1 from '@/components/button/button1.vue'
+import neonButton2 from '@/components/button/button2.vue'
+import neonButton3 from '@/components/button/button3.vue'
+import shadowBtn1 from '@/components/button/shadowBtn1.vue'
+import shadowBtn2 from '@/components/button/shadowBtn2.vue'
+import shadowBtn3 from '@/components/button/shadowBtn3.vue'
+import shadowBtn4 from '@/components/button/shadowBtn4.vue'
+import shadowBanner from '@/components/img/shadowBanner.vue'
+import moveText from '@/components/text/moveText.vue'
+import shadowText from '@/components/text/shadowText.vue'
+import breakText from '@/components/text/breakText.vue'
+import moveCard from '@/components/card/moveCard.vue'
 
 const state = reactive({
     imgurl: require('@/static/img/Cyber2.jpg'),
@@ -97,7 +96,6 @@ const state = reactive({
     btn3: 'AVAILABLE NOW',
     neonBtn: 'NEON BUTTON'
 })
-import { useWindowSize } from '@vueuse/core'
 import { ref, computed, watchEffect } from 'vue'
 
 const asideData = ref([
@@ -125,9 +123,9 @@ watchEffect(() => {
         element.value.style.top = transformScroll.value
     }
 })
-
+const fullPage = ref()
 //HEIGHT
-const { height } = useWindowSize()
+const height = ref(0)
 const windowHeight = computed(() => {
     // 高度变化时需要关闭动画
     isCloseTranstion.value = true
@@ -254,7 +252,8 @@ function changeBac(index) {
     $index.value = index
 }
 onMounted(() => {
-
+    console.log(fullPage.value)
+    height.value = fullPage.value.clientHeight+60
 })
 </script>
 
@@ -329,6 +328,7 @@ onMounted(() => {
                 color: #fff;
                 transition: all linear 0.1s;
                 font-size: 12px;
+
                 &::before {
                     display: inline-block;
                     content: "";
@@ -439,6 +439,7 @@ onMounted(() => {
 
         .movetext {
             height: 320px;
+            font-size: 48px;
         }
     }
 
