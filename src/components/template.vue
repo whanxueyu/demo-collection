@@ -2,7 +2,7 @@
 	<div>
 	</div>
 </template>
-<script setup>
+<script setup lang="ts">
 import { defineProps, ref } from 'vue';
 const props = defineProps({
 	text: {
@@ -10,7 +10,5 @@ const props = defineProps({
 		default: 'TEXT'
 	}
 })
-const data = ref({
-});
 </script>
 <style lang="scss" scoped></style>
