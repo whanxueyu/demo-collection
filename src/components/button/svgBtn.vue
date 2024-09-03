@@ -1,247 +1,273 @@
-<!--
- * @Author: anxueyu
- * @Date: 2024-09-03 15:20:25
- * @LastEditors: anxueyu 1358042645@qq.com
- * @LastEditTime: 2024-09-03 15:29:53
- * @FilePath: \demo-collection\src\components\button\svgBtn.vue
- * @Description: 
--->
 <template>
     <div>
-        <a class="container">
+        <div class="cp-svg-btn">
             <svg height="100%" width="100%" xmlns="http://www.w3.org/2000/svg">
                 <rect class="outline" height="100%" width="100%" />
                 <div class="text">Line Animation</div>
             </svg>
-        </a>
+        </div>
 
-        <a class="container2">
+        <div class="cp-svg-btn svg-2">
             <svg height="100%" width="100%" xmlns="http://www.w3.org/2000/svg">
                 <rect class="outline" height="100%" width="100%" />
                 <div class="text">Line Animation</div>
             </svg>
-        </a>
+        </div>
 
-        <a class="container3">
+        <div class="cp-svg-btn svg-3">
             <svg height="100%" width="100%" xmlns="http://www.w3.org/2000/svg">
                 <rect class="outline" height="100%" width="100%" />
                 <div class="text">Line Animation</div>
             </svg>
-        </a>
+        </div>
 
-        <a class="container4">
+        <div class="cp-svg-btn svg-4">
             <svg height="100%" width="100%" xmlns="http://www.w3.org/2000/svg">
                 <rect class="outline" height="100%" width="100%" />
                 <div class="text">Line Animation</div>
             </svg>
-        </a>
+        </div>
 
-        <a class="container4-5">
+        <div class="cp-svg-btn svg-5">
             <svg height="100%" width="100%" xmlns="http://www.w3.org/2000/svg">
                 <rect class="outline" height="100%" width="100%" />
                 <div class="text">Line Animation</div>
             </svg>
-        </a>
+        </div>
 
-        <a class="container5">
+        <div class="cp-svg-btn svg-6">
             <svg height="100%" width="100%" xmlns="http://www.w3.org/2000/svg">
                 <rect class="outline" height="100%" width="100%" />
                 <div class="text">Line Animation</div>
             </svg>
-        </a>
+        </div>
 
-        <a class="container6">
+        <div class="cp-svg-btn svg-7">
             <svg height="100%" width="100%" xmlns="http://www.w3.org/2000/svg">
                 <rect class="outline" height="100%" width="100%" />
                 <div class="text">Line Animation</div>
             </svg>
-        </a>
+        </div>
     </div>
 </template>
-<script setup lang="ts">
+<script setup>
 import { defineProps, ref } from 'vue';
-const props = defineProps({
-    text: {
-        type: String,
-        default: 'TEXT'
-    }
-})
 </script>
 <style lang="scss" scoped>
 $default: #ffcc00;
 $pink: deeppink;
 
+@keyframes woop {
+    0% {
+        stroke-dasharray: 50 600;
+        stroke-dashoffset: -550;
+    }
+
+    40%,
+    50% {
+        stroke-dasharray: 50 600;
+        stroke-dashoffset: -250;
+    }
+
+    100% {
+        stroke-dasharray: 600 0;
+        stroke-dashoffset: 25;
+    }
+}
+
+@keyframes bounceRight {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    30% {
+        transform: translateX(-100%);
+    }
+
+    40%,
+    60%,
+    80%,
+    100% {
+        transform: translateX(0);
+    }
+
+    50% {
+        transform: translateX(-30%);
+    }
+
+    70% {
+        transform: translateX(-15%);
+    }
+
+    90% {
+        transform: translateX(-7.5%);
+    }
+}
+
 html {
-  background: #000;
-  text-align: center;
-  color: $default;
-  *,
-  *:before,
-  *:after {
-    @include transition(1s);
-    @include box-sizing(border-box);
-  }
+    background: #000;
+    text-align: center;
+    color: $default;
+
+    *,
+    *:before,
+    *:after {
+        transition: transition(1s);
+        box-sizing: box-sizing(border-box);
+    }
 }
 
-[class^="container"] {
-  display: block;
-  position: relative;
-  color: $default;
-  text-decoration: none;
-  @include size(250px, 50px);
-  margin: 50px auto;
-  overflow: hidden;
-  .outline {
-    @include coverer;
-    stroke: $default;
-    stroke-width: 2px;
-    fill: transparent;
-  }
-  .text {
-    @include relative(-40px);
-    font-family: 'Helvetica';
-    font-size: 1.5rem;
-    line-height: 1;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-  &:hover {
+.cp-svg-btn {
+    display: inline-block;
+    position: relative;
+    color: $default;
+    text-decoration: none;
+    width: 250px;
+    height: 50px;
+    margin: 50px 10px;
+    overflow: hidden;
+    translate: all 1s;
+
     .outline {
-      stroke: $pink;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        stroke: $default;
+        stroke-width: 2px;
+        fill: transparent;
+        translate: all 1s;
     }
+
     .text {
-      color: $pink;
+        position: relative;
+        top: -40px;
+        font-family: 'Helvetica';
+        font-size: 1.5rem;
+        line-height: 1;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        translate: all 1s;
     }
-  }
+
+    &:hover {
+        .outline {
+            stroke: $pink;
+            translate: all 1s;
+        }
+
+        .text {
+            color: $pink;
+            translate: all 1s;
+        }
+    }
 }
 
-.container {
-  .outline {
-    stroke-dasharray: 25 25;
-    stroke-dashoffset: -588;
-  }
-  &:hover {
+.cp-svg-btn {
     .outline {
-      stroke-dasharray: 50 50;
-      stroke-dashoffset: -275;
+        stroke-dasharray: 25 25;
+        stroke-dashoffset: -588;
+        transition: all 1s;
     }
-  }
+
+    &:hover {
+        .outline {
+            stroke-dasharray: 50 50;
+            stroke-dashoffset: -275;
+            transition: all 1s;
+        }
+    }
 }
 
-.container2 {
-  .outline {
-    stroke-dasharray: 50 250;
-    stroke-dashoffset: -575;
-  }
-  &:hover {
+.svg-2 {
     .outline {
-      stroke-dasharray: 50 100;
-      stroke-dashoffset: -75;
+        stroke-dasharray: 50 250;
+        stroke-dashoffset: -575;
+        transition: all 1s;
     }
-  }
+
+    &:hover {
+        .outline {
+            stroke-dasharray: 50 100;
+            stroke-dashoffset: -75;
+            transition: all 1s;
+        }
+    }
 }
 
-.container3 {
-  .outline {
-    stroke-dasharray: 70 230;
-    stroke-dashoffset: 60;
-  }
-  &:hover {
+.svg-3 {
     .outline {
-      stroke-dashoffset: -350;
+        stroke-dasharray: 70 230;
+        stroke-dashoffset: 60;
+        transition: all 1s;
     }
-  }
+
+    &:hover {
+        .outline {
+            stroke-dashoffset: -350;
+            transition: all 1s;
+        }
+    }
 }
 
-.container4 {
-  .outline {
-    stroke-dasharray: 50 600;
-    stroke-dashoffset: -550;
-    @include transition(0.5s);
-  }
-  &:hover {
+.svg-4 {
     .outline {
-      stroke-dashoffset: -250;
+        stroke-dasharray: 50 600;
+        stroke-dashoffset: -550;
+        transition: all 0.5s;
     }
-  }
+
+    &:hover {
+        .outline {
+            stroke-dashoffset: -250;
+        }
+    }
 }
 
-@include keyframes(woop) {
-  0% {
-    stroke-dasharray: 50 600;
-    stroke-dashoffset: -550;
-  }
-  40%, 50% {
-    stroke-dasharray: 50 600;
-    stroke-dashoffset: -250;
-  }
-  100% {
-    stroke-dasharray: 600 0;
-    stroke-dashoffset: 25;
-  }
-}
-
-.container4-5 {
-  .outline {
-    stroke-dasharray: 50 600;
-    stroke-dashoffset: -550;
-    @include transition(1s);
-  }
-  &:hover {
+.svg-5 {
     .outline {
-      stroke-dasharray: 600 0;
-      stroke-dashoffset: 25;
-      @include animation(woop 1s linear);
+        stroke-dasharray: 50 600;
+        stroke-dashoffset: -550;
+        transition: all 1s;
     }
-  }
+
+    &:hover {
+        .outline {
+            stroke-dasharray: 600 0;
+            stroke-dashoffset: 25;
+            animation: woop 1s linear;
+        }
+    }
 }
 
-.container5 {
-  .outline {
-    stroke-dasharray: 100 500;
-    stroke-dashoffset: 225;
-    @include transition(0.5s);
-  }
-  &:hover {
+.svg-6 {
     .outline {
-      stroke-dasharray: 600 0;
-      stroke-dashoffset: 475;
+        stroke-dasharray: 100 500;
+        stroke-dashoffset: 225;
+        transition: all 0.5s;
     }
-  }
+
+    &:hover {
+        .outline {
+            stroke-dasharray: 600 0;
+            stroke-dashoffset: 475;
+        }
+    }
 }
 
-.container6 {
-  .outline {
-    stroke-dasharray: 50 550;
-    stroke-dashoffset: 200;
-    @include transition(0.5s);
-  }
-  &:hover {
+.svg-7 {
     .outline {
-      stroke-dasharray: 50 250;
-      stroke-dashoffset: 500;
+        stroke-dasharray: 50 550;
+        stroke-dashoffset: 200;
+        transition: all 0.5s;
     }
-  }
-}
 
-@include keyframes(bounceRight) {
-  0% {
-    @include translateX(-100%);
-  }
-  30% {
-    @include translateX(-100%);
-  }
-  40%, 60%, 80%, 100% {
-    @include translateX(0);
-  }
-  50% {
-    @include translateX(-30%);
-  }
-  70% {
-    @include translateX(-15%);
-  }
-  90% {
-    @include translateX(-7.5%);
-  }
+    &:hover {
+        .outline {
+            stroke-dasharray: 50 250;
+            stroke-dashoffset: 500;
+        }
+    }
 }
 </style>
