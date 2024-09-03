@@ -1,13 +1,18 @@
 <template>
-    <div>
-        <span class="text">{{ typedMessage }}</span>
-    </div>
+    <span class="cp-typed">
+        <slot></slot>
+    </span>
 </template>
 
 <script setup lang="ts">
-import { ref, onBeforeUnmount } from 'vue';
+import { ref, onBeforeUnmount, useSlots } from 'vue';
+const text = ref('')
 
-const text = 'Hello, this is a typing effect!Invalid input: text must be non-empty and delay must be non-negative.';
+const slots = useSlots();
+if (slots && slots.default) {
+    let tep = slots.default();
+    text.value = tep[0].children as string
+}
 const delay = 200; // 每个字符之间的延迟，单位为毫秒
 
 const typedMessage = ref('');
@@ -16,8 +21,8 @@ let charIndex = 0;
 let intervalId: ReturnType<typeof setInterval> | null = null;
 
 const type = () => {
-    if (charIndex < text.length) {
-        typedMessage.value += text.charAt(charIndex++);
+    if (charIndex < text.value.length) {
+        typedMessage.value += text.value.charAt(charIndex++);
     } else {
         clearInterval(intervalId);
         intervalId = null;
@@ -39,16 +44,17 @@ onBeforeUnmount(() => {
 
 </script>
 <style scoped lang="scss">
-.text{
+.cp-typed {
     border-right: 3px solid;
     animation: cursor-blink 0.5s step-end infinite alternate;
     font-family: Consolas, Monaco, monospace;
     font-weight: bold;
     padding-right: 5px;
 }
+
 @keyframes cursor-blink {
-  50% {
-    border-color: transparent;
-  }
+    50% {
+        border-color: transparent;
+    }
 }
 </style>

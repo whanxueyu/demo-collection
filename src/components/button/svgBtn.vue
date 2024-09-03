@@ -1,57 +1,25 @@
 <template>
-    <div>
-        <div class="cp-svg-btn">
-            <svg height="100%" width="100%" xmlns="http://www.w3.org/2000/svg">
-                <rect class="outline" height="100%" width="100%" />
-                <div class="text">Line Animation</div>
-            </svg>
-        </div>
-
-        <div class="cp-svg-btn svg-2">
-            <svg height="100%" width="100%" xmlns="http://www.w3.org/2000/svg">
-                <rect class="outline" height="100%" width="100%" />
-                <div class="text">Line Animation</div>
-            </svg>
-        </div>
-
-        <div class="cp-svg-btn svg-3">
-            <svg height="100%" width="100%" xmlns="http://www.w3.org/2000/svg">
-                <rect class="outline" height="100%" width="100%" />
-                <div class="text">Line Animation</div>
-            </svg>
-        </div>
-
-        <div class="cp-svg-btn svg-4">
-            <svg height="100%" width="100%" xmlns="http://www.w3.org/2000/svg">
-                <rect class="outline" height="100%" width="100%" />
-                <div class="text">Line Animation</div>
-            </svg>
-        </div>
-
-        <div class="cp-svg-btn svg-5">
-            <svg height="100%" width="100%" xmlns="http://www.w3.org/2000/svg">
-                <rect class="outline" height="100%" width="100%" />
-                <div class="text">Line Animation</div>
-            </svg>
-        </div>
-
-        <div class="cp-svg-btn svg-6">
-            <svg height="100%" width="100%" xmlns="http://www.w3.org/2000/svg">
-                <rect class="outline" height="100%" width="100%" />
-                <div class="text">Line Animation</div>
-            </svg>
-        </div>
-
-        <div class="cp-svg-btn svg-7">
-            <svg height="100%" width="100%" xmlns="http://www.w3.org/2000/svg">
-                <rect class="outline" height="100%" width="100%" />
-                <div class="text">Line Animation</div>
-            </svg>
-        </div>
+    <div :class="['cp-svg-btn', 'svg-' + props.type]">
+        <svg height="100%" width="100%" xmlns="http://www.w3.org/2000/svg">
+            <rect class="outline" height="100%" width="100%" />
+            <div class="text">
+                LLLLLLL
+            </div>
+        </svg>
     </div>
 </template>
 <script setup>
 import { defineProps, ref } from 'vue';
+const props = defineProps({
+    type: {
+        type: String,
+        default: '1'
+    },
+    text: {
+        type: String,
+        default: 'TEXT'
+    }
+})
 </script>
 <style lang="scss" scoped>
 $default: #ffcc00;
@@ -105,14 +73,13 @@ $pink: deeppink;
 }
 
 html {
-    background: #000;
     text-align: center;
     color: $default;
 
     *,
     *:before,
     *:after {
-        transition: transition(1s);
+        transition: all 1s;
         box-sizing: box-sizing(border-box);
     }
 }
@@ -126,7 +93,7 @@ html {
     height: 50px;
     margin: 50px 10px;
     overflow: hidden;
-    translate: all 1s;
+    transition: all 1s;
 
     .outline {
         position: absolute;
@@ -137,7 +104,7 @@ html {
         stroke: $default;
         stroke-width: 2px;
         fill: transparent;
-        translate: all 1s;
+        transition: all 1s;
     }
 
     .text {
@@ -148,18 +115,18 @@ html {
         line-height: 1;
         letter-spacing: 1px;
         text-transform: uppercase;
-        translate: all 1s;
+        transition: all 1s;
     }
 
     &:hover {
         .outline {
             stroke: $pink;
-            translate: all 1s;
+            transition: all 1s;
         }
 
         .text {
             color: $pink;
-            translate: all 1s;
+            transition: all 1s;
         }
     }
 }

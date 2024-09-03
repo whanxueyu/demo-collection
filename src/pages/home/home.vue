@@ -42,7 +42,13 @@
                     <shadowBtn4 class="shadow">NEON</shadowBtn4>
                 </div>
                 <div class="btn">
-                    <svgBtn></svgBtn>
+                    <svgBtn type="1" text="CyberPunk-UI"></svgBtn>
+                    <svgBtn type="2" text="CyberPunk-UI"></svgBtn>
+                    <svgBtn type="3" text="CyberPunk-UI"></svgBtn>
+                    <svgBtn type="4" text="CyberPunk-UI"></svgBtn>
+                    <svgBtn type="5" text="CyberPunk-UI"></svgBtn>
+                    <svgBtn type="6" text="CyberPunk-UI"></svgBtn>
+                    <svgBtn type="7" text="CyberPunk-UI"></svgBtn>
                 </div>
             </div>
             <div class="section section3 scroll-element">
@@ -57,8 +63,10 @@
                     <moveText text="CyberPunk"></moveText>
                     <breakText>BREAK TEXT</breakText>
                 </div>
-                <moveCard></moveCard>
+                <!-- <moveCard></moveCard> -->
                 <pinkText>123abcABC文字</pinkText>
+                <svgText1></svgText1>
+                <svgText2></svgText2>
             </div>
         </div>
         <ul class="aside">
@@ -92,6 +100,8 @@ import breakText from '@/components/text/breakText.vue'
 import moveCard from '@/components/card/moveCard.vue'
 import svgBtn from '@/components/button/svgBtn.vue'
 import typed from '@/components/text/typed.vue'
+import svgText1 from '@/components/text/svgText1.vue'
+import svgText2 from '@/components/text/svgText2.vue'
 const state = reactive({
     imgurl: require('@/static/img/Cyber2.jpg'),
     title: 'Cyberpunk 赛博朋克风格',

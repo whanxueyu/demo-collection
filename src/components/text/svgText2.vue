@@ -2,8 +2,8 @@
  * @Author: anxueyu
  * @Date: 2024-09-03 15:33:32
  * @LastEditors: anxueyu 1358042645@qq.com
- * @LastEditTime: 2024-09-03 15:35:34
- * @FilePath: \demo-collection\src\components\text\svgText1 copy.vue
+ * @LastEditTime: 2024-09-03 19:25:58
+ * @FilePath: \demo-collection\src\components\text\svgText2.vue
  * @Description: 
 -->
 <template>
@@ -33,7 +33,7 @@ body {
 }
 
 svg {
-    width: 600px;
+    width: 1005;
     height: 300px;
     margin: auto;
 }

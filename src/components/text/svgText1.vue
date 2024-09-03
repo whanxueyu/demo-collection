@@ -2,7 +2,7 @@
  * @Author: anxueyu
  * @Date: 2024-09-03 15:33:32
  * @LastEditors: anxueyu 1358042645@qq.com
- * @LastEditTime: 2024-09-03 15:34:12
+ * @LastEditTime: 2024-09-03 19:27:27
  * @FilePath: \demo-collection\src\components\text\svgText1.vue
  * @Description: 
 -->
@@ -44,7 +44,7 @@ body {
 svg {
     position: absolute;
     width: 100%;
-    height: 100%;
+    height: 300px;
 }
 
 .text-copy {
