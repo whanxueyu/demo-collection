@@ -1,6 +1,15 @@
+<!--
+ * @Author: anxueyu
+ * @Date: 2024-09-03 17:28:08
+ * @LastEditors: anxueyu 1358042645@qq.com
+ * @LastEditTime: 2024-09-04 13:31:57
+ * @FilePath: \demo-collection\src\components\text\typed.vue
+ * @Description: 
+-->
 <template>
     <span class="cp-typed">
-        <slot></slot>
+        <slot v-if="false"></slot>
+        {{ typedMessage }}
     </span>
 </template>
 
@@ -12,6 +21,7 @@ const slots = useSlots();
 if (slots && slots.default) {
     let tep = slots.default();
     text.value = tep[0].children as string
+    console.log(text.value)
 }
 const delay = 200; // 每个字符之间的延迟，单位为毫秒
 
