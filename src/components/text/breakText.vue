@@ -29,40 +29,51 @@ const props = defineProps({
 <style lang="scss" scoped>
 .cp-break-text {
     position: relative;
-    margin: 0 50%;
+    margin: 0 auto;
     letter-spacing: 0.02em;
+    width: 310px;
+    height: 52px;
     // text-transform: uppercase;
     text-shadow: 0 0 10px blue;
     user-select: none;
     white-space: nowrap;
     filter: blur(0.007em);
     animation: shake .5s linear forwards;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .cp-break-text span {
-    position: absolute;
-    top: 0;
-    left: 0;
-    transform: translate(-50%, -50%);
+    // position: absolute;
+    // top: 26px;
+    // left: 0;
+    transform: translate(50%,0);
+    display: block;
     clip-path: polygon(10% 0%, 44% 0%, 70% 100%, 55% 100%);
 }
 
 .cp-break-text::before,
 .cp-break-text::after {
     content: attr(data-text);
-    position: absolute;
-    top: 0;
-    left: 0;
+    display: block;
+    margin-top: 48px;
+    // position: absolute;
+    // top: 26px;
+    // left: 0;
+    
 }
 
 .cp-break-text::before {
     animation: crack1 2.5s linear forwards;
     clip-path: polygon(0% 0%, 10% 0%, 55% 100%, 0% 100%);
+    margin-right: -200%;
 }
 
 .cp-break-text::after {
     animation: crack2 2.5s linear forwards;
     clip-path: polygon(44% 0%, 100% 0%, 100% 100%, 70% 100%);
+    margin-left: -3%;
 }
 
 @keyframes shake {
