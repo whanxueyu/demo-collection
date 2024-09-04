@@ -271,7 +271,7 @@ type ThrottleOrDebounceFunction<T extends (...args: any[]) => any> = T & {
     cancel?: () => void;
     flush?: () => void;
 };
-// 节流函数
+// 节流函数--执行第一次
 export function throttle<T extends (...args: any[]) => any>(
     func: T,
     wait: number,
@@ -308,7 +308,7 @@ export function throttle<T extends (...args: any[]) => any>(
     return throttled as ThrottleOrDebounceFunction<T>;
 }
 
-// 防抖函数
+// 防抖函数--执行最后一次
 export function debounce<T extends (...args: any[]) => any>(
     func: T,
     wait: number,

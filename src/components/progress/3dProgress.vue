@@ -1,5 +1,5 @@
 <template>
-    <div class="demo-cube perspective percentage">
+    <!-- <div class="demo-cube perspective percentage">
         <ul class="cube">
             <li class="top"></li>
             <li class="bottom"></li>
@@ -15,7 +15,7 @@
             <li class="front"></li>
             <li class="back"></li>
         </ul>
-    </div>
+    </div> -->
 
     <div class="demo-cube perspective pink">
         <ul class="cube">
@@ -60,7 +60,7 @@ const props = defineProps({
         position: absolute;
         top: 50%;
         left: 50%;
-        width: 300px;
+        width: 600px;
         height: 100px;
         transform-style: preserve-3d;
         transform-origin: 50px 50px;
@@ -69,7 +69,7 @@ const props = defineProps({
         li {
             position: absolute;
             display: block;
-            width: 300px;
+            width: 100%;
             height: 100px;
         }
 
@@ -122,7 +122,7 @@ const props = defineProps({
     .bottom,
     .back {
         background: linear-gradient(90deg, rgba(255, 217, 34, .6), rgba(255, 34, 109, .8) var(--per), rgba(255, 34, 109, .1) var(--per), rgba(255, 34, 109, .1));
-        animation: perChange 6s infinite;
+        animation: perChange 6s ease-in-out;
     }
 }
 
@@ -131,9 +131,9 @@ const props = defineProps({
         --per: 0%;
     }
 
-    90%,
+    98%,
     to {
-        --per: 80%;
+        --per: 100%;
     }
 }
 

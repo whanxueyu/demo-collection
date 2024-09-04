@@ -1,5 +1,9 @@
 <template>
-    <div class="outer-box" ref="fullPage">
+    <div class="loading-cover" v-if="isLoading">
+        <shineText style="font-size: 160px;margin: 100px auto;">CyberPunk-UI</shineText>
+        <tDProgress></tDProgress>
+    </div>
+    <div class="outer-box" ref="fullPage" v-show="!isLoading">
         <div ref="element" :class="{ activeTranstion: isCloseTranstion }" class="inner-box" @mousewheel="mousewheel"
             @touchstart="handleTouchStart" @touchend="handleTouchEnd" @touchmove="handleTouchMove">
             <div class="section section1 scroll-element">
@@ -8,8 +12,8 @@
                 </div>
                 <div class="banner">
                     <shadowBanner></shadowBanner>
-                    <typed>Pure JavaScript Typing Animation Cyberpunk Style</typed>
-                    <tDText></tDText>
+                    <typed v-if="!isLoading">Pure JavaScript Typing Animation Cyberpunk Style</typed>
+                    <!-- <tDText></tDText> -->
                 </div>
             </div>
             <div class="section section1 scroll-element">
@@ -72,7 +76,7 @@
                     <shadowText direction="left" shadowColor="#2299cc">shadowText left</shadowText>
                 </div>
                 <div class="title flex justify-between">
-                    <shineText></shineText>
+                    <shineText style="font-size: 80px;"></shineText>
                     <waveText></waveText>
                 </div>
                 <pinkText>123abcABC文字</pinkText>
@@ -90,7 +94,7 @@
 </template>
 
 <script setup>
-import { onMounted, reactive } from 'vue'
+import { nextTick, onMounted, reactive } from 'vue'
 import cyberText from '@/components/text/text.vue'
 import cyberImg from '@/components/img/img.vue'
 import typing from '@/components/typing.vue'
@@ -116,6 +120,8 @@ import svgText2 from '@/components/text/svgText2.vue'
 import tDText from '@/components/text/3DText.vue'
 import shineText from '@/components/text/shineText.vue'
 import waveText from '@/components/text/waveText.vue'
+import tDProgress from '@/components/progress/3dProgress.vue'
+const isLoading = ref(true)
 const state = reactive({
     imgurl: require('@/static/img/Cyber2.jpg'),
     title: 'Cyberpunk 赛博朋克风格',
@@ -282,13 +288,28 @@ function changeBac(index) {
 }
 onMounted(() => {
     console.log(fullPage.value)
-    height.value = fullPage.value.clientHeight + 60
+    setTimeout(() => {
+        isLoading.value = false;
+        nextTick(() => {
+            height.value = fullPage.value.clientHeight + 60
+        })
+    }, 6000);
 })
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 @import url('./style.scss');
+
+.loading-cover {
+    width: 100vw;
+    top: 0;
+    left: 0;
+    z-index: 999;
+    height: 100vh;
+    position: absolute;
+    background: rgb(0 0 0);
+}
 
 .activeTranstion {
     transition: all 0ms ease 0s !important;
