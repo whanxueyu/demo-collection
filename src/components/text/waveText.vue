@@ -2,7 +2,7 @@
  * @Author: anxueyu
  * @Date: 2024-09-03 14:07:44
  * @LastEditors: anxueyu 1358042645@qq.com
- * @LastEditTime: 2024-09-03 14:11:20
+ * @LastEditTime: 2024-09-04 13:55:26
  * @FilePath: \demo-collection\src\components\text\waveText.vue
  * @Description: 
 -->
@@ -28,7 +28,8 @@ html, body {
 
 p {
     position: relative;
-    font-size: 120px;
+    font-size: 72px;
+    line-height: 80px;
     font-weight: bold;
     background: #fff;
     color: #000;
@@ -38,10 +39,10 @@ p {
     &::after {
         content: "";
         position: absolute;
-        top: -923px;
+        top: 520px;
         left: 50%;
-        width: 2000px;
-        height: 2000px;
+        width: 1000px;
+        height: 1000px;
         border-radius: 45% 48% 43% 47%;
         transform: translate(-50%, -50%);
         background: rgba(3, 169, 244, .85);

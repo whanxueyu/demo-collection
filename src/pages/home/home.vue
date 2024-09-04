@@ -9,6 +9,7 @@
                 <div class="banner">
                     <shadowBanner></shadowBanner>
                     <typed>Pure JavaScript Typing Animation Cyberpunk Style</typed>
+                    <tDText></tDText>
                 </div>
             </div>
             <div class="section section1 scroll-element">
@@ -18,7 +19,6 @@
                 <div class="img">
                     <cyberImg :imgurl="state.imgurl">
                         <div class="tip">
-                            <typing word="Pure CSS Typing Animation Cyberpunk Style."></typing>
                         </div>
                     </cyberImg>
                 </div>
@@ -42,28 +42,39 @@
                     <shadowBtn4 class="shadow">NEON</shadowBtn4>
                 </div>
                 <div class="btn">
-                    <svgBtn type="1" text="CyberPunk-UI"></svgBtn>
-                    <svgBtn type="2" text="CyberPunk-UI"></svgBtn>
-                    <svgBtn type="3" text="CyberPunk-UI"></svgBtn>
-                    <svgBtn type="4" text="CyberPunk-UI"></svgBtn>
-                    <svgBtn type="5" text="CyberPunk-UI"></svgBtn>
-                    <svgBtn type="6" text="CyberPunk-UI"></svgBtn>
-                    <svgBtn type="7" text="CyberPunk-UI"></svgBtn>
+                    <svgBtn type="1" size="small">CyberPunk-UI</svgBtn>
+                    <svgBtn type="2" size="small">CyberPunk-UI</svgBtn>
+                    <svgBtn type="3" size="small">CyberPunk-UI</svgBtn>
+                </div>
+                <div class="btn">
+                    <svgBtn type="4" size="default">CyberPunk-UI</svgBtn>
+                    <svgBtn type="5" size="default">CyberPunk-UI</svgBtn>
+                    <svgBtn type="6" size="default">CyberPunk-UI</svgBtn>
+                    <svgBtn type="7" size="default">CyberPunk-UI</svgBtn>
+                </div>
+                <div class="btn">
+                    <svgBtn type="1" size="large">CyberPunk-UI</svgBtn>
+                    <svgBtn type="2" size="large">CyberPunk-UI</svgBtn>
+                    <svgBtn type="3" size="large">CyberPunk-UI</svgBtn>
+                    <svgBtn type="4" size="large">CyberPunk-UI</svgBtn>
+                    <svgBtn type="5" size="large">CyberPunk-UI</svgBtn>
+                    <svgBtn type="6" size="large">CyberPunk-UI</svgBtn>
+                    <svgBtn type="7" size="large">CyberPunk-UI</svgBtn>
                 </div>
             </div>
             <div class="section section3 scroll-element">
                 <bigEye></bigEye>
             </div>
             <div class="section section4 scroll-element">
-                <div class="title flex justify-between">
-                    <shadowText direction="right">shadowText right</shadowText>
-                    <shadowText direction="left">shadowText left</shadowText>
-                </div>
-                <div class="movetext">
-                    <moveText text="CyberPunk"></moveText>
+                <div class="title flex justify-between" style="font-size: 48px;">
+                    <shadowText direction="right" shadowColor="#66cc22">shadowText right</shadowText>
                     <breakText>BREAK TEXT</breakText>
+                    <shadowText direction="left" shadowColor="#2299cc">shadowText left</shadowText>
                 </div>
-                <!-- <moveCard></moveCard> -->
+                <div class="title flex justify-between">
+                    <shineText></shineText>
+                    <waveText></waveText>
+                </div>
                 <pinkText>123abcABC文字</pinkText>
                 <svgText1></svgText1>
                 <svgText2></svgText2>
@@ -102,6 +113,9 @@ import svgBtn from '@/components/button/svgBtn.vue'
 import typed from '@/components/text/typed.vue'
 import svgText1 from '@/components/text/svgText1.vue'
 import svgText2 from '@/components/text/svgText2.vue'
+import tDText from '@/components/text/3DText.vue'
+import shineText from '@/components/text/shineText.vue'
+import waveText from '@/components/text/waveText.vue'
 const state = reactive({
     imgurl: require('@/static/img/Cyber2.jpg'),
     title: 'Cyberpunk 赛博朋克风格',
@@ -268,7 +282,7 @@ function changeBac(index) {
 }
 onMounted(() => {
     console.log(fullPage.value)
-    height.value = fullPage.value.clientHeight+60
+    height.value = fullPage.value.clientHeight + 60
 })
 </script>
 
@@ -454,7 +468,7 @@ onMounted(() => {
         margin: 0;
 
         .movetext {
-            height: 320px;
+            height: 58px;
             font-size: 48px;
         }
     }

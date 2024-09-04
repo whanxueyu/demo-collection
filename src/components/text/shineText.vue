@@ -1,3 +1,11 @@
+<!--
+ * @Author: anxueyu
+ * @Date: 2024-09-03 14:08:04
+ * @LastEditors: anxueyu 1358042645@qq.com
+ * @LastEditTime: 2024-09-04 13:48:13
+ * @FilePath: \demo-collection\src\components\text\shineText.vue
+ * @Description: 
+-->
 <template>
     <div class="g-container">
         <p>Magic Text</p>
@@ -14,8 +22,8 @@
 
 p {
     position: relative;
-    font-size: 12vw;
-    line-height: 16vw;
+    font-size: 80px;
+    line-height: 100px;
     // color: #9a9acc;
     overflow: hidden;
     -webkit-text-stroke: 3px #7272a5;
