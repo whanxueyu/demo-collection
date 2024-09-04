@@ -1,11 +1,11 @@
 <template>
-    <div :class="['cp-svg-btn', 'svg-' + props.type]">
+    <div :class="['cp-svg-btn', 'svg-' + props.type, props.size]">
         <svg height="100%" width="100%" xmlns="http://www.w3.org/2000/svg">
             <rect class="outline" height="100%" width="100%" />
-            <div class="text">
-                LLLLLLL
-            </div>
         </svg>
+        <div class="text">
+            <slot></slot>
+        </div>
     </div>
 </template>
 <script setup>
@@ -15,9 +15,9 @@ const props = defineProps({
         type: String,
         default: '1'
     },
-    text: {
+    size: {
         type: String,
-        default: 'TEXT'
+        default: 'default'
     }
 })
 </script>
@@ -79,8 +79,41 @@ html {
     *,
     *:before,
     *:after {
-        transition: all 1s;
-        box-sizing: box-sizing(border-box);
+        transition: 1s;
+        box-sizing: border-box;
+    }
+}
+
+.large {
+    height: 50px;
+    margin: 6px 12px;
+
+    .text {
+        line-height: 50px;
+        top: -50px;
+        font-size: 18px;
+    }
+}
+
+.default {
+    height: 32px;
+    margin: 5px 10px;
+
+    .text {
+        line-height: 32px;
+        top: -32px;
+        font-size: 14px;
+    }
+}
+
+.small {
+    height: 20px;
+    margin: 3px 6px;
+
+    .text {
+        line-height: 20px;
+        top: -20px;
+        font-size: 12px;
     }
 }
 
@@ -89,11 +122,9 @@ html {
     position: relative;
     color: $default;
     text-decoration: none;
-    width: 250px;
-    height: 50px;
-    margin: 50px 10px;
     overflow: hidden;
-    transition: all 1s;
+    transition: 1s;
+    box-sizing: border-box;
 
     .outline {
         position: absolute;
@@ -104,18 +135,18 @@ html {
         stroke: $default;
         stroke-width: 2px;
         fill: transparent;
-        transition: all 1s;
+        transition: 1s;
     }
 
     .text {
         position: relative;
-        top: -40px;
+        // top: -50px;
         font-family: 'Helvetica';
-        font-size: 1.5rem;
-        line-height: 1;
+        // font-size: 20px;
         letter-spacing: 1px;
         text-transform: uppercase;
-        transition: all 1s;
+        transition: 1s;
+        box-sizing: border-box;
     }
 
     &:hover {
