@@ -78,7 +78,7 @@ class ModelEntity {
     }
     private addModel = () => {
         // 位置信息和时间
-        let property = this.computeFlight(this.points, this.startTime, this.speed);
+        let property:any = this.computeFlight(this.points, this.startTime, this.speed);
         // 设置开始停止时间
         var times = property._property._times;
         var start = times[0];
