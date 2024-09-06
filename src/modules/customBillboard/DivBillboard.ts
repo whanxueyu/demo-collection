@@ -16,14 +16,14 @@ class DivBillboard {
     private vueComponent: any;
     private enableMouse: boolean
 
-/**
- * 
- * @param viewer Viewer
- * @param position Cartesian3
- * @param content string HTMLElement的string
- * @param vueComponent vue组件
- * @param enableMouse 是否允许鼠标事件
- */
+    /**
+     * 
+     * @param viewer Viewer
+     * @param position Cartesian3
+     * @param content string HTMLElement的string
+     * @param vueComponent vue组件
+     * @param enableMouse 是否允许鼠标事件
+     */
     constructor(viewer: Viewer, position: Cartesian3, content: string, vueComponent: any, enableMouse?: boolean) {
         this.viewer = viewer;
         this.position = position;
@@ -69,6 +69,8 @@ class DivBillboard {
             this.element.style.bottom = canvasHeight - windowPosition.y + "px";
             const elWidth = this.element.offsetWidth;
             this.element.style.left = windowPosition.x - elWidth / 2 + "px";
+            this.element.style.transformStyle = 'preserve-3d';
+
 
             const camerPosition = this.viewer.camera.position;
             let height =
@@ -82,6 +84,10 @@ class DivBillboard {
                     this.viewer.camera.positionCartographic.height < this.maxRenderDis
                 ) {
                     this.element.style.display = "block";
+                    const scale = this.maxRenderDis / (Cartesian3.distance(camerPosition, this.position) * 5);
+
+                    this.element.style.transform = `scale(${scale})`;
+
                 } else {
                     this.element.style.display = "none";
                 }
