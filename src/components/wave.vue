@@ -10,7 +10,7 @@ import * as THREE from 'three';
 
 const amountX = ref(50);
 const amountY = ref(50);
-const color = ref('#097bdb');
+const color = ref('#09cbfb');
 const top = ref(350);
 const SEPARATION = 100;
 const count = ref(0);
