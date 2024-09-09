@@ -1,5 +1,5 @@
 <template>
-    <wave></wave>
+    <wave :top="350" color="#09cbfb"></wave>
   </template>
   
   <script setup>

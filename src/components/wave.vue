@@ -10,13 +10,20 @@ import * as THREE from 'three';
 
 const amountX = ref(50);
 const amountY = ref(50);
-const color = ref('#09cbfb');
-const top = ref(350);
 const SEPARATION = 100;
 const count = ref(0);
 const mouseX = ref(0);
 const windowHalfX = ref(window.innerWidth / 2);
-
+const props = defineProps({
+    top: {
+        type: Number,
+        default: 300
+    },
+    color:{
+        type: String,
+        default: '#299bfb'
+    },
+})
 let container: HTMLElement | null = null;
 let camera: THREE.PerspectiveCamera | null = null;
 let scene: THREE.Scene | null = null;
@@ -59,7 +66,7 @@ const init = () => {
 
     const material = new THREE.ShaderMaterial({
         uniforms: {
-            color: { value: new THREE.Color(color.value) },
+            color: { value: new THREE.Color(props.color) },
         },
         vertexShader: `
         attribute float scale;
@@ -92,7 +99,7 @@ const init = () => {
 
     if (container) {
         container.style.position = 'relative';
-        container.style.top = `${top.value}px`;
+        container.style.top = `${props.top}px`;
     }
 
     window.addEventListener('resize', onWindowResize);
@@ -156,7 +163,7 @@ onBeforeUnmount(() => {
 
 watchEffect(() => {
     if (container) {
-        container.style.top = `${top.value}px`;
+        container.style.top = `${props.top}px`;
     }
 });
 
