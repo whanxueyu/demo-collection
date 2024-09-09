@@ -140,7 +140,16 @@ const routes = [
                         },
                     },
                 ]
-            }
+            },
+            {
+                path: '/other',
+                name: 'other',
+                component: () => import('@/pages/loginBg/loginBg.vue'),
+                meta: {
+                    name: '登录背景',
+                    hidden:false
+                },
+            },
         ]
     },
     {

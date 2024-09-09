@@ -38,6 +38,9 @@ importers:
       pinia:
         specifier: ^2.0.36
         version: 2.2.1(typescript@5.5.4)(vue@3.4.37(typescript@5.5.4))
+      three:
+        specifier: ^0.168.0
+        version: 0.168.0
       vue:
         specifier: ^3.2.13
         version: 3.4.37(typescript@5.5.4)
@@ -3751,6 +3754,9 @@ packages:
   three-bmfont-text@https://codeload.github.com/dmarcos/three-bmfont-text/tar.gz/eed4878795be9b3e38cf6aec6b903f56acd1f695:
     resolution: {tarball: https://codeload.github.com/dmarcos/three-bmfont-text/tar.gz/eed4878795be9b3e38cf6aec6b903f56acd1f695}
     version: 3.0.0
+
+  three@0.168.0:
+    resolution: {integrity: sha512-6m6jXtDwMJEK/GGMbAOTSAmxNdzKvvBzgd7q8bE/7Tr6m7PaBh5kKLrN7faWtlglXbzj7sVba48Idwx+NRsZXw==}
 
   throttle-debounce@3.0.1:
     resolution: {integrity: sha512-dTEWWNu6JmeVXY0ZYoPuH5cRIwc0MeGbJwah9KUNYSJwommQpCzTySTpEe8Gs1J23aeWEuAobe4Ag7EHVt/LOg==}
@@ -8794,6 +8800,8 @@ snapshots:
       layout-bmfont-text: 1.3.4
       nice-color-palettes: 3.0.0
       quad-indices: 2.0.1
+
+  three@0.168.0: {}
 
   throttle-debounce@3.0.1: {}
 
