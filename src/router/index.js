@@ -142,13 +142,33 @@ const routes = [
                 ]
             },
             {
-                path: '/other',
-                name: 'other',
-                component: () => import('@/pages/loginBg/loginBg.vue'),
+                path: '/three',
+                name: 'three',
+                component: () => import('@/pages/three/index.vue'),
                 meta: {
-                    name: '登录背景',
+                    name: 'ThreeJS案例',
                     hidden:false
                 },
+                children:[
+                    {
+                        path: '/three/wave',
+                        name: 'wave',
+                        component: () => import('@/pages/three/waveBg/waveBg.vue'),
+                        meta: {
+                            name: '粒子波浪',
+                            hidden:false
+                        },
+                    },
+                    {
+                        path: '/three/space',
+                        name: 'space',
+                        component: () => import('@/pages/three/spaceBg/spaceBg.vue'),
+                        meta: {
+                            name: '太空背景',
+                            hidden:false
+                        },
+                    },
+                ]
             },
         ]
     },
