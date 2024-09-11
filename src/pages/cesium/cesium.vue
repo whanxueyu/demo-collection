@@ -15,6 +15,7 @@
                     <div class="row">
                         <el-checkbox v-model="showMark" label="标记" />
                         <el-checkbox v-model="showMark1" label="div标记" />
+                        <el-checkbox v-model="showMark2" label="Gif标记" />
                         <el-button type="primary" @click="saveAll">保存标记</el-button>
                     </div>
                     <div class="row">
@@ -58,6 +59,32 @@
                             <el-radio :label="7">
                                 <div class="align-center flex">
                                     <span>边线</span>
+                                </div>
+                            </el-radio>
+                        </el-radio-group>
+                        <el-radio-group v-model="mapData.markIcon" v-if="showMark2">
+                            <el-radio :label="1">
+                                <div class="align-center flex">
+                                    <span>shine</span>
+                                    <el-image style="width: 24px; height: 24px" :src="shine" fit="fill" />
+                                </div>
+                            </el-radio>
+                            <el-radio :label="2">
+                                <div class="align-center flex">
+                                    <span>blue</span>
+                                    <el-image style="width: 24px; height: 24px" :src="blue" fit="fill" />
+                                </div>
+                            </el-radio>
+                            <el-radio :label="3">
+                                <div class="align-center flex">
+                                    <span>pop</span>
+                                    <el-image style="width: 24px; height: 24px" :src="pop" fit="fill" />
+                                </div>
+                            </el-radio>
+                            <el-radio :label="4">
+                                <div class="align-center flex">
+                                    <span>radar</span>
+                                    <el-image style="width: 24px; height: 24px" :src="radar" fit="fill" />
                                 </div>
                             </el-radio>
                         </el-radio-group>
@@ -285,6 +312,7 @@ import DivBillboard from '@/modules/customBillboard/DivBillboard';
 import anallysisDiv from "@/components/billboard/anallysisDiv.vue";
 import borderDiv from "@/components/billboard/borderDiv.vue";
 import lineDiv from "@/components/billboard/lineDiv.vue";
+// import shine from '../../assets/images/shine.gif'
 var viewer;
 
 const mapData = reactive({
@@ -297,6 +325,7 @@ const mapData = reactive({
 })
 const showMark = ref(false)
 const showMark1 = ref(false)
+const showMark2 = ref(true)
 const showLine = ref(false)
 const showPoint = ref(false)
 const activeTool = ref('')
@@ -320,6 +349,11 @@ const marker = require('@/assets/icon/marker.png')
 const flag = require('@/assets/icon/flag.png')
 const pin = require('@/assets/icon/pin.png')
 const star = require('@/assets/icon/star.png')
+
+const shine = require('@/assets/gif/shine.gif')
+const blue = require('@/assets/gif/bomb.gif')
+const pop = require('@/assets/gif/tf.gif')
+const radar = require('@/assets/gif/typhoon.gif')
 
 const viewModel = reactive({
     brightness: 0,
@@ -371,6 +405,9 @@ const handleMapLoaded = (cviewer) => {
         }
         if (showMark1.value) {
             addDiv(coordinate)
+        }
+        if (showMark2.value) {
+            loadGif(coordinate.longitude, coordinate.latitude)
         }
         if (activeTool.value === 'drawLine') {
             mapData.tempSketch.push(cartesian);
@@ -683,6 +720,44 @@ const addDiv = (coordinate) => {
     let content = `经度：${coordinate.longitude}\n纬度：${coordinate.latitude}\n高度：${coordinate.height}`
     let billboard = new DivBillboard(viewer, pos, content, component);
     console.log(billboard)
+}
+
+function loadGif(longitude, latitude) {
+    let icon = ''
+    let name = ''
+    if (showMark2.value) {
+        if (mapData.markIcon === 1) {
+            icon = shine
+            name = "shine"
+        } else if (mapData.markIcon === 2) {
+            icon = blue
+            name = "blue"
+        } else if (mapData.markIcon === 3) {
+            icon = pop
+            name = "pop"
+        } else {
+            icon = radar
+            name = "radar"
+        }
+        console.log("gifler", icon)
+        let gifler: any = (window as any).gifler
+        let gif = gifler(icon)
+        let entity = viewer.entities.add({
+            name: name,
+            position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
+            billboard: {
+                scale: 0.5
+            }
+
+        })
+        // 解析gif每帧图片，按时间序列进行切换
+        gif.frames(document.createElement('canvas'), function (ctx, frame) {
+            entity.billboard.image = new Cesium.CallbackProperty(() => {
+                return frame.buffer.toDataURL()
+            }, false)
+        })
+    }
+
 }
 const defaultMark = (longitude, latitude, mark) => {
     let icon = ''

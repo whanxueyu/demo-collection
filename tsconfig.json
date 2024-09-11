@@ -22,7 +22,6 @@
         "noEmit": true,
         "outDir": "dist",
         "types": [
-            "vite/client",
             "node"
         ],
         "paths": {

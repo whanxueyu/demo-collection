@@ -49,8 +49,15 @@
                     <svgBtn type="1" size="small">CyberPunk-UI</svgBtn>
                     <svgBtn type="2" size="small">CyberPunk-UI</svgBtn>
                     <svgBtn type="3" size="small">CyberPunk-UI</svgBtn>
+                    <svgBtn type="4" size="small">CyberPunk-UI</svgBtn>
+                    <svgBtn type="5" size="small">CyberPunk-UI</svgBtn>
+                    <svgBtn type="6" size="small">CyberPunk-UI</svgBtn>
+                    <svgBtn type="7" size="small">CyberPunk-UI</svgBtn>
                 </div>
                 <div class="btn">
+                    <svgBtn type="1" size="default">CyberPunk-UI</svgBtn>
+                    <svgBtn type="2" size="default">CyberPunk-UI</svgBtn>
+                    <svgBtn type="3" size="default">CyberPunk-UI</svgBtn>
                     <svgBtn type="4" size="default">CyberPunk-UI</svgBtn>
                     <svgBtn type="5" size="default">CyberPunk-UI</svgBtn>
                     <svgBtn type="6" size="default">CyberPunk-UI</svgBtn>
