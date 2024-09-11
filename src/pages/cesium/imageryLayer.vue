@@ -1,10 +1,13 @@
 <template>
   <div class="menubox">
     <el-color-picker v-model="lineColor" show-alpha color-format="hex"></el-color-picker>
-    <el-button :type="activeTool==='drawLine'?'success':'primary'" @click="changeTool('drawLine')">添加线</el-button>
-    <el-button :type="activeTool==='drawVolume'?'success':'primary'" @click="changeTool('drawVolume')">添加管道</el-button>
-    <el-button :type="activeTool==='drawRadar'?'success':'primary'" @click="changeTool('drawRadar')">添加雷达</el-button>
-    <el-button :type="activeTool==='drawPlane'?'success':'primary'" @click="changeTool('drawPlane')">视频面板</el-button>
+    <el-button :type="activeTool === 'drawLine' ? 'success' : 'primary'" @click="changeTool('drawLine')">添加线</el-button>
+    <el-button :type="activeTool === 'drawVolume' ? 'success' : 'primary'"
+      @click="changeTool('drawVolume')">添加管道</el-button>
+    <el-button :type="activeTool === 'drawScanRadar' ? 'success' : 'primary'"
+      @click="changeTool('drawScanRadar')">添加雷达</el-button>
+    <el-button :type="activeTool === 'drawPlane' ? 'success' : 'primary'"
+      @click="changeTool('drawPlane')">视频面板</el-button>
     <video id="trailer" style="width:0px" controls autoplay muted loop>
       <source src="@/assets/oceans.mp4" type="video/mp4">
       Your browser does not support the <code>video</code> element.
@@ -20,12 +23,17 @@
 <script setup lang="ts">
 import { nextTick, onMounted, reactive, ref } from "vue";
 import * as Cesium from "cesium";
+import { ceratBezierLine, points } from './tool'
 import Map from '@/components/cesium/map.vue'
 import 'cesium/Source/Widgets/widgets.css';
 import PolylineTrailLinkMaterialProperty from '@/modules/material/PolylineTrailLinkMaterial'
 import statusBar from '@/components/cesium/status-bar.vue'
 import radaeScanMaterial from "@/modules/material/radaeScanMaterial";
 import volumeFlowMaterial from "@/modules/material/volumeFlowMaterial";
+import radaeEffectAppearance from "@/modules/material/radaeEffectAppearance";
+import wallMaterial from "@/modules/material/wallMaterial";
+import migrationLineMaterial from "@/modules/material/migrationLineMaterial";
+import EllipsoidElectricMaterialProperty from "@/modules/material/EllipsoidElectricMaterial";
 var viewer: Cesium.Viewer;
 const loaded = ref(false);
 
@@ -38,7 +46,21 @@ const mapData = reactive<{
 })
 const lineColor = ref('#000000')
 const activeTool = ref('')
-
+const handleMapLoaded = (cviewer) => {
+  viewer = cviewer;
+  let handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+  loaded.value = true;
+  handler.setInputAction(handleMouseMove.bind(this), Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+  handler.setInputAction(handleLeftClick.bind(this), Cesium.ScreenSpaceEventType.LEFT_CLICK);
+  handler.setInputAction(function (event) {
+    activeTool.value = '';
+  }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+  handler.setInputAction(handleRightClick.bind(this), Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+  // drawRadar()
+  drawWall()
+  drawTailLine()
+  // drawEllipsoidElectric()
+}
 const changeTool = (name: string) => {
   activeTool.value = name
 }
@@ -54,27 +76,6 @@ function computeCircle(radius) {
     )
   }
   return positions
-}
-const loadRadar = () => {
-  var circleGeometry = new Cesium.CircleGeometry({
-    center: Cesium.Cartesian3.fromDegrees(-74.02, 40.69),
-    radius: 200.0,
-    vertexFormat: Cesium.VertexFormat.POSITION_AND_ST,
-  })
-  var instance = new Cesium.GeometryInstance({
-    geometry: circleGeometry,
-  })
-  viewer.scene.primitives.add(
-    new Cesium.GroundPrimitive({
-      geometryInstances: instance,
-      appearance: new Cesium.MaterialAppearance({
-        material: radaeScanMaterial(new Cesium.Color(0.0, 1.0, 0.0)),
-      }),
-    })
-  )
-  viewer.camera.flyToBoundingSphere(
-    Cesium.CircleGeometry.createGeometry(circleGeometry).boundingSphere
-  )
 }
 const drawPlane = (center: Cesium.Cartesian3) => {
   activeTool.value = '';
@@ -94,11 +95,11 @@ const drawPlane = (center: Cesium.Cartesian3) => {
     },
   });
 }
-const drawRadar = (center: Cesium.Cartesian3) => {
+const drawScanRadar = (center: Cesium.Cartesian3) => {
   activeTool.value = '';
   var circleGeometry = new Cesium.CircleGeometry({
     center: center,
-    radius: 200.0,
+    radius: 800.0,
     vertexFormat: Cesium.VertexFormat.POSITION_AND_ST,
   })
   var instance = new Cesium.GeometryInstance({
@@ -170,37 +171,171 @@ const drawVolume = () => {
       primitive.appearance.material.uniforms.offset = offset
     })
 }
-const handleMapLoaded = (cviewer) => {
-  viewer = cviewer;
-  let handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
-  loaded.value = true;
-  handler.setInputAction(handleMouseMove.bind(this), Cesium.ScreenSpaceEventType.MOUSE_MOVE);
-  handler.setInputAction(handleLeftClick.bind(this), Cesium.ScreenSpaceEventType.LEFT_CLICK);
-  handler.setInputAction(function (event) {
-    activeTool.value = '';
-  }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
-  handler.setInputAction(handleRightClick.bind(this), Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+
+
+// 材质有问题
+const drawRadar = () => {
+  var scene = viewer.scene
+  // 1 雷达位置计算
+  // 1.1 雷达的高度
+  var length = 40000.0
+  // 1.2 地面位置(垂直地面)
+  var positionOnEllipsoid = Cesium.Cartesian3.fromDegrees(116.39, 39.9)
+  // 1.3 中心位置
+  var centerOnEllipsoid = Cesium.Cartesian3.fromDegrees(116.39, 39.9, length * 0.5)
+  // 1.4 顶部位置(卫星位置)
+  var topOnEllipsoid = Cesium.Cartesian3.fromDegrees(116.39, 39.9, length)
+  // 1.5 矩阵计算
+  var modelMatrix = Cesium.Matrix4.multiplyByTranslation(
+    Cesium.Transforms.eastNorthUpToFixedFrame(positionOnEllipsoid),
+    new Cesium.Cartesian3(0.0, 0.0, length * 0.5),
+    new Cesium.Matrix4()
+  )
+  // 4 创建雷达放射波
+  // 4.1 先创建Geometry
+  var cylinderGeometry = new Cesium.CylinderGeometry({
+    length: length,
+    topRadius: 0.0,
+    bottomRadius: length * 0.5,
+    vertexFormat: Cesium.MaterialAppearance.MaterialSupport.TEXTURED.vertexFormat,
+  })
+  // 4.2 创建GeometryInstance
+  var redCone = new Cesium.GeometryInstance({
+    geometry: cylinderGeometry,
+    modelMatrix: modelMatrix,
+  })
+  // 4.3 创建Primitive
+  var radar = scene.primitives.add(
+    new Cesium.Primitive({
+      geometryInstances: redCone,
+      appearance: radaeEffectAppearance(Cesium.Color.RED),
+    })
+  )
+
+  // 5 动态修改雷达材质中的offset变量，从而实现动态效果。
+  viewer.scene.preUpdate.addEventListener(function () {
+    var offset = radar.appearance.material.uniforms.offset
+    offset -= 0.001
+    if (offset > 1.0) {
+      offset = 0.0
+    }
+    radar.appearance.material.uniforms.offset = offset
+  })
+}
+/**
+ * 添加尾迹线
+ */
+const drawTailLine = () => {
+  // let polylineGeometry = new Cesium.PolylineGeometry({
+  //   positions: Cesium.Cartesian3.fromDegreesArrayHeights(ceratBezierLine([116.385975,39.908886], [116.396384,39.905387])),
+  //   width: 2,
+  // })
+  let geometryInstances = []
+  let startPoint = points['start'][Object.keys(points['start'])[0]]
+  for (let key in points['end']) {
+    let endPoint = points['end'][key]
+    let polylineGeometry = new Cesium.PolylineGeometry({
+      positions: Cesium.Cartesian3.fromDegreesArrayHeights(ceratBezierLine(startPoint, endPoint)),
+      width: 2,
+    })
+    let geometryInstance = new Cesium.GeometryInstance({ geometry: polylineGeometry })
+    geometryInstances.push(geometryInstance)
+  }
+  var line = viewer.scene.primitives.add(
+    new Cesium.Primitive({
+      geometryInstances: geometryInstances,
+      appearance: new Cesium.PolylineMaterialAppearance({
+        material: migrationLineMaterial(new Cesium.Color(1.0, 0.5, 0.0, 1.0)),
+      }),
+    })
+  )
+  // viewer.camera.flyTo({ destination: Cartesian3.fromDegrees(startPoint[0], startPoint[1], 10000000) })
+  viewer.scene.preUpdate.addEventListener(function () {
+    var offset = line.appearance.material.uniforms.offset
+    offset += 0.005
+    if (offset > 1.0) {
+      offset = 0.0
+    }
+    line.appearance.material.uniforms.offset = offset
+  })
+}
+
+const drawEllipsoidElectric = () => {
+  const entity = viewer.entities.add({
+    position: Cesium.Cartesian3.fromDegrees(116.46, 39.91),
+    name: '电弧球体',
+    ellipsoid: {
+      radii: new Cesium.Cartesian3(100.0, 100.0, 100.0),
+      material: new EllipsoidElectricMaterialProperty({
+        color: new Cesium.Color(1.0, 0.5, 0.0, 1.0),
+        speed: 10.0
+      })
+    }
+  })
+  viewer.zoomTo(entity)
+}
+const drawWall = () => {
+  var greenWallInstance = new Cesium.GeometryInstance({
+    geometry: Cesium.WallGeometry.fromConstantHeights({
+      positions: Cesium.Cartesian3.fromDegreesArray([
+        116.385975,
+        39.908886,
+        116.385841,
+        39.905457,
+        116.396384,
+        39.905387,
+        116.396441,
+        39.908897,
+        116.385975,
+        39.908886,
+      ]),
+      maximumHeight: 100.0,
+      vertexFormat: Cesium.VertexFormat.POSITION_AND_ST,
+    }),
+    attributes: {
+      color: Cesium.ColorGeometryInstanceAttribute.fromColor(Cesium.Color.GREEN),
+    },
+  })
+
+  // Add green wall instances to primitives.
+  var greenWall = viewer.scene.primitives.add(
+    new Cesium.Primitive({
+      geometryInstances: greenWallInstance,
+      appearance: new Cesium.MaterialAppearance({
+        material: wallMaterial(Cesium.Color.GREEN),
+      }),
+    })
+  )
+  viewer.scene.preUpdate.addEventListener(function () {
+    var greenoffset = greenWall.appearance.material.uniforms.offset
+    greenoffset += 0.01
+    if (greenoffset > 1.0) {
+      greenoffset = 0.0
+    }
+    greenWall.appearance.material.uniforms.offset = greenoffset
+  })
 }
 const handleLeftClick = (event) => {
   let ray = viewer.camera.getPickRay(event.position);
   let cartesian = viewer.scene.globe.pick(ray, viewer.scene);
 
-  // let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
-  // let lng = Cesium.Math.toDegrees(cartographic.longitude); // 经度
-  // let lat = Cesium.Math.toDegrees(cartographic.latitude); // 纬度
-  // let coordinate = {
-  //     longitude: Number(lng.toFixed(6)),
-  //     latitude: Number(lat.toFixed(6)),
-  //     height: Number(cartographic.height.toFixed(6)),
-  // };
+  let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+  let lng = Cesium.Math.toDegrees(cartographic.longitude); // 经度
+  let lat = Cesium.Math.toDegrees(cartographic.latitude); // 纬度
+  let coordinate = {
+    longitude: Number(lng.toFixed(6)),
+    latitude: Number(lat.toFixed(6)),
+    height: Number(cartographic.height.toFixed(6)),
+  };
+  console.log(coordinate)
   if (activeTool.value === 'drawLine') {
     mapData.lineTempPos.push(cartesian);
     drawLine()
   } else if (activeTool.value === 'drawVolume') {
     mapData.volumeTempPos.push(cartesian);
     drawVolume()
-  } else if (activeTool.value === 'drawRadar') {
-    drawRadar(cartesian)
+  } else if (activeTool.value === 'drawScanRadar') {
+    drawScanRadar(cartesian)
   } else if (activeTool.value === 'drawPlane') {
     drawPlane(cartesian)
   }
