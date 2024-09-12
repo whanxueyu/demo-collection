@@ -35,6 +35,7 @@ import volumeFlowMaterial from "@/modules/material/volumeFlowMaterial";
 import radaeEffectAppearance from "@/modules/material/radaeEffectAppearance";
 import wallMaterial from "@/modules/material/wallMaterial";
 import migrationLineMaterial from "@/modules/material/migrationLineMaterial";
+import verticalLineMaterial from "@/modules/material/verticalLineMaterial";
 import EllipsoidElectricMaterialProperty from "@/modules/material/EllipsoidElectricMaterial";
 var viewer: Cesium.Viewer;
 const loaded = ref(false);
@@ -62,6 +63,7 @@ const handleMapLoaded = (cviewer) => {
   drawWall()
   drawTailLine()
   drawEllipsoidElectric()
+  drawVerticalLine()
 }
 const changeTool = (name: string) => {
   activeTool.value = name
@@ -111,7 +113,7 @@ const drawScanRadar = (center: Cesium.Cartesian3) => {
     new Cesium.GroundPrimitive({
       geometryInstances: instance,
       appearance: new Cesium.MaterialAppearance({
-        material: radaeScanMaterial(new Cesium.Color(0.0, 1.0, 0.0)),
+        material: radaeScanMaterial(Cesium.Color.fromCssColorString('#ffff0f')),
       }),
     })
   )
@@ -155,7 +157,7 @@ const drawVolume = () => {
         geometry: geometry,
       }),
       appearance: new Cesium.MaterialAppearance({
-        material: volumeFlowMaterial(new Cesium.Color(1.0, 0.0, 0.0))
+        material: volumeFlowMaterial(Cesium.Color.fromCssColorString('#f23f6f'))
       }),
     })
   )
@@ -180,13 +182,13 @@ const drawRadar = () => {
   var scene = viewer.scene
   // 雷达位置计算
   // 雷达的高度
-  var length = 40000.0
+  var length = 2000.0
   // 地面位置(垂直地面)
-  var positionOnEllipsoid = Cesium.Cartesian3.fromDegrees(116.39, 39.9)
+  var positionOnEllipsoid = Cesium.Cartesian3.fromDegrees(116.273374, 39.972007)
   // 中心位置
-  var centerOnEllipsoid = Cesium.Cartesian3.fromDegrees(116.39, 39.9, length * 0.5)
+  var centerOnEllipsoid = Cesium.Cartesian3.fromDegrees(116.273374, 39.972007, length * 0.5)
   // 顶部位置(卫星位置)
-  var topOnEllipsoid = Cesium.Cartesian3.fromDegrees(116.39, 39.9, length)
+  var topOnEllipsoid = Cesium.Cartesian3.fromDegrees(116.273374, 39.972007, length)
   // 矩阵计算
   var modelMatrix = Cesium.Matrix4.multiplyByTranslation(
     Cesium.Transforms.eastNorthUpToFixedFrame(positionOnEllipsoid),
@@ -210,7 +212,7 @@ const drawRadar = () => {
   var radar = scene.primitives.add(
     new Cesium.Primitive({
       geometryInstances: redCone,
-      appearance: radaeEffectAppearance(Cesium.Color.RED),
+      appearance: radaeEffectAppearance(Cesium.Color.fromCssColorString('#62ef3f99')),
     })
   )
 
@@ -247,7 +249,7 @@ const drawTailLine = () => {
     new Cesium.Primitive({
       geometryInstances: geometryInstances,
       appearance: new Cesium.PolylineMaterialAppearance({
-        material: migrationLineMaterial(new Cesium.Color(1.0, 0.5, 0.0, 1.0)),
+        material: migrationLineMaterial(Cesium.Color.fromCssColorString('#02ffff')),
       }),
     })
   )
@@ -261,45 +263,74 @@ const drawTailLine = () => {
     line.appearance.material.uniforms.offset = offset
   })
 }
-
+const generateRandomLines = (center, num) => {
+  let geometryInstances = []
+  for (let i = 0; i < num; i++) {
+    let lon = center[0] + (Math.random() - 0.5) * 0.1;
+    let lat = center[1] + (Math.random() - 0.5) * 0.1;
+    const geometry = new Cesium.PolylineGeometry({
+      positions: Cesium.Cartesian3.fromDegreesArrayHeights([
+        lon, lat, 0, lon, lat, 5000 * Math.random()
+      ]),
+      width: 1.0,
+    })
+    const instance = new Cesium.GeometryInstance({ geometry: geometry })
+    geometryInstances.push(instance)
+  }
+  return geometryInstances
+}
+const drawVerticalLine = () => {
+  viewer.scene.primitives.add(
+    new Cesium.Primitive({
+      geometryInstances: generateRandomLines([116.39, 39.959], 100),
+      appearance: new Cesium.PolylineMaterialAppearance({
+        material: verticalLineMaterial(Cesium.Color.fromCssColorString('#ff66f099')),
+      }),
+      allowPicking: false
+    })
+  )
+  const center = Cesium.Cartesian3.fromDegrees(116.39, 39.959);
+  viewer.camera.lookAt(center, new Cesium.Cartesian3(0.0, -10000.0, 3930.0));
+  viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
+}
 const drawEllipsoidElectric = () => {
   // if (Cesium.FeatureDetection.supportsImageRenderingPixelated()) {
   //   viewer.resolutionScale = window.devicePixelRatio
   // }
   viewer.scene.postProcessStages.fxaa.enabled = true
   const entity = viewer.entities.add({
-    position: Cesium.Cartesian3.fromDegrees(116.394317, 39.907479),
+    position: Cesium.Cartesian3.fromDegrees(116.389339, 39.96747),
     name: '电弧球体',
     ellipsoid: {
-      radii: new Cesium.Cartesian3(300.0, 300.0, 300.0),
+      radii: new Cesium.Cartesian3(2000.0, 2000.0, 2000.0),
       material: new EllipsoidElectricMaterialProperty({
-        color: new Cesium.Color(1.0, 0.5, 0.0, 1.0),
+        color: Cesium.Color.fromCssColorString('#2968d9'),
         speed: 10.0
       })
     }
   })
-  viewer.zoomTo(entity)
+  // viewer.zoomTo(entity)
 }
 const drawWall = () => {
   var greenWallInstance = new Cesium.GeometryInstance({
     geometry: Cesium.WallGeometry.fromConstantHeights({
       positions: Cesium.Cartesian3.fromDegreesArray([
-        116.385975,
-        39.908886,
-        116.385841,
-        39.905457,
-        116.396384,
-        39.905387,
-        116.396441,
-        39.908897,
-        116.385975,
-        39.908886,
+        116.32308,
+        39.902552,
+        116.454928,
+        39.902515,
+        116.454928,
+        40.02535,
+        116.32395,
+        40.02535,
+        116.32308,
+        39.902552,
       ]),
-      maximumHeight: 100.0,
+      maximumHeight: 1000.0,
       vertexFormat: Cesium.VertexFormat.POSITION_AND_ST,
     }),
     attributes: {
-      color: Cesium.ColorGeometryInstanceAttribute.fromColor(Cesium.Color.GREEN),
+      color: Cesium.ColorGeometryInstanceAttribute.fromColor(Cesium.Color.fromCssColorString('#409eff')),
     },
   })
 
@@ -308,7 +339,7 @@ const drawWall = () => {
     new Cesium.Primitive({
       geometryInstances: greenWallInstance,
       appearance: new Cesium.MaterialAppearance({
-        material: wallMaterial(Cesium.Color.GREEN),
+        material: wallMaterial(Cesium.Color.fromCssColorString('#f00e0f')),
       }),
     })
   )

@@ -369,7 +369,7 @@ export const ceratBezierLine = (p1, p2) => {
 }
 
 export const points = {
-    start: { 北京: [116.46, 39.92] },
+    start: { 北京: [116.391231, 39.857787] },
     end: {
         甘肃: [103.73, 36.03],
         青海: [101.74, 36.56],
