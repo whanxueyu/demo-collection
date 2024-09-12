@@ -229,48 +229,7 @@
             </el-tab-pane>
         </el-tabs>
     </div>
-    <div id="toolbar">
-        <div class="flex">
-            <div class="flex-label">Brightness</div>
-            <div class="flex-content">
-                <el-slider @change="setParmas('brightness')" type="range" :min="0" :max="3" :step="0.02"
-                    v-model="viewModel.brightness" />
-                <div class="value">{{ viewModel.brightness }}</div>
-            </div>
-        </div>
-        <div class="flex">
-            <div class="flex-label">Contrast</div>
-            <div class="flex-content">
-                <el-slider @change="setParmas('contrast')" type="range" :min="0" :max="3" :step="0.02"
-                    v-model="viewModel.contrast" />
-                <div class="value">{{ viewModel.contrast }}</div>
-            </div>
-        </div>
-        <div class="flex">
-            <div class="flex-label">Hue</div>
-            <div class="flex-content">
-                <el-slider @change="setParmas('hue')" type="range" :min="0" :max="3" :step="0.02"
-                    v-model="viewModel.hue" />
-                <div class="value">{{ viewModel.hue }}</div>
-            </div>
-        </div>
-        <div class="flex">
-            <div class="flex-label">Saturation</div>
-            <div class="flex-content">
-                <el-slider @change="setParmas('saturation')" type="range" :min="0" :max="3" :step="0.02"
-                    v-model="viewModel.saturation" />
-                <div class="value">{{ viewModel.saturation }}</div>
-            </div>
-        </div>
-        <div class="flex">
-            <div class="flex-label">Gamma</div>
-            <div class="flex-content">
-                <el-slider @change="setParmas('gamma')" type="range" :min="0" :max="3" :step="0.02"
-                    v-model="viewModel.gamma" />
-                <div class="value">{{ viewModel.gamma }}</div>
-            </div>
-        </div>
-    </div>
+    <imageryEditer :viewer="viewer" v-if="mapLoaded"></imageryEditer>
     <div class="addition">
         <div class="align-center flex">
             <div :class="activeTool = 'screenShot' ? 'menuBtn active' : 'menuBtn'" @click="takeScreenshot">
@@ -312,7 +271,7 @@ import DivBillboard from '@/modules/customBillboard/DivBillboard';
 import anallysisDiv from "@/components/billboard/anallysisDiv.vue";
 import borderDiv from "@/components/billboard/borderDiv.vue";
 import lineDiv from "@/components/billboard/lineDiv.vue";
-// import shine from '../../assets/images/shine.gif'
+import imageryEditer from '@/components/cesium/imageryEditer.vue'
 var viewer;
 
 const mapData = reactive({
@@ -355,39 +314,10 @@ const blue = require('@/assets/gif/bomb.gif')
 const pop = require('@/assets/gif/tf.gif')
 const radar = require('@/assets/gif/typhoon.gif')
 
-const viewModel = reactive({
-    brightness: 0,
-    contrast: 0,
-    hue: 0,
-    saturation: 0,
-    gamma: 0,
-})
-const imageryLayers = ref()
-// Make the viewModel react to base layer changes.
-function updateViewModel() {
-    if (imageryLayers.value.length > 0) {
-        const layer = imageryLayers.value.get(0);
-        viewModel.brightness = layer.brightness;
-        viewModel.contrast = layer.contrast;
-        viewModel.hue = layer.hue;
-        viewModel.saturation = layer.saturation;
-        viewModel.gamma = layer.gamma;
-    }
-}
-
-const setParmas = (name: string) => {
-    const layer = imageryLayers.value.get(0);
-    if (layer) {
-        layer[name] = viewModel[name]
-    }
-}
+const mapLoaded = ref(false)
 const handleMapLoaded = (cviewer) => {
     viewer = cviewer;
     let handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
-    imageryLayers.value = viewer.imageryLayers;
-    nextTick(() => {
-        updateViewModel()
-    })
     // 右
     handler.setInputAction(function (event) {
         let ray = viewer.camera.getPickRay(event.position);
@@ -414,6 +344,7 @@ const handleMapLoaded = (cviewer) => {
             drawSketch()
         }
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+    mapLoaded.value = true
 }
 const drawSketch = () => {
     //   let uuid = generateUniqueId()
@@ -671,7 +602,6 @@ const removeAll = () => {
     viewer.entities.removeAll()
     sessionStorage.removeItem('markers')
 }
-
 const addMark = (longitude, latitude) => {
     let icon = ''
     let name = ''
@@ -1180,33 +1110,6 @@ onMounted(() => {
         &.active {
             color: #409eff;
             background-color: #1d1e1f;
-        }
-    }
-}
-
-#toolbar {
-    background: var(--el-bg-color-overlay);
-    border: 1px solid var(--el-border-color);
-    position: absolute;
-    z-index: 999;
-    border-radius: 4px;
-    bottom: 10px;
-    left: 20px;
-    padding: 10px;
-
-    .flex-label {
-        width: 70px;
-        margin-right: 10px
-    }
-
-    .flex-content {
-        width: 160px;
-        display: flex;
-        line-height: 32px;
-
-        .value {
-            width: 20px;
-            margin-left: 10px;
         }
     }
 }

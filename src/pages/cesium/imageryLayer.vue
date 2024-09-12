@@ -18,6 +18,7 @@
   </div>
   <Map @loaded="handleMapLoaded" :duration="0" map-type="tileGrid"></Map>
   <status-bar v-if="loaded" :viewer="viewer"></status-bar>
+  <imageryEditer  v-if="loaded" :viewer="viewer"></imageryEditer>
 </template>
 <script>
 
@@ -37,6 +38,7 @@ import wallMaterial from "@/modules/material/wallMaterial";
 import migrationLineMaterial from "@/modules/material/migrationLineMaterial";
 import verticalLineMaterial from "@/modules/material/verticalLineMaterial";
 import EllipsoidElectricMaterialProperty from "@/modules/material/EllipsoidElectricMaterial";
+import imageryEditer from '@/components/cesium/imageryEditer.vue'
 var viewer: Cesium.Viewer;
 const loaded = ref(false);
 
