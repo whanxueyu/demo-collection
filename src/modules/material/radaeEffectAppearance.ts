@@ -44,22 +44,22 @@ const radaeEffectAppearance = (color: Cesium.Color) => {
     faceForward: false, // 当绘制的三角面片法向不能朝向视点时，自动翻转法向，从而避免法向计算后发黑等问题
     closed: true, // 是否为封闭体，实际上执行的是是否进行背面裁剪
     vertexShaderSource: `
-      attribute vec3 position3DHigh;
-      attribute vec3 position3DLow;
-      attribute vec3 normal;
-      attribute vec2 st;
-      attribute float batchId;
+      in vec3 position3DHigh;
+      in vec3 position3DLow;
+      in vec3 normal;
+      in vec2 st;
+      in float batchId;
 
-      varying vec3 v_positionEC;
-      varying vec3 v_normalEC;
-      varying vec2 v_st;
+      out vec3 v_positionEC;
+      out vec3 v_normalEC;
+      out vec2 v_st;
 
       void main()
       {
         vec4 p = czm_computePosition();
 
-        v_positionEC = (czm_modelViewRelativeToEye * p).xyz;      // position in eye coordinates
-        v_normalEC =  normal;                         // normal in world coordinates
+        v_positionEC = (czm_modelViewRelativeToEye * p).xyz;
+        v_normalEC =  normal;
         v_st = st;
 
         gl_Position = czm_modelViewProjectionRelativeToEye * p;
