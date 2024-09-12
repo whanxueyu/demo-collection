@@ -16,7 +16,7 @@
       <borderDiv html-content="88888"></borderDiv>
     </div> -->
   </div>
-  <Map @loaded="handleMapLoaded" :duration="0" map-type="tileGrid"></Map>
+  <Map @loaded="handleMapLoaded" :duration="0" map-type="gd_v"></Map>
   <status-bar v-if="loaded" :viewer="viewer"></status-bar>
   <imageryEditer  v-if="loaded" :viewer="viewer"></imageryEditer>
 </template>

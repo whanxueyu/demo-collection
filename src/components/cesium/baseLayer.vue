@@ -81,14 +81,6 @@ const changeBaseMap = async (type) => {
         })
         viewer.imageryLayers.addImageryProvider(gdMap)
     } else if (type == 'gd_v') {
-        // let gdvMap = new Cesium.UrlTemplateImageryProvider({
-        //     url: 'https://webst0{s}.is.autonavi.com/appmaptile?style=7&scl=1&ltype=0&x={x}&y={y}&z={z}&lang=zh_cn&size=1',
-        //     subdomains: ['1', '2', '3', '4', '5', '6', '7'], // 如果有多个子域名用于负载均衡，可以在这里指定  
-        //     tileWidth: 256,
-        //     tileHeight: 256,
-        //     tilingScheme: new AmapMercatorTilingScheme(),
-        //     maximumLevel: 18, // 根据高德地图的实际最大层级设置  
-        // })
         let gdvMap = new Cesium.UrlTemplateImageryProvider({
             url: 'https://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=2&style=8&x={x}&y={y}&z={z}',
             tileWidth: 256,

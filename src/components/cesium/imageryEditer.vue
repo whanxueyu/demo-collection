@@ -1,6 +1,7 @@
 <template>
     <div class="imagery-editor">
-        <el-button @click="setBlackMap(20, 20, 40)">暗色地图</el-button>
+        <el-button @click="setBlackMap()">暗色地图</el-button>
+        <el-color-picker v-model="filterColor" color-format="hex"></el-color-picker>
         <div class="flex">
             <div class="flex-label">Brightness</div>
             <div class="flex-content">
@@ -63,9 +64,11 @@ const viewModel = reactive({
 })
 // 获取 Cesium 视图对象
 let viewer: Cesium.Viewer | undefined;
-
+const filterColor = ref('#003690')
 const imageryLayers = ref()
-const setBlackMap = (red: number = 2, green: number = 61, blue: number = 102) => {
+const setBlackMap = () => {
+    let { red, blue, green } = hexColorToRgba(filterColor.value)
+    console.log(red, blue, green)
     modifyMap(viewer, {
         //反色?
         invertColor: true,
@@ -82,7 +85,6 @@ const setBlackMap = (red: number = 2, green: number = 61, blue: number = 102) =>
 
 const modifyMap = (viewer, options) => {
     const baseLayer = viewer.imageryLayers.get(0)
-    //以下几个参数根据实际情况修改,目前我是参照火星科技的参数,个人感觉效果还不错
     baseLayer.brightness = options.brightness || 0.6
     baseLayer.contrast = options.contrast || 1.8
     baseLayer.gamma = options.gamma || 0.3
@@ -95,17 +97,17 @@ const modifyMap = (viewer, options) => {
         let strT = 'color = czm_saturation(color, textureSaturation);\n#endif\n'
         if (options.invertColor) {
             strT += `
-color.r = 1.0 - color.r;
-color.g = 1.0 - color.g;
-color.b = 1.0 - color.b;
-`
+                color.r = 1.0 - color.r;
+                color.g = 1.0 - color.g;
+                color.b = 1.0 - color.b;
+                `
         }
         if (options.filterRGB.length > 0) {
             strT += `
-color.r = color.r * ${options.filterRGB[0]}.0/255.0;
-color.g = color.g * ${options.filterRGB[1]}.0/255.0;
-color.b = color.b * ${options.filterRGB[2]}.0/255.0;
-`
+                color.r = color.r * ${options.filterRGB[0]}.0/255.0;
+                color.g = color.g * ${options.filterRGB[1]}.0/255.0;
+                color.b = color.b * ${options.filterRGB[2]}.0/255.0;
+                `
         }
         baseFragShader[i] = baseFragShader[i].replace(strS, strT)
     }
@@ -130,6 +132,49 @@ const setParmas = (name: string) => {
         layer[name] = viewModel[name]
     }
 }
+const hexColorToRgba = (color: string) => {
+    // 检查输入颜色是否以 "#" 开头
+    if (!color.startsWith('#')) {
+        throw new Error('Invalid hex color format. Color should start with "#".');
+    }
+
+    // 获取去掉 "#" 后的颜色值部分
+    const hexValue = color.slice(1);
+
+    // 根据颜色值长度确定是 RGB 还是 RGBA
+    const isRgba = hexValue.length === 8;
+
+    // 确保颜色值长度合法（6 或 8 位）
+    if (hexValue.length !== 6 && hexValue.length !== 8) {
+        throw new Error(`Invalid hex color length. Expected 6 or 8 characters, got ${hexValue.length}.`);
+    }
+
+    // 将十六进制颜色值转换为十进制整数
+    const hexToInt = (hex: string) => parseInt(hex, 16);
+
+    // 提取 RGB 分量
+    const redHex = hexValue.substring(0, 2);
+    const greenHex = hexValue.substring(2, 4);
+    const blueHex = hexValue.substring(4, 6);
+
+    const red = hexToInt(redHex);
+    const green = hexToInt(greenHex);
+    const blue = hexToInt(blueHex);
+
+    // 如果是 RGBA，提取 Alpha 分量
+    let alpha = 1;
+    if (isRgba) {
+        const alphaHex = hexValue.substring(6, 8);
+        alpha = hexToInt(alphaHex);
+    }
+
+    return {
+        red: red,
+        green: green,
+        blue: blue,
+        alpha: alpha
+    };
+};
 onMounted(() => {
     viewer = props.viewer
     if (viewer) {
