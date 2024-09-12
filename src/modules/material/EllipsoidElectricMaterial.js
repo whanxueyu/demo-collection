@@ -1,53 +1,49 @@
 
 import * as Cesium from 'cesium';
-export default class EllipsoidElectricMaterialProperty extends Cesium.Material {
-    // private _definitionChanged: Cesium.Event;
-    // private _color: Cesium.Color | undefined;
-    // private _speed: number | undefined;
+export default class EllipsoidElectricMaterialProperty {
     constructor(options) {
-        super();
-        this._definitionChanged = new Cesium.Event();
-        this._color = options.color;
-        this._speed = options.speed;
-
+      this._definitionChanged = new Cesium.Event();
+      this._color = undefined;
+      this._speed = undefined;
+      this.color = options.color;
+      this.speed = options.speed;
+  
     }
     get isConstant() {
-        return false;
+      return false;
     }
-
+  
     get definitionChanged() {
-        return this._definitionChanged;
+      return this._definitionChanged;
     }
     // eslint-disable-next-line
     getType(time) {
-        return Cesium.Material.EllipsoidElectricMaterialType;
+      return Cesium.Material.EllipsoidElectricMaterialType;
     }
-
+  
     getValue(time, result) {
-        if (!Cesium.defined(result)) {
-            result = {};
-        }
-        result.color = Cesium.Property.getValueOrDefault(this._color, time, Cesium.Color.RED, result.color);
-        result.speed = Cesium.Property.getValueOrDefault(this._speed, time, 10, result.speed);
-        return result;
+      if (!Cesium.defined(result)) {
+        result = {};
+      }
+      result.color = Cesium.Property.getValueOrDefault(this._color, time, Cesium.Color.RED, result.color);
+      result.speed = Cesium.Property.getValueOrDefault(this._speed, time, 10, result.speed);
+      return result;
     }
-
+  
     equals(other) {
-        return (this === other ||
-            (other instanceof EllipsoidElectricMaterialProperty &&
-                Cesium.Property.equals(this._color, other._color) &&
-                Cesium.Property.equals(this._speed, other._speed)))
+      return (this === other ||
+        (other instanceof EllipsoidElectricMaterialProperty &&
+          Cesium.Property.equals(this._color, other._color) &&
+          Cesium.Property.equals(this._speed, other._speed)))
     }
-}
-Object.defineProperties(EllipsoidElectricMaterialProperty.prototype, {
+  }
+  Object.defineProperties(EllipsoidElectricMaterialProperty.prototype, {
     color: Cesium.createPropertyDescriptor('color'),
     speed: Cesium.createPropertyDescriptor('speed')
-})
-const myDynamicProperty = { EllipsoidElectricMaterialProperty: EllipsoidElectricMaterialProperty };
-Object.assign(Cesium, myDynamicProperty);
-Cesium.EllipsoidElectricMaterialProperty = EllipsoidElectricMaterialProperty
-Cesium.Material.EllipsoidElectricMaterialType = 'EllipsoidElectricMaterialType';
-Cesium.Material.EllipsoidElectricMaterialSource =
+  })
+  Cesium.EllipsoidElectricMaterialProperty = EllipsoidElectricMaterialProperty
+  Cesium.Material.EllipsoidElectricMaterialType = 'EllipsoidElectricMaterialType';
+  Cesium.Material.EllipsoidElectricMaterialSource =
     `
       uniform vec4 color;
       uniform float speed;
@@ -127,17 +123,17 @@ Cesium.Material.EllipsoidElectricMaterialSource =
       return material;
       }
       `
-Cesium.Material._materialCache.addMaterial(Cesium.Material.EllipsoidElectricMaterialType, {
+  Cesium.Material._materialCache.addMaterial(Cesium.Material.EllipsoidElectricMaterialType, {
     fabric: {
-        type: Cesium.Material.EllipsoidElectricMaterialType,
-        uniforms: {
-            color: new Cesium.Color(1.0, 1.0, 0.0, 1.0),
-            speed: 10.0
-        },
-        source: Cesium.Material.EllipsoidElectricMaterialSource
+      type: Cesium.Material.EllipsoidElectricMaterialType,
+      uniforms: {
+        color: new Cesium.Color(1.0, 1.0, 0.0, 1.0),
+        speed: 10.0
+      },
+      source: Cesium.Material.EllipsoidElectricMaterialSource
     },
     // eslint-disable-next-line
     translucent: function (material) {
-        return true;
+      return true;
     }
-})
+  })

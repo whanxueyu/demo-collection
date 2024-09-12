@@ -19,7 +19,9 @@
   <Map @loaded="handleMapLoaded" :duration="0" map-type="tileGrid"></Map>
   <status-bar v-if="loaded" :viewer="viewer"></status-bar>
 </template>
+<script>
 
+</script>
 <script setup lang="ts">
 import { nextTick, onMounted, reactive, ref } from "vue";
 import * as Cesium from "cesium";
@@ -56,10 +58,10 @@ const handleMapLoaded = (cviewer) => {
     activeTool.value = '';
   }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
   handler.setInputAction(handleRightClick.bind(this), Cesium.ScreenSpaceEventType.RIGHT_CLICK);
-  // drawRadar()
+  drawRadar()
   drawWall()
   drawTailLine()
-  // drawEllipsoidElectric()
+  drawEllipsoidElectric()
 }
 const changeTool = (name: string) => {
   activeTool.value = name
@@ -176,35 +178,35 @@ const drawVolume = () => {
 // 材质有问题
 const drawRadar = () => {
   var scene = viewer.scene
-  // 1 雷达位置计算
-  // 1.1 雷达的高度
+  // 雷达位置计算
+  // 雷达的高度
   var length = 40000.0
-  // 1.2 地面位置(垂直地面)
+  // 地面位置(垂直地面)
   var positionOnEllipsoid = Cesium.Cartesian3.fromDegrees(116.39, 39.9)
-  // 1.3 中心位置
+  // 中心位置
   var centerOnEllipsoid = Cesium.Cartesian3.fromDegrees(116.39, 39.9, length * 0.5)
-  // 1.4 顶部位置(卫星位置)
+  // 顶部位置(卫星位置)
   var topOnEllipsoid = Cesium.Cartesian3.fromDegrees(116.39, 39.9, length)
-  // 1.5 矩阵计算
+  // 矩阵计算
   var modelMatrix = Cesium.Matrix4.multiplyByTranslation(
     Cesium.Transforms.eastNorthUpToFixedFrame(positionOnEllipsoid),
     new Cesium.Cartesian3(0.0, 0.0, length * 0.5),
     new Cesium.Matrix4()
   )
-  // 4 创建雷达放射波
-  // 4.1 先创建Geometry
+  //  创建雷达放射波
+  //  先创建Geometry
   var cylinderGeometry = new Cesium.CylinderGeometry({
     length: length,
     topRadius: 0.0,
     bottomRadius: length * 0.5,
     vertexFormat: Cesium.MaterialAppearance.MaterialSupport.TEXTURED.vertexFormat,
   })
-  // 4.2 创建GeometryInstance
+  //  创建GeometryInstance
   var redCone = new Cesium.GeometryInstance({
     geometry: cylinderGeometry,
     modelMatrix: modelMatrix,
   })
-  // 4.3 创建Primitive
+  //  创建Primitive
   var radar = scene.primitives.add(
     new Cesium.Primitive({
       geometryInstances: redCone,
@@ -212,7 +214,7 @@ const drawRadar = () => {
     })
   )
 
-  // 5 动态修改雷达材质中的offset变量，从而实现动态效果。
+  // 动态修改雷达材质中的offset变量，从而实现动态效果。
   viewer.scene.preUpdate.addEventListener(function () {
     var offset = radar.appearance.material.uniforms.offset
     offset -= 0.001
@@ -261,11 +263,15 @@ const drawTailLine = () => {
 }
 
 const drawEllipsoidElectric = () => {
+  // if (Cesium.FeatureDetection.supportsImageRenderingPixelated()) {
+  //   viewer.resolutionScale = window.devicePixelRatio
+  // }
+  viewer.scene.postProcessStages.fxaa.enabled = true
   const entity = viewer.entities.add({
-    position: Cesium.Cartesian3.fromDegrees(116.46, 39.91),
+    position: Cesium.Cartesian3.fromDegrees(116.394317, 39.907479),
     name: '电弧球体',
     ellipsoid: {
-      radii: new Cesium.Cartesian3(100.0, 100.0, 100.0),
+      radii: new Cesium.Cartesian3(300.0, 300.0, 300.0),
       material: new EllipsoidElectricMaterialProperty({
         color: new Cesium.Color(1.0, 0.5, 0.0, 1.0),
         speed: 10.0
