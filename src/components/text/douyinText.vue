@@ -17,10 +17,11 @@
 </script>
 <style lang="scss" scoped>
 .text-magic {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(3);
+    // position: absolute;
+    // top: 50%;
+    // left: 50%;
+    // transform: translate(-50%, -50%) scale(3);
+    transform: translate(0%, 0%);
     width: 300px;
     font-size: 36px;
     font-family: Raleway, Verdana, Arial;

@@ -31,15 +31,6 @@ const props = defineProps({
 })
 </script>
 <style lang="scss" scoped>
-body {
-    background: #000;
-    background-size: .12em 100%;
-    font: 16em/1 Arial;
-}
-
-.text--line {
-    font-size: .5em;
-}
 
 svg {
     position: absolute;

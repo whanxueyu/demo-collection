@@ -82,13 +82,17 @@
                     <breakText>BREAK TEXT</breakText>
                     <shadowText direction="left" shadowColor="#2299cc">shadowText left</shadowText>
                 </div>
-                <div class="title flex justify-between">
-                    <shineText style="font-size: 80px;"></shineText>
+                <div class="title flex justify-between" style="font-size: 60px;">
+                    <shineText>shineText</shineText>
+                    <pinkText>123abcABC文字</pinkText>
                     <waveText></waveText>
                 </div>
-                <pinkText>123abcABC文字</pinkText>
-                <svgText1></svgText1>
-                <svgText2></svgText2>
+                <div class="title flex justify-between" style="font-size: 60px;">
+                    <svgText1></svgText1>
+                    <svgText2></svgText2>
+                </div>
+                <douyin></douyin>
+                <douyinText></douyinText>
             </div>
         </div>
         <ul class="aside">
@@ -128,6 +132,8 @@ import tDText from '@/components/text/3DText.vue'
 import shineText from '@/components/text/shineText.vue'
 import waveText from '@/components/text/waveText.vue'
 import tDProgress from '@/components/progress/3dProgress.vue'
+import douyin from '@/components/text/douyin.vue'
+import douyinText from '@/components/text/douyinText.vue'
 const isLoading = ref(true)
 const state = reactive({
     imgurl: require('@/static/img/Cyber2.jpg'),
@@ -139,6 +145,7 @@ const state = reactive({
     neonBtn: 'NEON BUTTON'
 })
 import { ref, computed, watchEffect } from 'vue'
+import Douyin from '@/components/text/douyin.vue'
 
 const asideData = ref([
     {
