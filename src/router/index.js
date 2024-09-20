@@ -39,7 +39,7 @@ const routes = [
                 },
                 children:[
                     {
-                        path: '/map',
+                        path: '/cesium/map',
                         name: 'map',
                         component: () => import('@/pages/cesium/cesium.vue'),
                         meta: {
@@ -48,7 +48,7 @@ const routes = [
                         },
                     },
                     {
-                        path: '/deployment',
+                        path: '/cesium/deployment',
                         name: 'deployment',
                         component: () => import('@/pages/cesium/deployment.vue'),
                         meta: {
@@ -57,11 +57,20 @@ const routes = [
                         },
                     },
                     {
-                        path: '/imagery',
-                        name: 'imagery',
-                        component: () => import('@/pages/cesium/imageryLayer.vue'),
+                        path: '/cesium/material',
+                        name: 'material',
+                        component: () => import('@/pages/cesium/material.vue'),
                         meta: {
                             name: '各类材质',
+                            hidden:false
+                        },
+                    },
+                    {
+                        path: '/cesium/echarts',
+                        name: 'echarts',
+                        component: () => import('@/pages/cesium/withEcharts.vue'),
+                        meta: {
+                            name: 'Echarts融合',
                             hidden:false
                         },
                     },
