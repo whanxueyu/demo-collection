@@ -1,53 +1,59 @@
 # demo-collection
 
-[![license](https://img.shields.io/github/license/anncwb/vue-vben-admin.svg)](LICENSE)
+[![license](https://img.shields.io/github/license/whanxueyu/demo-collection.svg)](LICENSE)
+![Contributors](https://img.shields.io/github/contributors/whanxueyu/demo-collection.svg)
 
 
-[中文](./README.zh_CN.md) | **English**
+![Stars](https://img.shields.io/github/stars/whanxueyu/demo-collection.svg?style=social) 
+![Forks](https://img.shields.io/github/forks/whanxueyu/demo-collection.svg?style=social) 
 
-## Project Introduction
+## 项目介绍
 
-#### This demo collection project was created in my spare time and includes some CSS and SVG effects, such as neon-style text buttons and cyberpunk-style text button images. It also includes an m3u8 player for streaming and playing videos, as well as several 360-degree panoramic views and some VR pages. Additionally, I have implemented a simple VR viewing effect (which can be viewed on mobile devices) and some basic Cesium operations. In the future, I plan to add some big data dashboards, but I'm not sure what else yet. If you find it helpful, please feel free to **star** it. 
+#### 这个demo集合项目是自己闲暇的时间做的，里面包含了一些CSS、SVG特效，比如霓虹风格的文字按钮、赛博朋克风的文字按钮图片，还有几个360度全景的东西和一些VR的页面，然后也简单的实现了一个VR看房的效果（手机可以看VR）,还有一些 ``cesium`` 相关的简单操作（目前主要研究这方面的代码），可视化数据大屏模板案例，其他的还不知道会有什么。如果觉得有参考价值的话，欢迎 ``star``
+
+#### 另外还在抽空尝试做一个vue组件库，<a href="https://github.com/whanxueyu/cyberpunk-ui">CyberPunk-UI</a> ，欢迎提交 ``issue`` 和 ``pr``
 
 ---
 
-### Github address
+### github地址
 
 <https://github.com/whanxueyu/demo-collection.git>
 
-### Gitee address
+### gitee地址
 
 <https://gitee.com/whaxy/demo-collection.git>
 
-### Preview Address
+### 在线预览地址
 
 <https://axydemo.netlify.app/>
 
 ---
 
-## Project setup
+## 项目启动
 
-### Get the project code
+### 获取项目代码
 ```bash
 git clone https://github.com/whanxueyu/demo-collection.git
 ```
+推荐使用pnpm 作为依赖管理工具
 
-### Install pnpm
+### 安装pnpm
 ```bash
 npm install pnpm -g
 ```
-### Installation dependency
+
+### 安装依赖
 
 ```bash
 pnpm install
 ```
 
-### Compiles and hot-reloads for development
+### 开发环境编译启动热更新
 ```bash
 pnpm run serve
 ```
 
-### Compiles and minifies for production
+### 生产环境打包
 ```bash
 pnpm run build
 ```
