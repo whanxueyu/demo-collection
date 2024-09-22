@@ -1,10 +1,15 @@
 <template>
-    <div :class="['menubox box1', showPanel1 ? '' : 'hide']" @dblclick="handleShowPanel(1)">
-        <el-tabs v-model="activeName" @tab-change="handleTabChange" class="demo-tabs">
-            <el-tab-pane label="矩阵" name="rect"></el-tab-pane>
-            <el-tab-pane label="圆形" name="circle"></el-tab-pane>
-            <el-tab-pane label="楔形" name="wedge"></el-tab-pane>
-        </el-tabs>
+    <div :class="['menubox box1', showPanel1 ? '' : 'hide']">
+        <div class="menuclose" @click="handleShowPanel(1)">
+            <el-icon size="20">
+                <Close />
+            </el-icon>
+        </div>
+        <el-radio-group class="demo-tabs" v-model="activeName" @change="handleTabChange">
+            <el-radio-button label="矩阵" value="rect" />
+            <el-radio-button label="圆形" value="circle" />
+            <el-radio-button label="楔形" value="wedge" />
+        </el-radio-group>
         <div class="menucell">
             <el-button :icon="Location" size="small" @click="deploy" type="primary">锚点</el-button>
             <el-button :icon="Refresh" size="small" @click="reset" type="success">还原</el-button>
@@ -69,7 +74,12 @@
             </el-icon>
         </div>
     </div>
-    <div :class="['menubox box2', showPanel2 ? '' : 'hide']" @dblclick="handleShowPanel(2)">
+    <div :class="['menubox box2', showPanel2 ? '' : 'hide']">
+        <div class="menuclose" @click="handleShowPanel(2)">
+            <el-icon size="20">
+                <Close />
+            </el-icon>
+        </div>
         <div class="el-tabs">
             <div class="modelList" dropzone="copy">
                 <div class="model" draggable="true" v-for="model in modelList" @mousedown="selectModel(model)"
@@ -98,7 +108,7 @@ import * as Cesium from "cesium";
 import Map from '@/components/cesium/map.vue'
 import statusBar from '@/components/cesium/status-bar.vue'
 import 'cesium/Source/Widgets/widgets.css';
-import { Refresh, Brush, Location, Operation, Grid } from '@element-plus/icons-vue'
+import { Refresh, Brush, Location, Operation, Grid, Close } from '@element-plus/icons-vue'
 import { getCirclePosition, getRectPosition, getWedgePosition, throttle, debounce } from './tool'
 import { ElMessage } from "element-plus";
 import { ControlEntity, callbackParams } from '@/modules/editor-control/editor-translate'
@@ -424,8 +434,10 @@ const handleMapLoaded = (cviewer: Cesium.Viewer) => {
             height: Number(0),
         };
         target.value = coordinate;
-        // viewer.entities.remove(targetEntity.value)
-        // deploy()
+        if (targetEntity.value) {
+            let targetPosition = Cesium.Cartesian3.fromDegrees(coordinate.longitude, coordinate.latitude, coordinate.height)
+            targetEntity.value.position = new Cesium.ConstantPositionProperty(targetPosition);
+        }
         var pick = viewer.scene.pick(event.position);//拾取鼠标所在的entity
         if (Cesium.defined(pick)) {
             if (pick.id.id === selectId.value) {
@@ -566,6 +578,18 @@ onMounted(() => {
     user-select: none;
     transition: all .3s;
 
+    .menuclose {
+        position: absolute;
+        right: 4px;
+        top: 4px;
+        cursor: pointer;
+        color: #00eeff;
+
+        &:hover {
+            color: #ffffff
+        }
+    }
+
     &.hide {
         width: 40px;
         height: 40px;
@@ -581,6 +605,10 @@ onMounted(() => {
         }
 
         .menucell {
+            display: none;
+        }
+
+        .menuclose {
             display: none;
         }
     }
@@ -600,6 +628,10 @@ onMounted(() => {
         height: 30px;
         padding: 5px;
         transition: all .3s;
+    }
+
+    .demo-tabs {
+        margin: 10px auto;
     }
 
     .modelList {
