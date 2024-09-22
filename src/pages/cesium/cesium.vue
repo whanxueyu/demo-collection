@@ -12,14 +12,15 @@
                     </span>
                 </template>
                 <div class="tab-body">
+                    <el-radio-group class="demo-tabs" v-model="showMark">
+                        <el-radio-button label="关闭" value="" />
+                        <el-radio-button label="标记" value="billboard" />
+                        <el-radio-button label="div" value="div" />
+                        <el-radio-button label="gif" value="gif" />
+                    </el-radio-group>
+                    <el-button type="primary" v-if="showMark === 'billboard'" @click="saveAll">保存标记</el-button>
                     <div class="row">
-                        <el-checkbox v-model="showMark" label="标记" />
-                        <el-checkbox v-model="showMark1" label="div标记" />
-                        <el-checkbox v-model="showMark2" label="Gif标记" />
-                        <el-button type="primary" @click="saveAll">保存标记</el-button>
-                    </div>
-                    <div class="row">
-                        <el-radio-group v-model="mapData.markIcon" v-if="showMark">
+                        <el-radio-group v-model="mapData.markIcon" v-if="showMark === 'billboard'">
                             <el-radio :label="1">
                                 <div class="align-center flex">
                                     <span>Mark</span>
@@ -45,7 +46,7 @@
                                 </div>
                             </el-radio>
                         </el-radio-group>
-                        <el-radio-group v-model="mapData.markIcon" v-if="showMark1">
+                        <el-radio-group v-model="mapData.markIcon" v-if="showMark === 'div'">
                             <el-radio :label="5">
                                 <div class="align-center flex">
                                     <span>基础</span>
@@ -62,7 +63,7 @@
                                 </div>
                             </el-radio>
                         </el-radio-group>
-                        <el-radio-group v-model="mapData.markIcon" v-if="showMark2">
+                        <el-radio-group v-model="mapData.markIcon" v-if="showMark=== 'gif'">
                             <el-radio :label="1">
                                 <div class="align-center flex">
                                     <span>shine</span>
@@ -276,15 +277,13 @@ var viewer;
 
 const mapData = reactive({
     markType: '1',
-    markIcon: 1,
+    markIcon: 0,
     allLines: [],
     allPoints: [],
     tempSketch: [],
     tempCalculate: [],
 })
-const showMark = ref(false)
-const showMark1 = ref(false)
-const showMark2 = ref(true)
+const showMark = ref('')
 const showLine = ref(false)
 const showPoint = ref(false)
 const activeTool = ref('')
@@ -330,13 +329,13 @@ const handleMapLoaded = (cviewer) => {
             latitude: Number(lat.toFixed(6)),
             height: Number(cartographic.height.toFixed(6)),
         };
-        if (showMark.value) {
+        if (showMark.value === 'billboard') {
             addMark(coordinate.longitude, coordinate.latitude)
         }
-        if (showMark1.value) {
+        if (showMark.value === "div") {
             addDiv(coordinate)
         }
-        if (showMark2.value) {
+        if (showMark.value === 'gif') {
             loadGif(coordinate.longitude, coordinate.latitude)
         }
         if (activeTool.value === 'drawLine') {
@@ -655,7 +654,7 @@ const addDiv = (coordinate) => {
 function loadGif(longitude, latitude) {
     let icon = ''
     let name = ''
-    if (showMark2.value) {
+    if (showMark.value === 'gif') {
         if (mapData.markIcon === 1) {
             icon = shine
             name = "shine"
