@@ -58,57 +58,6 @@ pnpm run build
 
 ## 展示截图
 
-```魔术文字和3D立体进度条```
-![首页加载loading](./public/images/example/loading.png)
-
-```3D轮播图和js打字效果```
-![3D轮播图](./public/images/example/lunbo.png)
-
-```可视化大屏模板```
-![可视化大屏](./public/images/example/bigscreen.png)
-
-
-```纯前端ORC文字识别```
-![ORC文字识别](./public/images/example/orc.png)
-
-
-```各种方式实现的VR看房```
-![VR看房](./public/images/example/vr.png)
-
-
-### threejs
-
-```粒子波浪效果```
-![波浪](./public/images/example/wave.png)
-
-
-```threejs的太空背景登录页模板```
-![太空背景](./public/images/example/space.png)
-
-
-### cesium
-
-``` div标签，vue组件标签，gif标签 ```
-![各类标签](./public/images/example/billboard_layer.png)
-
-
-``` 模型队列计算和队形转换效果，模型拖拽添加，编辑位置缩放旋转工具 ```
-![模型队列](./public/images/example/deploy.png)
-
-
-``` 结合Echarts实现迁徙线效果及饼图加载 ```
-![结合Echarts](./public/images/example/echarts.png)
-
-
-``` 计算赛贝尔曲线生成迁徙线效果 ```
-![迁徙线](./public/images/example/flyline.png)
-
-
-```视频材质、雷达、动态墙、动态线、雷达扫描、电弧球体、粒子效果和暗色地图图层编辑```
-![各类材质特效](./public/images/example/effect.png)
-
-## 展示截图
-
 ### 特效与界面
 
 - **魔术文字和3D立体进度条**

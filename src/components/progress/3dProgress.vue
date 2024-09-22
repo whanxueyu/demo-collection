@@ -122,7 +122,7 @@ const props = defineProps({
     .bottom,
     .back {
         background: linear-gradient(90deg, rgba(255, 217, 34, .6), rgba(255, 34, 109, .8) var(--per), rgba(255, 34, 109, .1) var(--per), rgba(255, 34, 109, .1));
-        animation: perChange 6s ease-in-out;
+        animation: perChange 2s ease-in-out;
     }
 }
 
