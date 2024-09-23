@@ -11,9 +11,9 @@
             <el-radio-button label="楔形" value="wedge" />
         </el-radio-group>
         <div class="menucell">
-            <el-button :icon="Location" size="small" @click="deploy" type="primary">锚点</el-button>
-            <el-button :icon="Refresh" size="small" @click="reset" type="success">还原</el-button>
-            <el-button :icon="Brush" size="small" @click="removeAll" type="danger">清空</el-button>
+            <el-button :icon="Flag" size="small" @click="deploy" type="primary">锚点</el-button>
+            <el-button :icon="Place" size="small" @click="reset" type="success">定位</el-button>
+            <el-button :icon="Brush" size="small" @click="removeAll" type="danger">清除</el-button>
             <div v-if="activeName == 'rect'" class="flex form-cell">
                 <div class="form-cell-label">队列方向：</div>
                 <div class="form-cell-content">
@@ -108,7 +108,7 @@ import * as Cesium from "cesium";
 import Map from '@/components/cesium/map.vue'
 import statusBar from '@/components/cesium/status-bar.vue'
 import 'cesium/Source/Widgets/widgets.css';
-import { Refresh, Brush, Location, Operation, Grid, Close } from '@element-plus/icons-vue'
+import { Place, Brush, Flag, Operation, Grid, Close } from '@element-plus/icons-vue'
 import { getCirclePosition, getRectPosition, getWedgePosition, throttle, debounce } from './tool'
 import { ElMessage } from "element-plus";
 import { ControlEntity, callbackParams } from '@/modules/editor-control/editor-translate'
@@ -127,6 +127,11 @@ const modelList = [
     //     url: './models/警车.glb',
     //     icon: ''
     // },
+    {
+        name: '士兵',
+        url: './models/士兵.glb',
+        icon: '/models/士兵.png'
+    },
     {
         name: '猛士车',
         url: './models/猛士车.glb',
@@ -597,8 +602,11 @@ onMounted(() => {
         padding: 0;
         background-color: #01a1fd;
         // border: 1px solid #00eeff;
-        box-shadow: 0 0 8px 2px #00eeff;
         transition: all .3s;
+
+        &:hover {
+            box-shadow: 0 0 4px 1px #00eeff;
+        }
 
         .el-tabs {
             display: none;
@@ -609,6 +617,10 @@ onMounted(() => {
         }
 
         .menuclose {
+            display: none;
+        }
+
+        .demo-tabs {
             display: none;
         }
     }
@@ -638,7 +650,9 @@ onMounted(() => {
         width: 130px;
         display: flex;
         flex-wrap: wrap;
-
+        overflow-y: auto;
+        height: 300px;
+        margin-top: 30px;
         .model {
             width: 100px;
             height: 100px;
