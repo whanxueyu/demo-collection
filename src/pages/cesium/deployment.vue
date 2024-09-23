@@ -122,15 +122,26 @@ const target = ref({
     height: 0,
 });
 const modelList = [
-    // {
-    //     name: '警车（问题模型）',
-    //     url: './models/警车.glb',
-    //     icon: ''
-    // },
+    
     {
         name: '士兵',
         url: './models/士兵.glb',
         icon: '/models/士兵.png'
+    },
+    {
+        name: 'Cesium_Man',
+        url: './models/Cesium_Man.glb',
+        icon: '/models/Cesium_Man.png'
+    },
+    {
+        name: '警车',
+        url: './models/警车.glb',
+        icon: './models/警车.png'
+    },
+    {
+        name: '救护车',
+        url: './models/救护车.glb',
+        icon: './models/救护车.png'
     },
     {
         name: '猛士车',
@@ -142,20 +153,26 @@ const modelList = [
         url: './models/水炮车.glb',
         icon: './models/水炮车.png'
     },
-    // {
-    //     name: '特警车（问题模型）',
-    //     url: './models/特警用车.glb'
-    // },
     {
         name: '武警巡逻车',
         url: './models/武警巡逻车.glb',
         icon: './models/武警巡逻车.png'
     },
-    // {
-    //     name: '装甲车（问题模型）',
-    //     url: './models/装甲车.glb'
-    // },
-
+    {
+        name: '火警车',
+        url: './models/Fire_Truck.glb',
+        icon: './models/Fire_Truck.png'
+    },
+    {
+        name: '无人机-3轴',
+        url: './models/hovering_drone.glb',
+        icon: './models/hovering_drone.png'
+    },
+    {
+        name: '无人机-4轴',
+        url: './models/flying_drone.glb',
+        icon: './models/flying_drone.png'
+    },
 ]
 let startTime = Cesium.JulianDate.addHours(Cesium.JulianDate.now(), 8, new Cesium.JulianDate());
 let endTime = Cesium.JulianDate.addSeconds(startTime, 3600, new Cesium.JulianDate())
