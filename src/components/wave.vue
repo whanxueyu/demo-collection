@@ -13,13 +13,14 @@ const amountY = ref(50);
 const SEPARATION = 100;
 const count = ref(0);
 const mouseX = ref(0);
+const isPressed = ref(false);
 const windowHalfX = ref(window.innerWidth / 2);
 const props = defineProps({
     top: {
         type: Number,
         default: 300
     },
-    color:{
+    color: {
         type: String,
         default: '#299bfb'
     },
@@ -95,6 +96,12 @@ const init = () => {
     container?.appendChild(renderer.domElement);
 
     container?.addEventListener('pointermove', onPointerMove);
+    container?.addEventListener('mousedown', () => {
+        isPressed.value = true;
+    });
+    container?.addEventListener('mouseup', () => {
+        isPressed.value = false;
+    });
 
 
     if (container) {
@@ -141,8 +148,8 @@ const onWindowResize = () => {
 };
 
 const onPointerMove = (event: MouseEvent) => {
-    // if (event.isPrimary === false) return;
-    mouseX.value = event.clientX - windowHalfX.value;
+    if (isPressed.value)
+        mouseX.value = event.clientX - windowHalfX.value;
 };
 
 const animate = () => {
