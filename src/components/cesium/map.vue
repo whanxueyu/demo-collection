@@ -32,6 +32,7 @@ import * as Cesium from "cesium";
 import 'cesium/Source/Widgets/widgets.css';
 import { useMouse, onClickOutside } from '@vueuse/core'
 import baseLayer from '@/components/cesium/baseLayer.vue'
+import Compass from '@/modules/compass/compass.ts'
 var viewer;
 const props = defineProps({
     // 默认经纬度
@@ -100,6 +101,7 @@ const initCesium = () => {
     // viewer.scene.screenSpaceCameraController.enableTranslate = false;
     viewer.scene.screenSpaceCameraController.enableRotate = true; //拖拽旋转
     viewer.scene.screenSpaceCameraController.enableTilt = true; //右键拖拽倾斜
+    new Compass(viewer)
     var helper = new Cesium.EventHelper();
     if (props.lazy) {
         helper.add(viewer.scene.globe.tileLoadProgressEvent, function (e) {
