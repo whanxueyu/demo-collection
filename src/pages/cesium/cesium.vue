@@ -233,21 +233,21 @@
     <imageryEditer :viewer="viewer" v-if="mapLoaded"></imageryEditer>
     <div class="addition">
         <div class="align-center flex">
-            <div :class="activeTool = 'screenShot' ? 'menuBtn active' : 'menuBtn'" @click="takeScreenshot">
+            <div :class="activeTool === 'screenShot' ? 'menuBtn active' : 'menuBtn'" @click="takeScreenshot">
                 <el-tooltip class="box-item" effect="dark" content="保存图片" placement="top">
                     <el-icon>
                         <Picture />
                     </el-icon>
                 </el-tooltip>
             </div>
-            <div :class="activeTool = 'drawLine' ? 'menuBtn active' : 'menuBtn'" @click="handleDrawLine">
+            <div :class="activeTool === 'drawLine' ? 'menuBtn active' : 'menuBtn'" @click="handleDrawLine">
                 <el-tooltip class="box-item" effect="dark" content="画线" placement="top">
                     <el-icon>
                         <EditPen />
                     </el-icon>
                 </el-tooltip>
             </div>
-            <div :class="activeTool = 'measure' ? 'menuBtn active' : 'menuBtn'" @click="handleMeasurement">
+            <div :class="activeTool === 'measure' ? 'menuBtn active' : 'menuBtn'" @click="handleMeasurement">
                 <el-tooltip class="box-item" effect="dark" content="测量" placement="top">
                     <el-icon>
                         <Share />

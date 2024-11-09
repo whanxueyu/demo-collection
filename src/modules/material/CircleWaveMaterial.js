@@ -1,3 +1,4 @@
+import * as Cesium from 'cesium';
 /**
  * 水波纹扩散材质
  * @param {*} options
@@ -6,7 +7,7 @@
  * @param {Number} options.count 波浪数量
  * @param {Number} options.gradient 渐变曲率
  */
-export default class CircleWaveMaterialProperty {
+export default class CircleWaveMaterialProperty extends Cesium.MaterialProperty{
   constructor(options) {
     this._definitionChanged = new Cesium.Event();
     this.color = Cesium.defaultValue(options.color && new Cesium.Color.fromCssColorString(options.color), Cesium.Color.RED);

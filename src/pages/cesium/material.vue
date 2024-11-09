@@ -6,6 +6,8 @@
       @click="changeTool('drawVolume')">添加管道</el-button>
     <el-button :type="activeTool === 'drawScanRadar' ? 'success' : 'primary'"
       @click="changeTool('drawScanRadar')">添加雷达</el-button>
+    <el-button :type="activeTool === 'drawCircleWave' ? 'success' : 'primary'"
+      @click="changeTool('drawCircleWave')">波纹雷达</el-button>
     <el-button :type="activeTool === 'drawPlane' ? 'success' : 'primary'"
       @click="changeTool('drawPlane')">视频面板</el-button>
     <video id="trailer" style="width:0px" controls autoplay muted loop>
@@ -18,7 +20,7 @@
   </div>
   <Map @loaded="handleMapLoaded" :duration="0" map-type="gd_v"></Map>
   <status-bar v-if="loaded" :viewer="viewer"></status-bar>
-  <imageryEditer  v-if="loaded" :viewer="viewer"></imageryEditer>
+  <imageryEditer v-if="loaded" :viewer="viewer"></imageryEditer>
 </template>
 <script>
 
@@ -38,6 +40,7 @@ import wallMaterial from "@/modules/material/wallMaterial";
 import migrationLineMaterial from "@/modules/material/migrationLineMaterial";
 import verticalLineMaterial from "@/modules/material/verticalLineMaterial";
 import EllipsoidElectricMaterialProperty from "@/modules/material/EllipsoidElectricMaterial";
+import CircleWaveMaterialProperty from "@/modules/material/CircleWaveMaterial";
 import imageryEditer from '@/components/cesium/imageryEditer.vue'
 var viewer: Cesium.Viewer;
 const loaded = ref(false);
@@ -119,6 +122,22 @@ const drawScanRadar = (center: Cesium.Cartesian3) => {
       }),
     })
   )
+
+}
+const drawCircleWaveRadar = (center: Cesium.Cartesian3) => {
+  viewer.entities.add({
+    position: center,
+    ellipse: {
+      semiMinorAxis: 1000,
+      semiMajorAxis: 1000,
+      material: new CircleWaveMaterialProperty({ color: '#ffff0f', duration: 5000, count: 3 }),
+      outline: true,
+      // outlineWidth: 25,
+      outlineColor: Cesium.Color.AQUA,
+      height: 1,
+
+    },
+  });
 }
 const drawLine = () => {
   //   let uuid = generateUniqueId()
@@ -375,6 +394,8 @@ const handleLeftClick = (event) => {
     drawVolume()
   } else if (activeTool.value === 'drawScanRadar') {
     drawScanRadar(cartesian)
+  } else if (activeTool.value === 'drawCircleWave') {
+    drawCircleWaveRadar(cartesian)
   } else if (activeTool.value === 'drawPlane') {
     drawPlane(cartesian)
   }

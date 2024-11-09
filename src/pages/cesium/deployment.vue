@@ -157,6 +157,10 @@ const modelList = [
         name: '武警巡逻车',
         url: './models/武警巡逻车.glb',
         icon: './models/武警巡逻车.png'
+    },{
+        name: 'SK_BIAOZHI_508_black',
+        url: './models/SK_BIAOZHI_508_black.glb',
+        icon: './models/武警巡逻车.png'
     },
     {
         name: '火警车',
