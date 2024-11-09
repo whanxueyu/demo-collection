@@ -69,7 +69,7 @@ class DivBillboard {
             this.element.style.bottom = canvasHeight - windowPosition.y + "px";
             const elWidth = this.element.offsetWidth;
             this.element.style.left = windowPosition.x - elWidth / 2 + "px";
-            // this.element.style.transformStyle = 'preserve-3d';
+            this.element.style.transformStyle = 'preserve-3d';
 
 
             const camerPosition = this.viewer.camera.position;
@@ -84,9 +84,11 @@ class DivBillboard {
                     this.viewer.camera.positionCartographic.height < this.maxRenderDis
                 ) {
                     this.element.style.display = "block";
-                    // const scale = this.maxRenderDis / (Cartesian3.distance(camerPosition, this.position) * 5);
-
-                    // this.element.style.transform = `scale(${scale})`;
+                    let scale = this.maxRenderDis / (Cartesian3.distance(camerPosition, this.position) * 5);
+                    if(scale > 1){
+                        scale = 1
+                    }
+                    this.element.style.transform = `scale(${scale})`;
 
                 } else {
                     this.element.style.display = "none";
