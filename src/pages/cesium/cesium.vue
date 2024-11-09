@@ -63,7 +63,7 @@
                                 </div>
                             </el-radio>
                         </el-radio-group>
-                        <el-radio-group v-model="mapData.markIcon" v-if="showMark=== 'gif'">
+                        <el-radio-group v-model="mapData.markIcon" v-if="showMark === 'gif'">
                             <el-radio :label="1">
                                 <div class="align-center flex">
                                     <span>shine</span>
@@ -273,6 +273,7 @@ import anallysisDiv from "@/components/billboard/anallysisDiv.vue";
 import borderDiv from "@/components/billboard/borderDiv.vue";
 import lineDiv from "@/components/billboard/lineDiv.vue";
 import imageryEditer from '@/components/cesium/imageryEditer.vue'
+import { color } from "echarts";
 var viewer;
 
 const mapData = reactive({
@@ -319,8 +320,9 @@ const handleMapLoaded = (cviewer) => {
     let handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
     // 右
     handler.setInputAction(function (event) {
-        let ray = viewer.camera.getPickRay(event.position);
-        let cartesian = viewer.scene.globe.pick(ray, viewer.scene);
+        // let ray = viewer.camera.getPickRay(event.position);
+        // let cartesian = viewer.scene.globe.pick(ray, viewer.scene);
+        var cartesian = viewer.camera.pickEllipsoid(event.position, viewer.scene.globe.ellipsoid);
         let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
         let lng = Cesium.Math.toDegrees(cartographic.longitude); // 经度
         let lat = Cesium.Math.toDegrees(cartographic.latitude); // 纬度
@@ -649,6 +651,20 @@ const addDiv = (coordinate) => {
     let content = `经度：${coordinate.longitude}\n纬度：${coordinate.latitude}\n高度：${coordinate.height}`
     let billboard = new DivBillboard(viewer, pos, content, component);
     console.log(billboard)
+    addpoint(coordinate.longitude, coordinate.latitude)
+}
+const addpoint = (longitude, latitude) => {
+    viewer.entities.add({
+        name: name,
+        position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
+        point: {
+            pixelSize: 2,
+            color: Cesium.Color.RED,
+            outlineColor: Cesium.Color.WHITE,
+            outlineWidth: 2,
+            heightReference: Cesium.HeightReference.NONE,
+        },
+    })
 }
 
 function loadGif(longitude, latitude) {
