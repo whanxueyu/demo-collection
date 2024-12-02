@@ -1,6 +1,6 @@
 <template>
     <div :class="['cp-svg-btn', 'svg-' + props.type, props.size]">
-        <svg height="100%" width="100%" xmlns="http://www.w3.org/2000/svg">
+        <svg height="100%" xmlns="http://www.w3.org/2000/svg">
             <rect class="outline" height="100%" width="100%" />
         </svg>
         <div class="text">

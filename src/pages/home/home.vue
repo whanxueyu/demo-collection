@@ -30,9 +30,12 @@
             <div class="section section2 scroll-element">
                 <div class="title">
                     <cyberText>{{ state.title1 }}</cyberText>
+                    <div style="width: 100px;height: 40px;">
+                    <DigitalFlop :config="config1" />
+                </div>
                 </div>
                 <div class="btn">
-                    <errorbutton>{{ state.btn3 }}</errorbutton>
+                    <errorbutton @click="changeConfig">{{ state.btn3 }}</errorbutton>
                 </div>
                 <div class="btn">
                     <neonButton1>{{ state.neonBtn }}</neonButton1>
@@ -134,6 +137,7 @@ import waveText from '@/components/text/waveText.vue'
 import tDProgress from '@/components/progress/3dProgress.vue'
 import douyin from '@/components/text/douyin.vue'
 import douyinText from '@/components/text/douyinText.vue'
+import { DigitalFlop } from '@kjgl77/datav-vue3';
 const isLoading = ref(true)
 const state = reactive({
     imgurl: require('@/static/img/Cyber2.jpg'),
@@ -144,6 +148,19 @@ const state = reactive({
     btn3: 'AVAILABLE NOW',
     neonBtn: 'NEON BUTTON'
 })
+const config1 = reactive({
+    number: [100],
+    content: '{nt}个',
+    style:{
+        color: '#fff',
+        fontSize: '40px',
+        fontWeight: 'bold'
+    }
+})
+
+const changeConfig = () => {
+    config1.number[0] = 20
+}
 import { ref, computed, watchEffect } from 'vue'
 import Douyin from '@/components/text/douyin.vue'
 

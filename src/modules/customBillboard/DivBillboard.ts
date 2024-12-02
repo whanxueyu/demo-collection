@@ -100,7 +100,6 @@ class DivBillboard {
     }
     public setContent(content: string) {
         this.content = content;
-        this.content = content;
         if (this.element) {
             const app = createApp({
                 render: () => h(this.vueComponent, { id: this.id, htmlContent: this.content })

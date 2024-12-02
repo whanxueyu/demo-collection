@@ -138,16 +138,7 @@ const routes = [
                             name: 'VR看房',
                             hidden:false
                         },
-                    },
-                    {
-                        path: '/aframehouse',
-                        name: 'aframehouse',
-                        component: () => import('@/pages/aFrame/aframehouse.vue'),
-                        meta: {
-                            name: 'Aframe 房间',
-                            hidden:false
-                        },
-                    },
+                    }
                 ]
             },
             {
