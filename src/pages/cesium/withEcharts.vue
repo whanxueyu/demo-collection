@@ -14,13 +14,23 @@ import Map from '@/components/cesium/map.vue'
 import statusBar from '@/components/cesium/status-bar.vue'
 import * as echarts from "echarts"
 import EchartsLayer from './echartsLayer.js'
-import { geoOption, pieOption, pieOption2 } from './chartData.ts'
+import { geoOption, pieOption, pieOption2 } from './chartData.ts';
+import { FireEffect } from '@/modules/particleEffect/FireEffect.js'
+import { explotEffect } from '@/modules/particleEffect/explotEffect.js'
+import { sprayEffect } from '@/modules/particleEffect/sprayEffect.js'
+import { smokeEffect } from '@/modules/particleEffect/smokeEffect.js'
+import { waterEffect } from '@/modules/particleEffect/waterEffect.js'
 var viewer: Cesium.Viewer;
 const loaded = ref(false);
 const handleMapLoaded = (cviewer) => {
     viewer = cviewer;
     loaded.value = true;
     setTimeout(() => {
+        new FireEffect(viewer)
+        new explotEffect(viewer)
+        new smokeEffect(viewer)
+        new sprayEffect(viewer)
+        new waterEffect(viewer)
         addEcharts(viewer)
         drawPie(pieOption, { lon: 116, lat: 39 })
         drawPie(pieOption2, { radius: 50000, lon: 103, lat: 34 })
@@ -85,7 +95,6 @@ const addEcharts = (viewer: Cesium.Viewer) => {
     })
 }
 onMounted(() => {
-
 })
 </script>
 
