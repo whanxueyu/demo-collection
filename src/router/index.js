@@ -74,6 +74,15 @@ const routes = [
                             hidden:false
                         },
                     },
+                    {
+                        path: '/cesium/particle',
+                        name: 'particle',
+                        component: () => import('@/pages/cesium/particle.vue'),
+                        meta: {
+                            name: '粒子效果',
+                            hidden:false
+                        },
+                    },
                 ]
             },
             {
@@ -86,11 +95,11 @@ const routes = [
                 },
             },
             {
-                path: '/PearORC',
-                name: 'PearORC',
+                path: '/PearOCR',
+                name: 'PearOCR',
                 component: () => import('@/pages/orc/orc.vue'),
                 meta: {
-                    name: 'PearORC',
+                    name: 'PearOCR',
                     hidden:false
                 },
             },

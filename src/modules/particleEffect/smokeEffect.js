@@ -7,12 +7,12 @@ export class smokeEffect {
             emissionRate: 5,
             gravity: 0.0,//设置重力参数
             minimumParticleLife: 1,
-            maximumParticleLife: 6,
+            maximumParticleLife: 2,
             minimumSpeed: 1.0,//粒子发射的最小速度
-            maximumSpeed: 4.0,//粒子发射的最大速度
+            maximumSpeed: 2.0,//粒子发射的最大速度
             startScale: 0.0,
-            endScale: 10.0,
-            particleSize: 25.0,
+            endScale: 5.0,
+            particleSize: 10.0,
         }
         this.emitterModelMatrix = new Cesium.Matrix4()
         this.translation = new Cesium.Cartesian3()
@@ -24,8 +24,9 @@ export class smokeEffect {
         this.entity = this.viewer.entities.add({
             //选择粒子放置的坐标
             position: Cesium.Cartesian3.fromDegrees(
-                116.35285552299206,
-                39.99754814959118
+                116.4485552299206,
+                39.93194814959118,
+                37.8
             ),
         });
         this.init();
