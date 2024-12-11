@@ -7,6 +7,12 @@
 [![GitHub Stars](https://img.shields.io/github/stars/whanxueyu/demo-collection.svg?style=social)](https://github.com/whanxueyu/demo-collection/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/whanxueyu/demo-collection.svg?style=social)](https://github.com/whanxueyu/demo-collection/network/members)
 
+
+## <font color="red">重要通知</font>
+
+<font color="orange"><strong>项目中 Cesium 相关的例子将迁移至新的仓库中，使用 Vite 构建的 Vue3 项目，并全面使用 TypeScript。项目正在重构中，等候将迁移到新的仓库中，增加从基础到高级的各类例子 demo，并重新开源。</strong></font>
+
+
 ## 项目介绍
 
 这是一个在业余时间创建的示例集合项目，包含多种视觉效果如CSS与SVG特效，包括霓虹风格按钮、赛博朋克元素等。此外，还实现了360度全景展示和VR页面浏览功能，并且有一个简单的VR看房应用。项目还包括了`cesium`相关的很多案例和组件、数据可视化大屏模板以及其他实验性内容。如果你觉得这些内容对你有所帮助，请给予一个Star。
