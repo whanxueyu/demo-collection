@@ -27,6 +27,7 @@ import * as Cesium from "cesium";
 import Map from '@/components/cesium/map.vue'
 import statusBar from '@/components/cesium/status-bar.vue'
 import waterfrom from '../../assets/water.png'
+import fireImg from '../../assets/water.png'
 import { smokeEffect } from '@/modules/particleEffect/smokeEffect.js'
 import { waterEffect } from '@/modules/particleEffect/waterEffect.js'
 var viewer: Cesium.Viewer;
@@ -48,6 +49,7 @@ const handleMapLoaded = (Viewer) => {
         reset()
         addFireSmoke()
         addWaterPipe()
+        createParticle()
     })
 }
 const saveEdit = () => {
@@ -58,6 +60,29 @@ const saveEdit = () => {
 }
 const addFireSmoke = () => {
     new smokeEffect(viewer)
+}
+const createParticle = () => {
+    var particle = new Cesium.ParticleSystem({
+        image: fireImg,
+        startColor: Cesium.Color.RED.withAlpha(0.1),
+        endColor: Cesium.Color.YELLOW.withAlpha(0.5),
+        startScale: 10,
+        endScale: 5,
+        minimumParticleLife: 1.5,
+        maximumParticleLife: 1.8,
+        minimumSpeed: 6,
+        maximumSpeed: 8,
+        imageSize: new Cesium.Cartesian2(1, 1),
+        sizeInMeters: true,
+        // Particles per second.
+        emissionRate: 20,
+        lifetime: 3,
+        emitter: new Cesium.CircleEmitter(5.0),
+        modelMatrix: computeModelMatrix({ lon: 116.45, lat: 39.933, alt: 35 }),
+        emitterModelMatrix: computeEmitterModelMatrix()
+
+    })
+    viewer.scene.primitives.add(particle);
 }
 const waterParticle = ref()
 const addWaterPipe = () => {
@@ -101,7 +126,7 @@ function applyGravityTWO(p, dt: number) {
     // 更新粒子的速度
     p.velocity = Cesium.Cartesian3.add(p.velocity, gravityScratch, p.velocity)
 }
-function computeEmitterModelMatrix(heading: number, pich: number, roll: number) {
+function computeEmitterModelMatrix(heading: number = 0, pich: number = 0, roll: number = 0) {
     let hpr = Cesium.HeadingPitchRoll.fromDegrees(heading, pich, roll) //!!!发射粒子的方向
     let trs = new Cesium.TranslationRotationScale()
     trs.translation = Cesium.Cartesian3.fromElements(-4.0, 0.0, 1.4)
