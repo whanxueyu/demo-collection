@@ -11,7 +11,7 @@
 ## <font color="red">重要通知</font>
 
 <font color="orange"><strong>项目中 Cesium 相关的例子将迁移至新的仓库中，使用 Vite 构建的 Vue3 项目，并全面使用 TypeScript。项目正在重构中，等候将迁移到新的仓库中，增加从基础到高级的各类例子 demo，并重新开源。</strong></font>
-新的项目预览地址在这里 [AXY-Cesium](https://axy-cesium.netlify.app/) ，目前正在重构中，请关注。
+<font color="red"><strong>新的项目预览地址在这里 [AXY-Cesium](https://axy-cesium.netlify.app/) ，目前正在重构中，请关注。</strong></font>
 
 
 ## 项目介绍
