@@ -28,11 +28,11 @@
                 </div>
             </div>
             <div class="section section2 scroll-element">
-                <div class="title">
+                <div class="title justify-between">
                     <cyberText>{{ state.title1 }}</cyberText>
                     <div style="width: 100px;height: 40px;">
-                    <DigitalFlop :config="config1" />
-                </div>
+                        <DigitalFlop :config="config1" />
+                    </div>
                 </div>
                 <div class="btn">
                     <errorbutton @click="changeConfig">{{ state.btn3 }}</errorbutton>
@@ -80,22 +80,25 @@
                 <bigEye></bigEye>
             </div>
             <div class="section section4 scroll-element">
-                <div class="title flex justify-between" style="font-size: 48px;">
+                <div class="title">
+                    <cyberText>Cyberpunk Text</cyberText>
+                </div>
+                <div class="btn flex justify-between align-center" style="font-size: 48px;">
                     <shadowText direction="right" shadowColor="#66cc22">shadowText right</shadowText>
                     <breakText>BREAK TEXT</breakText>
                     <shadowText direction="left" shadowColor="#2299cc">shadowText left</shadowText>
                 </div>
-                <div class="title flex justify-between" style="font-size: 60px;">
+                <div class="btn flex justify-between align-center" style="font-size: 60px;">
                     <shineText>shineText</shineText>
                     <pinkText>123abcABC文字</pinkText>
                     <waveText></waveText>
                 </div>
-                <div class="title flex justify-between" style="font-size: 60px;">
+                <div class="btn flex justify-between align-center">
+                    <douyin></douyin>
+                    <douyinText text="douyinText"></douyinText>
                     <svgText1></svgText1>
                     <svgText2></svgText2>
                 </div>
-                <douyin></douyin>
-                <douyinText></douyinText>
             </div>
         </div>
         <ul class="aside">
@@ -324,7 +327,7 @@ onMounted(() => {
         nextTick(() => {
             height.value = fullPage.value.clientHeight + 60
         })
-    }, 5500);
+    }, 2500);
 })
 </script>
 
@@ -453,9 +456,10 @@ onMounted(() => {
 .title {
     width: calc(100vw - 40px);
     background-color: #000;
-    line-height: 50px;
+    line-height: 40px;
     padding: 0 20px;
     text-align: left;
+    box-shadow: 0 0 10px 0 rgba(255, 255, 255, 0.3);
 
     &.no {
         background-color: transparent;
@@ -522,6 +526,12 @@ onMounted(() => {
         .movetext {
             height: 58px;
             font-size: 48px;
+        }
+        .btn {
+            padding: 20px 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
         }
     }
 

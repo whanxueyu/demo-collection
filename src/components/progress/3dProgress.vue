@@ -98,7 +98,7 @@ const props = defineProps({
 }
 
 .colorful {
-    animation: hueRotate 10s infinite linear;
+    animation: hueRotate 2s infinite linear;
 
     .cube {
 
@@ -117,7 +117,7 @@ const props = defineProps({
     .front,
     .bottom,
     .back {
-        animation: perChange 5s ease-in-out forwards;
+        animation: perChange 2s ease-in-out forwards;
     }
 }
 

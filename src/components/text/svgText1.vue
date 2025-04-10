@@ -7,19 +7,21 @@
  * @Description: 
 -->
 <template>
-    <svg viewBox="0 0 800 600">
-        <symbol id="s-text">
-            <text text-anchor="middle" x="50%" y="35%" class="text--line">Swing</text>
-            <text text-anchor="middle" x="50%" y="68%" class="text--line2">Text</text>
-        </symbol>
-        <g class="g-ants">
-            <use xlink:href="#s-text" class="text-copy"></use>
-            <use xlink:href="#s-text" class="text-copy"></use>
-            <use xlink:href="#s-text" class="text-copy"></use>
-            <use xlink:href="#s-text" class="text-copy"></use>
-            <use xlink:href="#s-text" class="text-copy"></use>
-        </g>
-    </svg>
+    <div>
+        <svg viewBox="0 0 280 172">
+            <symbol id="s-text">
+                <text text-anchor="middle" x="50%" y="35%" class="text--line">Swing</text>
+                <text text-anchor="middle" x="50%" y="68%" class="text--line2">Text</text>
+            </symbol>
+            <g class="g-ants">
+                <use xlink:href="#s-text" class="text-copy"></use>
+                <use xlink:href="#s-text" class="text-copy"></use>
+                <use xlink:href="#s-text" class="text-copy"></use>
+                <use xlink:href="#s-text" class="text-copy"></use>
+                <use xlink:href="#s-text" class="text-copy"></use>
+            </g>
+        </svg>
+    </div>
 </template>
 <script setup lang="ts">
 import { defineProps, ref } from 'vue';
@@ -33,9 +35,10 @@ const props = defineProps({
 <style lang="scss" scoped>
 
 svg {
-    position: absolute;
-    width: 100%;
-    height: 300px;
+    margin: auto;
+    width: 280px;
+    height: 172px;
+    font-size: 100px;
 }
 
 .text-copy {

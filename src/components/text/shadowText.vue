@@ -68,5 +68,6 @@ const adjustColor = (color: string, step: number): string => {
 .shadow-text {
     text-align: center;
     display: inline-block;
+    margin: auto;
 }
 </style>

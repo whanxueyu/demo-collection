@@ -7,9 +7,11 @@
  * @Description: 
 -->
 <template>
-    <svg viewBox="0 0 400 200">
-        <text x="0" y="70%"> Lorem </text>
-    </svg>
+    <div>
+        <svg viewBox="0 0 600 300">
+            <text x="0" y="70%"> Lorem </text>
+        </svg>
+    </div>
 </template>
 <script setup lang="ts">
 import { defineProps, ref } from 'vue';
@@ -23,17 +25,8 @@ const props = defineProps({
 <style lang="scss" scoped>
 @import url("https://fonts.googleapis.com/css2?family=Bangers&family=Homemade+Apple&family=Sacramento&display=swap");
 
-html,
-body {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    font-family: "Bangers", cursive;
-    background: #000;
-}
-
 svg {
-    width: 1005;
+    width: 100%;
     height: 300px;
     margin: auto;
 }

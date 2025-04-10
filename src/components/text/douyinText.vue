@@ -7,22 +7,24 @@
  * @Description: 
 -->
 <template>
-    <div class="text-magic" data-word="CSSTextGlitch">
+    <div class="text-magic" :data-word="props.text">
         <div class="white"></div>
     </div>
 </template>
 
 <script setup lang="ts">
-
+const props = defineProps({
+    text: {
+        type: String,
+        default: 'DouYin',
+    }
+})
 </script>
 <style lang="scss" scoped>
 .text-magic {
-    // position: absolute;
-    // top: 50%;
-    // left: 50%;
-    // transform: translate(-50%, -50%) scale(3);
+    height: 56px;
     transform: translate(0%, 0%);
-    width: 300px;
+    width: 240px;
     font-size: 36px;
     font-family: Raleway, Verdana, Arial;
     color: transparent;
@@ -43,7 +45,7 @@
     position: absolute;
     top: 0;
     left: 0;
-    height: 36px;
+    height: 56px;
     color: red;
     overflow: hidden;
     z-index: 2;
@@ -57,7 +59,7 @@
     position: absolute;
     top: 0;
     left: -1px;
-    height: 36px;
+    height: 56px;
     color: rgba(255, 255, 255, 0.8);
     overflow: hidden;
     z-index: 3;

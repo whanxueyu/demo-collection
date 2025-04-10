@@ -7,7 +7,9 @@
  * @Description: 
 -->
 <template>
-    <div class="douyin">
+    <div class="cp-douyin">
+        <div class="douyin">
+        </div>
     </div>
 </template>
 
@@ -20,11 +22,16 @@ defineOptions({
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
+.cp-douyin{
+    width: 318px;
+    height: 348px;
+    padding-top: 30px;
+}
 .douyin {
     position: relative;
     width: 37px;
     height: 218px;
-    margin: 100px auto;
+    margin: 30px 100px 100px 170px;
     z-index: 1;
     background: #fff;
     filter:drop-shadow(-10px -10px 0 #24f6f0) contrast(150%) brightness(110%);
