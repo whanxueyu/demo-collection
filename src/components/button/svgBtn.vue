@@ -1,6 +1,6 @@
 <template>
     <div :class="['cp-svg-btn', 'svg-' + props.type, props.size]">
-        <svg height="100%" xmlns="http://www.w3.org/2000/svg">
+        <svg height="100%" width="100%" xmlns="http://www.w3.org/2000/svg">
             <rect class="outline" height="100%" width="100%" />
         </svg>
         <div class="text">
@@ -87,6 +87,7 @@ html {
 .large {
     height: 50px;
     margin: 6px 12px;
+    width: 200px;
 
     .text {
         line-height: 50px;
@@ -98,6 +99,7 @@ html {
 .default {
     height: 32px;
     margin: 5px 10px;
+    width: 170px;
 
     .text {
         line-height: 32px;
@@ -109,6 +111,7 @@ html {
 .small {
     height: 20px;
     margin: 3px 6px;
+    width: 130px;
 
     .text {
         line-height: 20px;
