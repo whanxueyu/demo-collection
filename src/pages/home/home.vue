@@ -324,7 +324,7 @@ onMounted(() => {
         nextTick(() => {
             height.value = fullPage.value.clientHeight + 60
         })
-    }, 2500);
+    }, 5500);
 })
 </script>
 
