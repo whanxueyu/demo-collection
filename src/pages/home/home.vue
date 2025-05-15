@@ -1,6 +1,6 @@
 <template>
     <div class="loading-cover" v-if="isLoading">
-        <shineText style="font-size: 160px;margin: 100px auto;">CyberPunk-UI</shineText>
+        <shineText style="font-size: 160px;margin: 100px auto;">AXY-DEMO</shineText>
         <tDProgress></tDProgress>
     </div>
     <div class="outer-box" ref="fullPage" v-show="!isLoading">

@@ -1,5 +1,5 @@
 <template>
-    <VuePannellum ref="pannellumViewer" class="viewwe" :src="require('../../assets/house.jpg')"
+    <VuePannellum ref="pannellumViewer" class="viewwe" :src="state.options.panorama"
         :hotSpots="state.options.hotSpots" />
 </template>
 
@@ -12,7 +12,7 @@ const state = reactive({
     viewer: null,
     options: {
         type: 'equirectangular',
-        panorama: '../assets/360.jpg',
+        panorama: require('../../assets/house.jpg'),
         autoLoad: true,
         showControls: false,
         hotSpots: [
@@ -21,17 +21,44 @@ const state = reactive({
                 yaw: 1.4,
                 type: 'scene',
                 text: '第一个场景',
-                sceneId: 'scene2',
-                image: require("../../assets/logo.png"),
+                sceneId: 'scene1',
             },
             {
                 pitch: -10.8,
                 yaw: -42.6,
                 type: 'scene',
                 text: '第二个场景',
-                sceneId: 'scene3',
+                sceneId: 'scene2',
             },
         ],
+        scenes: {
+            scene1: {
+                title: '第一个场景',
+                panorama: require('../../assets/360.jpg'),
+                hotSpots: [
+                    {
+                        pitch: 1.1,
+                        yaw: 1.4,
+                        type: 'scene',
+                        text: '360的hotpot',
+                        sceneId: 'scene2',
+                    }
+                ]
+            } ,
+            scene2: {
+                title: '第二个场景',
+                panorama: require('../../assets/house.jpg'),
+                hotSpots: [
+                    {
+                        pitch: 1.1,
+                        yaw: 1.4,
+                        type: 'scene',
+                        text: 'house的hotpot',
+                        sceneId: 'scene1',
+                    }
+                ]
+            }
+        }
     },
 
 })
