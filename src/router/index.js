@@ -7,8 +7,8 @@ const routes = [
         path: '/',
         component: () => import('@/pages/public/index.vue'),
         meta: {
-            hidden:true,
-            name:'public'
+            hidden: true,
+            name: 'public'
         },
         children: [
             // {
@@ -26,7 +26,7 @@ const routes = [
                 component: () => import('@/pages/home/home.vue'),
                 meta: {
                     name: '首页',
-                    hidden:false
+                    hidden: false
                 },
             },
             {
@@ -35,16 +35,16 @@ const routes = [
                 component: () => import('@/pages/cesium/index.vue'),
                 meta: {
                     name: 'cesium用例',
-                    hidden:false
+                    hidden: false
                 },
-                children:[
+                children: [
                     {
                         path: '/cesium/map',
                         name: 'map',
                         component: () => import('@/pages/cesium/cesium.vue'),
                         meta: {
                             name: '标签图层',
-                            hidden:false
+                            hidden: false
                         },
                     },
                     {
@@ -53,7 +53,7 @@ const routes = [
                         component: () => import('@/pages/cesium/deployment.vue'),
                         meta: {
                             name: '队列部署',
-                            hidden:false
+                            hidden: false
                         },
                     },
                     {
@@ -62,7 +62,7 @@ const routes = [
                         component: () => import('@/pages/cesium/material.vue'),
                         meta: {
                             name: '各类材质',
-                            hidden:false
+                            hidden: false
                         },
                     },
                     {
@@ -71,7 +71,7 @@ const routes = [
                         component: () => import('@/pages/cesium/withEcharts.vue'),
                         meta: {
                             name: 'Echarts融合',
-                            hidden:false
+                            hidden: false
                         },
                     },
                     {
@@ -80,7 +80,7 @@ const routes = [
                         component: () => import('@/pages/cesium/particle.vue'),
                         meta: {
                             name: '粒子效果',
-                            hidden:false
+                            hidden: false
                         },
                     },
                 ]
@@ -91,7 +91,7 @@ const routes = [
                 component: () => import('@/pages/bigscreen/bigscreen.vue'),
                 meta: {
                     name: '可视化大屏',
-                    hidden:false
+                    hidden: false
                 },
             },
             {
@@ -100,7 +100,7 @@ const routes = [
                 component: () => import('@/pages/orc/orc.vue'),
                 meta: {
                     name: 'PearOCR',
-                    hidden:false
+                    hidden: false
                 },
             },
             // {
@@ -118,16 +118,16 @@ const routes = [
                 component: () => import('@/pages/panoramic/index.vue'),
                 meta: {
                     name: '全景VR',
-                    hidden:false
+                    hidden: false
                 },
-                children:[
+                children: [
                     {
                         path: '/equirectangular',
                         name: 'equirectangular',
                         component: () => import('@/pages/panoramic/equirectangular.vue'),
                         meta: {
                             name: '圆柱投影',
-                            hidden:false
+                            hidden: false
                         },
                     },
                     {
@@ -136,7 +136,7 @@ const routes = [
                         component: () => import('@/pages/panoramic/cubic.vue'),
                         meta: {
                             name: '立方体投影',
-                            hidden:false
+                            hidden: false
                         },
                     },
                     {
@@ -145,7 +145,7 @@ const routes = [
                         component: () => import('@/pages/panoramic/house.vue'),
                         meta: {
                             name: 'VR看房',
-                            hidden:false
+                            hidden: false
                         },
                     }
                 ]
@@ -156,16 +156,16 @@ const routes = [
                 component: () => import('@/pages/three/index.vue'),
                 meta: {
                     name: 'ThreeJS案例',
-                    hidden:false
+                    hidden: false
                 },
-                children:[
+                children: [
                     {
                         path: '/three/wave',
                         name: 'wave',
                         component: () => import('@/pages/three/waveBg/waveBg.vue'),
                         meta: {
                             name: '粒子波浪',
-                            hidden:false
+                            hidden: false
                         },
                     },
                     {
@@ -174,27 +174,36 @@ const routes = [
                         component: () => import('@/pages/three/spaceBg/spaceBg.vue'),
                         meta: {
                             name: '太空背景',
-                            hidden:false
+                            hidden: false
                         },
                     },
                 ]
             },
+            {
+                path: '/project',
+                name: 'project',
+                component: () => import('@/pages/project/index.vue'),
+                meta: {
+                    name: '项目案例',
+                    hidden: false
+                },
+            },
+            {
+                path: '/404',
+                name: '404',
+                component: () => import('@/pages/404/notFound.vue'),
+                meta: {
+                    hidden: true,
+                    name: '404'
+                },
+            },
         ]
-    },
-    {
-        path: '/404',
-        name:'404',
-        component: () => import('@/pages/404/notFound.vue'),
-        meta: {
-            hidden:true,
-            name:'404'
-        },
     },
     {
         path: '/:pathMatch(.*)*',
         component: () => import('@/pages/404/notFound.vue'),
         meta: {
-            hidden:true,
+            hidden: true,
         },
     }
 ]

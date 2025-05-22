@@ -75,25 +75,25 @@ const props = defineProps({
         clip-path: inset(#{randomNum(150, 30)}px 0 #{randomNum(150, 30)}px);
     }
 
-    24% {
-        left: #{randomNum(200, -100)}px;
-        clip-path: inset(#{randomNum(150, 30)}px 0 #{randomNum(150, 30)}px);
-    }
+    // 24% {
+    //     left: #{randomNum(200, -100)}px;
+    //     clip-path: inset(#{randomNum(150, 30)}px 0 #{randomNum(150, 30)}px);
+    // }
 
-    26% {
-        left: #{randomNum(200, -100)}px;
-        clip-path: inset(#{randomNum(150, 30)}px 0 #{randomNum(150, 30)}px);
-    }
+    // 26% {
+    //     left: #{randomNum(200, -100)}px;
+    //     clip-path: inset(#{randomNum(150, 30)}px 0 #{randomNum(150, 30)}px);
+    // }
 
-    28% {
-        left: #{randomNum(200, -100)}px;
-        clip-path: inset(#{randomNum(150, 30)}px 0 #{randomNum(150, 30)}px);
-    }
+    // 28% {
+    //     left: #{randomNum(200, -100)}px;
+    //     clip-path: inset(#{randomNum(150, 30)}px 0 #{randomNum(150, 30)}px);
+    // }
 
-    30% {
-        left: #{randomNum(200, -100)}px;
-        clip-path: inset(#{randomNum(150, 30)}px 0 #{randomNum(150, 30)}px);
-    }
+    // 30% {
+    //     left: #{randomNum(200, -100)}px;
+    //     clip-path: inset(#{randomNum(150, 30)}px 0 #{randomNum(150, 30)}px);
+    // }
 
     15.5% {
         clip-path: inset(10px 0 320px);
@@ -160,11 +160,11 @@ const props = defineProps({
         transform: scale(1.3);
     }
 
-    49.5% {
-        clip-path: inset(105px 0 210px);
-        left: 0%;
-        transform: scale(1.1);
-    }
+    // 49.5% {
+    //     clip-path: inset(105px 0 210px);
+    //     left: 0%;
+    //     transform: scale(1.1);
+    // }
 
     50% {
         clip-path: inset(175px 0 160px);
@@ -182,23 +182,23 @@ const props = defineProps({
         left: -14%;
     }
 
-    51.5% {
-        clip-path: inset(350px 0 7px);
-        left: -14%;
-    }
+    // 51.5% {
+    //     clip-path: inset(350px 0 7px);
+    //     left: -14%;
+    // }
 
-    52% {
-        clip-path: inset(320px 0 27px);
-        left: -12%;
-        transform: scale(1.1);
-    }
+    // 52% {
+    //     clip-path: inset(320px 0 27px);
+    //     left: -12%;
+    //     transform: scale(1.1);
+    // }
 
-    52.5% {
-        clip-path: inset(190px 0 127px);
-        left: -11%;
-        transform: scale(1.3);
-        filter: hue-rotate(90deg) saturate(1.3);
-    }
+    // 52.5% {
+    //     clip-path: inset(190px 0 127px);
+    //     left: -11%;
+    //     transform: scale(1.3);
+    //     filter: hue-rotate(90deg) saturate(1.3);
+    // }
 
     54% {
         clip-path: inset(20px 0 20px);

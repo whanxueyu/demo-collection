@@ -165,7 +165,7 @@ button {
 
 .error__message {
     text-align: center;
-    color: #181828;
+    color: #000000;
 }
 
 .message__title {
