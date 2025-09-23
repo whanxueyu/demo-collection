@@ -25,7 +25,7 @@
             <img src="https://i.pinimg.com/736x/ea/e7/b5/eae7b513060702e86bdd51d4d5cfc5ae.jpg" alt="">
         </div>
         <div class="child">
-            <img src="https://cdn.hipwallpaper.com/i/94/92/Fk0l6I.jpg" alt="">
+            <img src="https://img.freepik.com/premium-photo/cyberpunk-city-lone-figure-futuristic-neon-cityscape_1282444-203220.jpg" alt="">
         </div>
     </div>
 </template>
@@ -55,12 +55,12 @@ img {
 .parent {
     padding: .8rem;
     background: black;
-    height: 95vh;
-    min-height: 500px;
+    // height: 95vh;
+    // min-height: 500px;
     width: 100%;
-    max-width: 600px;
-    margin: auto;
-    margin-top: 2.5vh;
+    // max-width: 600px;
+    // margin: auto;
+    // margin-top: 2.5vh;
     border: 1px solid #c9b473;
     overflow: hidden;
     display: grid;

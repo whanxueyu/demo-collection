@@ -1,11 +1,14 @@
 <template>
     <div class="imgbox">
-        <div class="cyberimg" :style="'background: url(' + props.imgurl + ') no-repeat;background-size: cover;'">
+        <div class="cyberimg" :style="{
+        background: `url(${props.imgurl}) no-repeat`,
+        backgroundSize: 'cover'
+      }">
             <slot></slot>
         </div>
     </div>
 </template>
-<script setup>
+<script setup lang="ts">
 import { defineProps} from 'vue'
 const props = defineProps({
 	imgurl: {
@@ -15,7 +18,6 @@ const props = defineProps({
 })
 </script>
 <style lang="scss" scoped>
-// $img: require("@/static/img/Cyber2.jpg");
 
 @function randomNum($max, $min: 0, $u: 1) {
     @return ($min + random($max)) * $u;
@@ -29,9 +31,10 @@ const props = defineProps({
 
 .cyberimg {
     position: relative;
-    width: 100%;
+    width: 70%;
     height: 100%;
     margin: auto;
+    // background: url($img) no-repeat;
     background-repeat: no-repeat;
     background-size: cover;
     animation: main-img-hide 20s infinite step-end;
@@ -40,7 +43,7 @@ const props = defineProps({
 .cyberimg::before,
 .cyberimg::after {
     position: absolute;
-    width: 100%;
+    width: 70%;
     height: 100%;
     top: 0;
     left: 0;
@@ -58,41 +61,11 @@ const props = defineProps({
 }
 
 @keyframes glitch-one {
-
     // @for $i from 20 to 30 {
     //     #{$i / 2}% {
     //         left: #{randomNum(200, -100)}px;
     //         clip-path: inset(#{randomNum(150, 30)}px 0 #{randomNum(150, 30)}px);
     //     }
-    // }
-    20% {
-        left: #{randomNum(200, -100)}px;
-        clip-path: inset(#{randomNum(150, 30)}px 0 #{randomNum(150, 30)}px);
-    }
-
-    22% {
-        left: #{randomNum(200, -100)}px;
-        clip-path: inset(#{randomNum(150, 30)}px 0 #{randomNum(150, 30)}px);
-    }
-
-    // 24% {
-    //     left: #{randomNum(200, -100)}px;
-    //     clip-path: inset(#{randomNum(150, 30)}px 0 #{randomNum(150, 30)}px);
-    // }
-
-    // 26% {
-    //     left: #{randomNum(200, -100)}px;
-    //     clip-path: inset(#{randomNum(150, 30)}px 0 #{randomNum(150, 30)}px);
-    // }
-
-    // 28% {
-    //     left: #{randomNum(200, -100)}px;
-    //     clip-path: inset(#{randomNum(150, 30)}px 0 #{randomNum(150, 30)}px);
-    // }
-
-    // 30% {
-    //     left: #{randomNum(200, -100)}px;
-    //     clip-path: inset(#{randomNum(150, 30)}px 0 #{randomNum(150, 30)}px);
     // }
 
     15.5% {
@@ -119,136 +92,107 @@ const props = defineProps({
 
     46% {
         clip-path: inset(150px 0 160px);
-        left: 15%;
+        left: 8%;
     }
 
     46.5% {
         clip-path: inset(20px 0 200px);
-        left: -10%;
+        left: -8%;
         transform: scale(1.1);
     }
 
-    47% {
-        clip-path: inset(240px 0 20px);
-        left: -11%;
-        transform: scale(1.2);
-    }
+    // 47% {
+    //     clip-path: inset(240px 0 20px);
+    //     left: -11%;
+    //     transform: scale(1.2);
+    // }
 
-    47.5% {
-        clip-path: inset(20 0 20px);
-        left: 13%;
-        transform: scale(1.3);
-        filter: invert(0);
-    }
+    // 47.5% {
+    //     clip-path: inset(20 0 20px);
+    //     left: 13%;
+    //     transform: scale(1.3);
+    //     filter: invert(0);
+    // }
 
-    48% {
-        clip-path: inset(120 0 120px);
-        left: 15%;
-        transform: scale(1.1);
-    }
+    // 48% {
+    //     clip-path: inset(120 0 120px);
+    //     left: 15%;
+    //     transform: scale(1.1);
+    // }
 
     48.5% {
         clip-path: inset(260px 0 10px);
-        left: -11%;
-        transform: scale(1.2);
+        left: -3%;
+        transform: scale(1.06);
         filter: none;
     }
 
     49% {
-        clip-path: inset(5px 0 350px);
-        left: 11%;
-        transform: scale(1.3);
+        clip-path: inset(5px 0 200px);
+        left: 2%;
+        transform: scale(1);
     }
 
-    // 49.5% {
-    //     clip-path: inset(105px 0 210px);
-    //     left: 0%;
-    //     transform: scale(1.1);
-    // }
+    49.5% {
+        clip-path: inset(105px 0 210px);
+        left: -2%;
+        transform: scale(1.1);
+    }
 
     50% {
         clip-path: inset(175px 0 160px);
-        left: -11%;
+        left: -4%;
     }
 
-    50.5% {
-        clip-path: inset(95px 0 230px);
-        left: -14%;
-        transform: scale(1.2);
-    }
+    // 50.5% {
+    //     clip-path: inset(95px 0 230px);
+    //     left: -14%;
+    //     transform: scale(1.2);
+    // }
 
-    51% {
-        clip-path: inset(235px 0 12px);
-        left: -14%;
-    }
-
-    // 51.5% {
-    //     clip-path: inset(350px 0 7px);
+    // 51% {
+    //     clip-path: inset(235px 0 12px);
     //     left: -14%;
     // }
 
-    // 52% {
-    //     clip-path: inset(320px 0 27px);
-    //     left: -12%;
-    //     transform: scale(1.1);
-    // }
+    51.5% {
+        clip-path: inset(350px 0 7px);
+        left: 4%;
+    }
 
-    // 52.5% {
-    //     clip-path: inset(190px 0 127px);
-    //     left: -11%;
-    //     transform: scale(1.3);
-    //     filter: hue-rotate(90deg) saturate(1.3);
-    // }
+    52% {
+        clip-path: inset(320px 0 27px);
+        left: -2%;
+        transform: scale(1.1);
+    }
+
+    52.5% {
+        clip-path: inset(190px 0 127px);
+        left: -1%;
+        transform: scale(1.03);
+        filter: hue-rotate(90deg) saturate(1.3);
+    }
 
     54% {
         clip-path: inset(20px 0 20px);
-        left: 12%;
+        left: 2%;
         transform: scale(1.1);
         filter: none;
     }
 
-    84% {
-        background-image: none;
+    54% {
+        // background-image: none;
+        opacity: 0;
     }
 }
 
 @keyframes glitch-two {
-
     // @for $i from 40 to 50 {
-    //     #{$i / 2}% {
+    //     {$i / 2}% {
     //         left: #{randomNum(200, -100)}px;
     //         clip-path: inset(#{randomNum(180)}px 0 #{randomNum(180)}px);
     //     }
     // }
-    40% {
-        left: #{randomNum(200, -100)}px;
-        clip-path: inset(#{randomNum(180)}px 0 #{randomNum(180)}px);
-    }
-
-    42% {
-        left: #{randomNum(200, -100)}px;
-        clip-path: inset(#{randomNum(180)}px 0 #{randomNum(180)}px);
-    }
-
-    44% {
-        left: #{randomNum(200, -100)}px;
-        clip-path: inset(#{randomNum(180)}px 0 #{randomNum(180)}px);
-    }
-
-    46% {
-        left: #{randomNum(200, -100)}px;
-        clip-path: inset(#{randomNum(180)}px 0 #{randomNum(180)}px);
-    }
-
-    48% {
-        left: #{randomNum(200, -100)}px;
-        clip-path: inset(#{randomNum(180)}px 0 #{randomNum(180)}px);
-    }
-
-    50% {
-        left: #{randomNum(200, -100)}px;
-        clip-path: inset(#{randomNum(180)}px 0 #{randomNum(180)}px);
-    }
 
     25.5% {
         clip-path: inset(10px 0 320px);
@@ -267,103 +211,103 @@ const props = defineProps({
         filter: hue-rotate(45deg) saturate(1.1);
     }
 
-    45.5% {
-        left: 0px;
-        filter: invert(1.2);
-    }
+    // 45.5% {
+    //     left: 0px;
+    //     filter: invert(1.2);
+    // }
 
-    46% {
-        clip-path: inset(50px 0 260px);
-        left: -12%;
-    }
+    // 46% {
+    //     clip-path: inset(50px 0 260px);
+    //     left: -12%;
+    // }
 
     46.5% {
         clip-path: inset(120px 0 100px);
-        left: 8%;
+        left: -1%;
         transform: scale(1.2);
     }
 
     47% {
-        clip-path: inset(40px 0 300px);
-        left: 8%;
-        transform: scale(1.3);
+        clip-path: inset(40px 0 200px);
+        left: 1%;
+        transform: scale(1.03);
     }
 
-    47.5% {
-        clip-path: inset(220 0 70px);
-        left: -9%;
-        transform: scale(1.1);
-        filter: invert(1.1);
-    }
+    // 47.5% {
+    //     clip-path: inset(220 0 70px);
+    //     left: -9%;
+    //     transform: scale(1.1);
+    //     filter: invert(1.1);
+    // }
 
-    48% {
-        clip-path: inset(240px 0 120px);
-        left: 11%;
-        transform: scale(1.2);
-    }
+    // 48% {
+    //     clip-path: inset(240px 0 120px);
+    //     left: 11%;
+    //     transform: scale(1.2);
+    // }
 
     48.5% {
         clip-path: inset(0px 0 310px);
-        left: -12%;
+        left: -3%;
         transform: scale(1.2);
         filter: none;
     }
 
     49% {
         clip-path: inset(255px 0 50px);
-        left: 11%;
-        transform: scale(1.3);
+        left: 2%;
+        transform: scale(1.03);
     }
 
     49.5% {
         clip-path: inset(10px 0 240px);
-        left: 6%;
+        left: -2%;
         transform: scale(1.1);
     }
 
     50% {
         clip-path: inset(275px 0 90px);
-        left: -12%;
+        left: -4%;
     }
 
-    50.5% {
-        clip-path: inset(195px 0 90px);
-        left: 14%;
-        transform: scale(1.4);
-    }
+    // 50.5% {
+    //     clip-path: inset(195px 0 90px);
+    //     left: 14%;
+    //     transform: scale(1.4);
+    // }
 
-    51% {
-        clip-path: inset(35px 0 282px);
-        left: -14%;
-    }
+    // 51% {
+    //     clip-path: inset(35px 0 282px);
+    //     left: -14%;
+    // }
 
     51.5% {
         clip-path: inset(350px 0 7px);
-        left: 14%;
+        left: 4%;
     }
 
     52% {
         clip-path: inset(20px 0 270px);
-        left: -12%;
+        left: -2%;
         transform: scale(1.1);
     }
 
     52.5% {
         clip-path: inset(90px 0 227px);
-        left: -11%;
-        transform: scale(1.3);
+        left: -1%;
+        transform: scale(1.03);
         filter: hue-rotate(150deg) saturate(1.3);
     }
 
     54% {
         clip-path: inset(220px 0 100px);
-        left: 12%;
-        transform: scale(1.1);
+        left: 2%;
+        transform: scale(1.06);
         filter: none;
     }
 
-    84% {
-        background-image: none;
+    54% {
+        opacity: 0;
     }
 }
 
@@ -416,22 +360,22 @@ const props = defineProps({
     }
 
     55.5% {
-        background-image: none;
+        // background-image: none;
         filter: none;
         opacity: 1;
     }
 
     56% {
-        background-image: url('@/static/img/Cyber2.jpg');
+        // background-image: url($img);
         opacity: 0.5;
     }
 
     56.5% {
-        background-image: none;
+        // background-image: none;
     }
 
     57% {
-        background-image: url('@/static/img/Cyber2.jpg');
+        // background-image: url($img);
         opacity: 0.8;
     }
 
@@ -440,28 +384,9 @@ const props = defineProps({
     }
 
     58% {
-        background-image: none;
-
-    }
-
-    63% {
-        background-image: url('@/static/img/Cyber2.jpg');
-        opacity: 0.8;
-    }
-
-    70% {
-        opacity: 0.3;
-    }
-
-    72% {
         opacity: 1;
     }
-
-    72% {
-        opacity: 0.6;
-    }
-
-    87.5% {
-        opacity: 0.3;
+    99% { 
+        opacity: 0;
     }
 }</style>

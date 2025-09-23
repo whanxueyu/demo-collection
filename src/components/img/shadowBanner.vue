@@ -6,42 +6,42 @@
             <div class="control">
                 <!-- 图片层 -->
                 <div class="imgWrap">
-                    <div class="img img1">
-                        <img src="@/static/img/Cyber.jpeg">
-                    </div>
-                    <div class="img img2">
-                        <img src="@/static/img/Cyber2.jpg">
-                    </div>
-                    <div class="img img3">
-                        <img src="@/static/img/Cyber3.jpeg">
-                    </div>
-                    <div class="img img4">
-                        <img src="@/static/img/Cyber4.jpeg">
-                    </div>
-                    <div class="img img5">
-                        <img src="@/static/img/Cyber5.jpeg">
-                    </div>
-                    <div class="img img6">
-                        <img src="@/static/img/Cyber6.jpg">
-                    </div>
-                    <div class="img img7">
-                        <img src="@/static/img/Cyber7.jpeg">
-                    </div>
-                    <div class="img img8">
-                        <img src="@/static/img/Cyber8.jpeg">
+                    <div v-for="(img, index) in props.imgList" :key="index" class="img" :style="getImageStyle(index)">
+                        <img :src="img">
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </template>
-<script setup>
+<script setup lang="ts">
+import { ref } from 'vue'
 
+const props = defineProps({
+    imgList: {
+        type: String,
+        default: [
+            '/images/img/Cyber.jpeg',
+            '/images/img/Cyber2.jpg',
+            '/images/img/Cyber3.jpeg',
+            '/images/img/Cyber4.jpeg',
+            '/images/img/Cyber5.jpeg',
+            '/images/img/Cyber6.jpg',
+            '/images/img/Cyber7.jpeg',
+            '/images/img/Cyber8.jpeg',
+        ]
+    }
+})
+const imageCount = ref(8)
+imageCount.value = props.imgList.length;
+const getImageStyle = (index: number) => {
+    const angle = 35 + (index + 1) * (360 / imageCount.value); // 索引从0开始，需+1匹配原逻辑
+    return {
+        transform: `rotateY(${angle}deg) translateZ(650px)`
+    };
+};
 </script>
 <style lang="scss" scoped>
-$imgCount : 8;
-
-
 .container {
     position: relative;
 }
@@ -92,12 +92,12 @@ $imgCount : 8;
                     object-fit: cover;
                 }
 
-                @for $i from 1 through $imgCount {
-                    .img#{$i} {
-                        // transform: rotateY(35 + ($i * 45deg)) translateZ(482.84px) ;
-                        transform: rotateY(35 + ($i * 45deg)) translateZ(650px);
-                    }
-                }
+                // @for $i from 1 through v-bind('$imageCount') {
+                //     .img#{$i} {
+                //         // transform: rotateY(35 + ($i * 45deg)) translateZ(482.84px) ;
+                //         transform: rotateY(35 + ($i * 45deg)) translateZ(650px);
+                //     }
+                // }
             }
         }
     }
@@ -149,12 +149,12 @@ $imgCount : 8;
                     object-fit: cover;
                 }
 
-                @for $i from 1 through $imgCount {
-                    .img#{$i} {
-                        // transform: rotateY(35 + ($i * 45deg)) translateZ(482.84px) ;
-                        transform: rotateY(35 + ($i * 45deg)) translateZ(650px);
-                    }
-                }
+                // @for $i from 1 through v-bind('$imageCount') {
+                //     .img#{$i} {
+                //         // transform: rotateY(35 + ($i * 45deg)) translateZ(482.84px) ;
+                //         transform: rotateY(35 + ($i * 45deg)) translateZ(650px);
+                //     }
+                // }
             }
         }
     }

@@ -83,22 +83,22 @@
                 <div class="title">
                     <cyberText>Cyberpunk Text</cyberText>
                 </div>
-                <div class="btn flex justify-between align-center" style="font-size: 48px;">
-                    <shadowText direction="right" shadowColor="#66cc22">shadowText right</shadowText>
-                    <breakText>BREAK TEXT</breakText>
+                <div class="btn" style="font-size: 48px;">
                     <shadowText direction="left" shadowColor="#2299cc">shadowText left</shadowText>
-                </div>
-                <div class="btn flex justify-between align-center" style="font-size: 60px;">
+                    <shadowText direction="right" shadowColor="#66cc22">shadowText right</shadowText>
                     <shineText>shineText</shineText>
                     <pinkText>123abcABC文字</pinkText>
-                    <waveText></waveText>
                 </div>
-                <div class="btn flex justify-between align-center">
+                <div class="btn flex justify-between align-center" style="font-size: 60px;">
+                    <breakText>BREAK TEXT</breakText>
+                    <!-- <waveText>see waveText</waveText> -->
+                </div>
+                <!-- <div class="btn flex justify-between align-center"> -->
                     <douyin></douyin>
                     <douyinText text="douyinText"></douyinText>
                     <svgText1></svgText1>
-                    <svgText2></svgText2>
-                </div>
+                    <svgText2 :text="'这是什么Cyberpunk'"></svgText2>
+                <!-- </div> -->
             </div>
         </div>
         <ul class="aside">
@@ -143,7 +143,7 @@ import douyinText from '@/components/text/douyinText.vue'
 import { DigitalFlop } from '@kjgl77/datav-vue3';
 const isLoading = ref(true)
 const state = reactive({
-    imgurl: require('@/static/img/Cyber2.jpg'),
+    imgurl: './images/img/Cyber2.jpg',
     title: 'Cyberpunk 赛博朋克风格',
     title1: 'Cyberpunk Button',
     btn1: "横向按钮",
@@ -404,7 +404,7 @@ onMounted(() => {
             .show-dec {
                 text-align: right;
                 position: absolute;
-                width: 100px;
+                width: 120px;
                 right: 20px;
                 padding: 1px;
                 display: flex;

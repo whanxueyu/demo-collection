@@ -8,8 +8,8 @@
 -->
 <template>
     <div>
-        <svg viewBox="0 0 600 300">
-            <text x="0" y="70%"> Lorem </text>
+        <svg>
+            <text x="0" y="70%"> {{ props.text }} </text>
         </svg>
     </div>
 </template>
@@ -23,11 +23,11 @@ const props = defineProps({
 })
 </script>
 <style lang="scss" scoped>
-@import url("https://fonts.googleapis.com/css2?family=Bangers&family=Homemade+Apple&family=Sacramento&display=swap");
+// @import url("https://fonts.googleapis.com/css2?family=Bangers&family=Homemade+Apple&family=Sacramento&display=swap");
 
 svg {
     width: 100%;
-    height: 300px;
+    // height: 300px;
     margin: auto;
 }
 

@@ -8,7 +8,9 @@
 -->
 <template>
     <div class="g-container">
-    <p>TEXT WAVE</p>
+    <p>
+        <slot></slot>
+    </p>
 </div>
 </template>
 
@@ -31,8 +33,8 @@ p {
     font-size: 72px;
     line-height: 80px;
     font-weight: bold;
-    background: #fff;
-    color: #000;
+    // background: #fff;
+    // color: #000;
     overflow: hidden;
     
     &::before,
